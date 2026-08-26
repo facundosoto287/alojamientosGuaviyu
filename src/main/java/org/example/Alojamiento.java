@@ -8,14 +8,16 @@ public class Alojamiento {
     private int capacidad;
     private double precio;
     private String ubicacion;
+    private float DistanciaApiscina;
 
-    public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, String ubicacion) {
+    public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, String ubicacion, float distanciaApiscina) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.capacidad = capacidad;
         this.precio = precio;
         this.ubicacion = ubicacion;
+        DistanciaApiscina = distanciaApiscina;
     }
 
     public int getId() {
@@ -58,17 +60,19 @@ public class Alojamiento {
         this.precio = precio;
     }
 
+    public float getDistanciaApiscina() {
+        return DistanciaApiscina;
+    }
+
+    public void setDistanciaApiscina(float distanciaApiscina) {
+        DistanciaApiscina = distanciaApiscina;
+    }
+
     public String getUbicacion() {
         return ubicacion;
     }
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
-    }
-
-    @Override
-    public String toString() {
-        return "Alojamiento{id=" + id + ", nombre='" + nombre + "', descripcion='" + descripcion +
-                "', capacidad=" + capacidad + ", precio=" + precio + ", ubicacion='" + ubicacion + "'}";
     }
 }
