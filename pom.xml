@@ -14,4 +14,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <!-- Conector oficial de MariaDB para Java (JDBC) -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.1.4</version>
+        </dependency>
+    </dependencies>
+
+
 </project>
