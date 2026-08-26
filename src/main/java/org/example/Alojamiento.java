@@ -77,7 +77,7 @@ public class Alojamiento {
         this.distanciaApiscina = distanciaApiscina;
     }
 
-
+    //Solo exitos
     @Override
     public String toString() {
         return "Alojamiento{id=" + id + ", nombre='" + nombre + "', descripcion='" + descripcion +
