@@ -1,6 +1,4 @@
 package org.example;
-
-//import org.example.ConexionBD;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,7 +12,7 @@ public class AdministradorDAO {
     public Administrador iniciarSesion(String correo, String contrasena) {
         String sql = "SELECT id, nombre, correo, contrasena FROM administrador WHERE correo = ? AND contrasena = ?";
 
-        try (Connection conexion = ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
             sentencia.setString(1, correo);
