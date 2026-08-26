@@ -35,4 +35,10 @@ public class AdministradorDAO {
 
         return null; // no se encontró un administrador con esas credenciales
     }
+    // Caso de uso 2: Cerrar sesión
+// Limpia la sesión activa. No hace falta acceder a la base de datos.
+    public void cerrarSesion() {
+        administradorActual = null;
+    }
+
 }
