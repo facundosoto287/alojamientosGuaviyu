@@ -10,7 +10,7 @@ public class AdministradorDAO {
     // Valida correo y contraseña. Si son correctos, devuelve el Administrador autenticado.
     // Si no coinciden, devuelve null.
     public Administrador iniciarSesion(String correo, String contrasena) {
-        String sql = "SELECT id, nombre, correo, contrasena FROM administrador WHERE correo = ? AND contrasena = ?";
+        String sql = "SELECT id, nombre, correo, contrasena FROM administrador WHERE email = ? AND contrasena = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {

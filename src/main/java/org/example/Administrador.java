@@ -7,7 +7,7 @@ public class Administrador {
     private String email;
     private String contrasenia;
 
-    public Administrador(int id, String nombre, String email, String contrasenia) {
+    public Administrador(int id, String nombre, String email, String contrasena) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
