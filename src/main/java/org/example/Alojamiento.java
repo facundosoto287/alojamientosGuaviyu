@@ -2,20 +2,20 @@ package org.example;
 
 public class Alojamiento {
 
-    private int id,capacidad;
-    private String nombre,descripcion,ubicacion;
-    private Double precio;
-    private Float distanciaApiscina;
+    private int id;
+    private String nombre;
+    private String descripcion;
+    private int capacidad;
+    private double precio;
+    private String ubicacion;
 
-
-    public Alojamiento(int id, int capacidad, String nombre, String descripcion, String ubicacion, Double precio, Float distanciaApiscina) {
+    public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, String ubicacion) {
         this.id = id;
-        this.capacidad = capacidad;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.ubicacion = ubicacion;
+        this.capacidad = capacidad;
         this.precio = precio;
-        this.distanciaApiscina = distanciaApiscina;
+        this.ubicacion = ubicacion;
     }
 
     public int getId() {
@@ -24,14 +24,6 @@ public class Alojamiento {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getCapacidad() {
-        return capacidad;
-    }
-
-    public void setCapacidad(int capacidad) {
-        this.capacidad = capacidad;
     }
 
     public String getNombre() {
@@ -50,6 +42,22 @@ public class Alojamiento {
         this.descripcion = descripcion;
     }
 
+    public int getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(int capacidad) {
+        this.capacidad = capacidad;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
     public String getUbicacion() {
         return ubicacion;
     }
@@ -58,19 +66,9 @@ public class Alojamiento {
         this.ubicacion = ubicacion;
     }
 
-    public Double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(Double precio) {
-        this.precio = precio;
-    }
-
-    public Float getDistanciaApiscina() {
-        return distanciaApiscina;
-    }
-
-    public void setDistanciaApiscina(Float distanciaApiscina) {
-        this.distanciaApiscina = distanciaApiscina;
+    @Override
+    public String toString() {
+        return "Alojamiento{id=" + id + ", nombre='" + nombre + "', descripcion='" + descripcion +
+                "', capacidad=" + capacidad + ", precio=" + precio + ", ubicacion='" + ubicacion + "'}";
     }
 }

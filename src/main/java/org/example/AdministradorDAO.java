@@ -7,15 +7,15 @@ import java.sql.SQLException;
 public class AdministradorDAO {
 
     // Caso de uso 1: Iniciar sesión
-    // Valida correo y contraseña. Si son correctos, devuelve el Administrador autenticado.
+    // Valida email y contraseña. Si son correctos, devuelve el Administrador autenticado.
     // Si no coinciden, devuelve null.
-    public Administrador iniciarSesion(String correo, String contrasena) {
-        String sql = "SELECT id, nombre, correo, contrasena FROM administrador WHERE correo = ? AND contrasena = ?";
+    public Administrador iniciarSesion(String email, String contrasena) {
+        String sql = "SELECT id, nombre, email, contrasena FROM administrador WHERE email = ? AND contrasena = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-            sentencia.setString(1, correo);
+            sentencia.setString(1, email);
             sentencia.setString(2, contrasena);
 
             try (ResultSet resultado = sentencia.executeQuery()) {
@@ -23,7 +23,7 @@ public class AdministradorDAO {
                     return new Administrador(
                             resultado.getInt("id"),
                             resultado.getString("nombre"),
-                            resultado.getString("correo"),
+                            resultado.getString("email"),
                             resultado.getString("contrasena")
                     );
                 }
