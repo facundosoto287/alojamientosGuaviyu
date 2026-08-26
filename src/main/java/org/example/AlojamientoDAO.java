@@ -16,7 +16,7 @@ public class AlojamientoDAO {
 
         String sql = "INSERT INTO alojamiento (nombre, descripcion, capacidad, precio, ubicacion) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conexion = ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
             sentencia.setString(1, alojamiento.getNombre());

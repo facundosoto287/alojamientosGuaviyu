@@ -2,9 +2,17 @@ package org.example;
 
 public class Cliente {
     private int id;
-    private String nombre,documennto,telefono,email,procedencia;
+    private String nombre,documennto,telefono,email,procedencia,contrasena;
 
-    public Cliente(int id, String nombre, String documennto, String telefono, String email, String procedencia) {
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
+
+    public Cliente(int id, String nombre, String documennto, String telefono, String email, String procedencia, String contrasena ) {
         this.id = id;
         this.nombre = nombre;
         this.documennto = documennto;
