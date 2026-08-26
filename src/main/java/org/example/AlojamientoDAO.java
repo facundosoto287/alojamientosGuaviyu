@@ -6,33 +6,36 @@ import java.sql.SQLException;
 
 public class AlojamientoDAO {
 
-    // Caso de uso 2: Agregar alojamiento
-    // Valida los datos básicos antes de insertar (capacidad y precio deben ser válidos).
-    public boolean crear(Alojamiento alojamiento) {
-        if (!esValido(alojamiento)) {
-            System.out.println("Datos inválidos: la capacidad y el precio deben ser mayores a 0.");
-            return false;
-        }
+    // Caso de uso 2: Agregar Alojamiento
+    // Valida que el administrador haya iniciado sesion, si inicio, le permite agregar un nuevo alojamiento al catalogo de la plataforma.
+    // Si no coinciden, le pide que inicie sesion.
 
-        String sql = "INSERT INTO alojamiento (nombre, descripcion, capacidad, precio, ubicacion) VALUES (?, ?, ?, ?, ?)";
+    public boolean agregarAlojamiento(Alojamiento alojamiento) {
+
+        String sql = """
+               
+                INSERT INTO alojamiento (nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina)
+               VALUES (?, ?, ?, ?, ?, ?)""";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
-             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+             PreparedStatement sentencia = conexion.prepareStatement(sql)){
 
             sentencia.setString(1, alojamiento.getNombre());
-            sentencia.setString(2, alojamiento.getDescripcion());
+            sentencia.setString(2,alojamiento.getDescripcion());
             sentencia.setInt(3, alojamiento.getCapacidad());
             sentencia.setDouble(4, alojamiento.getPrecio());
             sentencia.setString(5, alojamiento.getUbicacion());
+            sentencia.setFloat(6, alojamiento.getDistanciaApiscina());
 
-            return sentencia.executeUpdate() > 0;
+            int filasAfectadas = sentencia.executeUpdate();
+
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return false;
+
         }
     }
 
-    private boolean esValido(Alojamiento alojamiento) {
-        return alojamiento.getCapacidad() > 0 && alojamiento.getPrecio() > 0;
-    }
 }
