@@ -35,4 +35,12 @@ public class AdministradorDAO {
 
         return null; // no se encontró un administrador con esas credenciales
     }
+    // Caso de uso: Cerrar sesión
+// No requiere acceso a la base de datos: solo indica que la operación fue exitosa.
+    public boolean cerrarSesion() {
+        System.out.println("Sesión finalizada correctamente.");
+        return true;
+    }
+
+
 }
