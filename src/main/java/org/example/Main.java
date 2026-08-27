@@ -6,8 +6,8 @@ public class Main {
 
     static Scanner sc = new Scanner(System.in);
     static AdministradorDAO administradorDAO = new AdministradorDAO();
+    static AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
 
-    // Guarda el administrador autenticado actualmente. Si es null, nadie inició sesión.
     static Administrador administradorActual = null;
 
     public static void main(String[] args) {
@@ -21,6 +21,7 @@ public class Main {
             switch (opcion) {
                 case 1 -> iniciarSesion();
                 case 2 -> cerrarSesion();
+                case 3 -> agregarAlojamiento();
                 case 0 -> System.out.println("Saliendo del programa...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -32,6 +33,7 @@ public class Main {
         System.out.println("\n===== MENÚ =====");
         System.out.println("1. Iniciar sesión");
         System.out.println("2. Cerrar sesión");
+        System.out.println("3. Agregar alojamiento");
         System.out.println("0. Salir");
         System.out.print("Elija una opción: ");
     }
@@ -51,7 +53,7 @@ public class Main {
         Administrador admin = administradorDAO.iniciarSesion(correo, contrasena);
 
         if (admin != null) {
-            administradorActual = admin; // guardamos quién está logueado
+            administradorActual = admin;
             System.out.println("Bienvenido, " + admin.getNombre() + ". Sesión iniciada correctamente.");
         } else {
             System.out.println("Correo o contraseña incorrectos.");
@@ -59,7 +61,6 @@ public class Main {
     }
 
     static void cerrarSesion() {
-        // Precondición: el administrador debe haber iniciado sesión
         if (administradorActual == null) {
             System.out.println("No hay ninguna sesión activa para cerrar.");
             return;
@@ -69,7 +70,44 @@ public class Main {
 
         if (exito) {
             System.out.println("Hasta luego, " + administradorActual.getNombre() + ".");
-            administradorActual = null; // el sistema deja de reconocerlo como autenticado
+            administradorActual = null;
+        }
+    }
+
+    static void agregarAlojamiento() {
+        // Precondición: el administrador debe haber iniciado sesión
+        if (administradorActual == null) {
+            System.out.println("Debe iniciar sesión como administrador para agregar un alojamiento.");
+            return;
+        }
+
+        System.out.println("Ingrese el nombre del alojamiento:");
+        String nombre = sc.nextLine();
+
+        System.out.println("Ingrese la descripción:");
+        String descripcion = sc.nextLine();
+
+        System.out.println("Ingrese la capacidad (personas):");
+        int capacidad = sc.nextInt();
+
+        System.out.println("Ingrese el precio:");
+        double precio = sc.nextDouble();
+
+        System.out.println("Ingrese la ubicación:");
+        sc.nextLine();
+        String ubicacion = sc.nextLine();
+
+        System.out.println("Ingrese la distancia a la piscina (metros):");
+        float distanciaApiscina = sc.nextFloat();
+        sc.nextLine();
+
+        Alojamiento nuevoAlojamiento = new Alojamiento(0, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        boolean exito = alojamientoDAO.agregarAlojamiento(nuevoAlojamiento);
+
+        if (exito) {
+            System.out.println("Alojamiento registrado correctamente y disponible en el catálogo.");
+        } else {
+            System.out.println("No se pudo registrar el alojamiento (revise los datos ingresados).");
         }
     }
 }
