@@ -175,6 +175,7 @@ public class Main {
             switch (opcion) {
                 case 1 -> agregarAlojamiento();
                 case 2 -> listarAlojamientos();
+                case 3 -> modificarAlojamiento();
                 case 4 -> eliminarAlojamiento();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
@@ -229,16 +230,18 @@ public class Main {
     static void eliminarAlojamiento(){
         if (administradorActual == null){
             System.out.println("Debe iniciar sesión como administrador para eliminar un alojamiento.");
+            return;
         }
 
         listarAlojamientos();
 
         System.out.println("Ingrese el id del alojamiento a eliminar:");
         int id = sc.nextInt();
+        sc.nextLine();
 
         boolean eliminado = alojamientoDAO.eliminarAlojamiento(id);
 
-        System.out.println(eliminado ? "El alojamiento se elimino con exito" : "No se encontro un alojamiento con ese id");
+        System.out.println(eliminado ? "El alojamiento se eliminó con éxito" : "No se encontró un alojamiento con ese id");
     }
 
 
