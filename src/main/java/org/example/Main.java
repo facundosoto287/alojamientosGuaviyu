@@ -113,6 +113,7 @@ public class Main {
         } while (opcion != 0 && administradorActual != null);
     }
 
+
     static void agregarAlojamiento() {
         // Precondición: el administrador debe haber iniciado sesión
         if (administradorActual == null) {
@@ -120,27 +121,7 @@ public class Main {
             return;
         }
 
-        System.out.println("Ingrese el nombre del alojamiento:");
-        String nombre = sc.nextLine();
-
-        System.out.println("Ingrese la descripción:");
-        String descripcion = sc.nextLine();
-
-        System.out.println("Ingrese la capacidad (personas):");
-        int capacidad = sc.nextInt();
-
-        System.out.println("Ingrese el precio:");
-        double precio = sc.nextDouble();
-
-        System.out.println("Ingrese la ubicación:");
-        sc.nextLine();
-        String ubicacion = sc.nextLine();
-
-        System.out.println("Ingrese la distancia a la piscina (metros):");
-        float distanciaApiscina = sc.nextFloat();
-        sc.nextLine();
-
-        Alojamiento nuevoAlojamiento = new Alojamiento(0, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        Alojamiento nuevoAlojamiento = alojamientoDAO.pedirDatosNuevoAlojamiento(sc);
         boolean exito = alojamientoDAO.agregarAlojamiento(nuevoAlojamiento);
 
         if (exito) {
@@ -171,31 +152,7 @@ public class Main {
 
         listarAlojamientos();
 
-        System.out.println("Ingrese el id del alojamiento a modificar:");
-        int id = sc.nextInt();
-        sc.nextLine();
-
-        System.out.println("Ingrese el nuevo nombre:");
-        String nombre = sc.nextLine();
-
-        System.out.println("Ingrese la nueva descripción:");
-        String descripcion = sc.nextLine();
-
-        System.out.println("Ingrese la nueva capacidad:");
-        int capacidad = sc.nextInt();
-
-        System.out.println("Ingrese el nuevo precio:");
-        double precio = sc.nextDouble();
-
-        System.out.println("Ingrese la nueva ubicación:");
-        sc.nextLine();
-        String ubicacion = sc.nextLine();
-
-        System.out.println("Ingrese la nueva distancia a la piscina:");
-        float distanciaApiscina = sc.nextFloat();
-        sc.nextLine();
-
-        Alojamiento alojamientoModificado = new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        Alojamiento alojamientoModificado = alojamientoDAO.pedirDatosModificarAlojamiento(sc);
         boolean exito = alojamientoDAO.modificarAlojamiento(alojamientoModificado);
 
         System.out.println(exito ? "Alojamiento modificado correctamente." : "No se pudo modificar (verifique el id).");
