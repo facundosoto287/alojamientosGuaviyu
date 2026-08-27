@@ -106,7 +106,7 @@ public class ClienteDAO {
     }
     public List<Cliente> listarClientes() throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, nombre, documennto, telefono, email, procedencia, contrasena FROM cliente ORDER BY nombre";
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena FROM cliente ORDER BY nombre";
 
         Connection conexion = ConexionBD.obtenerConexion();
         PreparedStatement sentencia = conexion.prepareStatement(sql);
