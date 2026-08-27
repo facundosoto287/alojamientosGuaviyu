@@ -79,6 +79,24 @@ public class AlojamientoDAO {
         }
     }
 
+    public boolean eliminarAlojamiento(int id) {
+        String sql = "DELETE FROM alojamiento WHERE id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)){
+
+            sentencia.setInt(1, id);
+
+            int filasAeliminar = sentencia.executeUpdate();
+
+            return filasAeliminar > 0;
+        }catch(SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     private Alojamiento mapearAlojamiento(ResultSet resultado) throws SQLException {
         return new Alojamiento(
                 resultado.getInt("id"),
