@@ -76,6 +76,7 @@ public class Main {
             administradorActual = null;
         }
     }
+
     static void menuAdministrador() {
         int opcion;
 
@@ -84,6 +85,9 @@ public class Main {
             System.out.println("3. Registrar cliente");
             System.out.println("4. Agregar servicio");
             System.out.println("5. Listar servicios");
+            System.out.println("6. Agregar alojamiento");
+            System.out.println("7. Listar alojamientos");
+            System.out.println("8. Modificar alojamiento");
             System.out.println("2. Cerrar sesión");
             System.out.println("0. Volver al menú principal");
             System.out.print("Elija una opción: ");
@@ -92,9 +96,12 @@ public class Main {
             sc.nextLine();
 
             switch (opcion) {
-              //  case 3 -> registrarCliente();
+                //  case 3 -> registrarCliente();
                 case 4 -> agregarServicio();
                 case 5 -> listarServicios();
+                case 6 -> agregarAlojamiento();
+                case 7 -> listarAlojamientos();
+                case 8 -> modificarAlojamiento();
                 case 2 -> {
                     cerrarSesion();
                     opcion = 0; // si cierra sesión, salimos del submenú
@@ -142,6 +149,58 @@ public class Main {
             System.out.println("No se pudo registrar el alojamiento (revise los datos ingresados).");
         }
     }
+
+    static void listarAlojamientos() {
+        List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
+
+        if (alojamientos.isEmpty()) {
+            System.out.println("No hay alojamientos registrados.");
+        } else {
+            System.out.println("ALOJAMIENTOS:");
+            for (Alojamiento a : alojamientos) {
+                System.out.println(a);
+            }
+        }
+    }
+
+    static void modificarAlojamiento() {
+        if (administradorActual == null) {
+            System.out.println("Debe iniciar sesión como administrador para modificar un alojamiento.");
+            return;
+        }
+
+        listarAlojamientos();
+
+        System.out.println("Ingrese el id del alojamiento a modificar:");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("Ingrese el nuevo nombre:");
+        String nombre = sc.nextLine();
+
+        System.out.println("Ingrese la nueva descripción:");
+        String descripcion = sc.nextLine();
+
+        System.out.println("Ingrese la nueva capacidad:");
+        int capacidad = sc.nextInt();
+
+        System.out.println("Ingrese el nuevo precio:");
+        double precio = sc.nextDouble();
+
+        System.out.println("Ingrese la nueva ubicación:");
+        sc.nextLine();
+        String ubicacion = sc.nextLine();
+
+        System.out.println("Ingrese la nueva distancia a la piscina:");
+        float distanciaApiscina = sc.nextFloat();
+        sc.nextLine();
+
+        Alojamiento alojamientoModificado = new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        boolean exito = alojamientoDAO.modificarAlojamiento(alojamientoModificado);
+
+        System.out.println(exito ? "Alojamiento modificado correctamente." : "No se pudo modificar (verifique el id).");
+    }
+
     static void agregarServicio() {
         System.out.println("Ingrese el id del servicio:");
         int id = sc.nextInt();
@@ -165,6 +224,7 @@ public class Main {
             System.out.println("Error al agregar el servicio: " + e.getMessage());
         }
     }
+
     static void listarServicios() {
         try {
             List<Servicio> servicios = servicioDAO.listarServicios();
