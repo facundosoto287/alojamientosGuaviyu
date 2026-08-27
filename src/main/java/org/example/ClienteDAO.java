@@ -48,32 +48,38 @@ public class ClienteDAO {
     public void cerrarSesion() {
         clienteActual = null;
     }
+
     // Caso de uso 8: Registrar cliente
-// Valida datos obligatorios, verifica que el correo y documento no estén repetidos,
-// crea el cliente en la base de datos y devuelve el Cliente creado.
-// Si falla alguna validación, lanza una excepción con el motivo.
-    public Cliente registrarCliente(String nombre, String documennto, String telefono,
-                                    String email, String procedencia, String contrasena) {
+    public Cliente registrarCliente(String nombre, String documennto, String telefono, String email, String procedencia, String contrasena) {
 
-        // 1. Validar que los datos requeridos estén completos
-        if (nombre == null || nombre.isBlank()
-                || documennto == null || documennto.isBlank()
-                || email == null || email.isBlank()
-                || contrasena == null || contrasena.isBlank()) {
-            throw new IllegalArgumentException("Faltan datos obligatorios para el registro.");
+        // Validar que no falten datos
+        if (nombre.isBlank() || documennto.isBlank() || email.isBlank() || contrasena.isBlank()) {
+            throw new IllegalArgumentException("Faltan datos obligatorios.");
         }
 
-        // 2. Verificar que el correo y el documento no estén registrados previamente
-        if (existeClientePorEmailODocumento(email, documennto)) {
-            throw new IllegalArgumentException("Ya existe un cliente registrado con ese correo o documento.");
-        }
-
-        // 3. Crear el nuevo cliente en la base de datos
-        String sql = "INSERT INTO cliente (nombre, documennto, telefono, email, procedencia, contrasena) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        // Validar que no exista ya un cliente con ese email o documento
+        String sqlVerificar = "SELECT id FROM cliente WHERE email = ? OR documennto = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
-             PreparedStatement sentencia = conexion.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement verificar = conexion.prepareStatement(sqlVerificar)) {
+
+            verificar.setString(1, email);
+            verificar.setString(2, documennto);
+
+            ResultSet resultado = verificar.executeQuery();
+            if (resultado.next()) {
+                throw new IllegalArgumentException("Ya existe un cliente con ese email o documento.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Insertar el nuevo cliente
+        String sqlInsertar = "INSERT INTO cliente (nombre, documennto, telefono, email, procedencia, contrasena) VALUES (?,?,?,?,?,?)";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sqlInsertar, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             sentencia.setString(1, nombre);
             sentencia.setString(2, documennto);
@@ -82,25 +88,20 @@ public class ClienteDAO {
             sentencia.setString(5, procedencia);
             sentencia.setString(6, contrasena);
 
-            int filasAfectadas = sentencia.executeUpdate();
-            if (filasAfectadas == 0) {
-                throw new RuntimeException("No se pudo registrar el cliente.");
+            sentencia.executeUpdate();
+
+            ResultSet claves = sentencia.getGeneratedKeys();
+            int id = 0;
+            if (claves.next()) {
+                id = claves.getInt(1);
             }
 
-            int idGenerado = 0;
-            try (ResultSet claves = sentencia.getGeneratedKeys()) {
-                if (claves.next()) {
-                    idGenerado = claves.getInt(1);
-                }
-            }
-
-            return new Cliente(idGenerado, nombre, documennto, telefono, email, procedencia, contrasena);
+            return new Cliente(id, nombre, documennto, telefono, email, procedencia, contrasena);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
     // Método auxiliar: verifica si ya existe un cliente con ese correo o documento
     private boolean existeClientePorEmailODocumento(String email, String documennto) {
         String sql = "SELECT id FROM cliente WHERE email = ? OR documennto = ?";
