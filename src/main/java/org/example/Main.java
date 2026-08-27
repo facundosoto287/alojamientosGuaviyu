@@ -13,6 +13,7 @@ public class Main {
     static AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
     static ServicioDAO servicioDAO = new ServicioDAO();
     static Administrador administradorActual = null;
+    static ClienteDAO clienteDAO= new ClienteDAO();
 
     public static void main(String[] args) {
         int opcion;
@@ -81,14 +82,11 @@ public class Main {
         int opcion;
 
         do {
-            System.out.println("\nMENÚ ADMINISTRADOR:");
-            System.out.println("3. Registrar cliente");
-            System.out.println("4. Agregar servicio");
-            System.out.println("5. Listar servicios");
-            System.out.println("6. Agregar alojamiento");
-            System.out.println("7. Listar alojamientos");
-            System.out.println("8. Modificar alojamiento");
-            System.out.println("2. Cerrar sesión");
+            System.out.println("\n===== MENÚ ADMINISTRADOR =====");
+            System.out.println("1. Gestionar clientes");
+            System.out.println("2. Gestionar servicios");
+            System.out.println("3. Gestionar alojamientos");
+            System.out.println("3. Cerrar sesión");
             System.out.println("0. Volver al menú principal");
             System.out.print("Elija una opción: ");
 
@@ -96,15 +94,12 @@ public class Main {
             sc.nextLine();
 
             switch (opcion) {
-                //  case 3 -> registrarCliente();
-                case 4 -> agregarServicio();
-                case 5 -> listarServicios();
-                case 6 -> agregarAlojamiento();
-                case 7 -> listarAlojamientos();
-                case 8 -> modificarAlojamiento();
-                case 2 -> {
+                case 1 -> menuClientes();
+                case 2 -> menuServicios();
+                case 3 -> menuAlojamientos();
+                case 4 -> {
                     cerrarSesion();
-                    opcion = 0; // si cierra sesión, salimos del submenú
+                    opcion = 0;
                 }
                 case 0 -> System.out.println("Volviendo al menú principal...");
                 default -> System.out.println("Opción inválida.");
@@ -113,7 +108,79 @@ public class Main {
         } while (opcion != 0 && administradorActual != null);
     }
 
+    // ===== Submenú de Cliente =====
+    static void menuClientes() {
+        int opcion;
 
+        do {
+            System.out.println("\n----- MENÚ CLIENTES -----");
+            System.out.println("1. Registrar cliente");
+            System.out.println("2. Listar clientes");
+            System.out.println("0. Volver");
+            System.out.print("Elija una opción: ");
+
+            opcion = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcion) {
+                //case 1 -> registrarCliente();
+                case 2 -> listarClientes();
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción inválida.");
+            }
+
+        } while (opcion != 0);
+    }
+    static void menuServicios() {
+        int opcion;
+
+        do {
+            System.out.println("\n----- MENÚ SERVICIOS -----");
+            System.out.println("1. Agregar servicio");
+            System.out.println("2. Listar servicios");
+            System.out.println("3. Editar servicio");
+            System.out.println("4. Eliminar servicio");
+            System.out.println("0. Volver");
+            System.out.print("Elija una opción: ");
+
+            opcion = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcion) {
+                case 1 -> agregarServicio();
+                case 2 -> listarServicios();
+                case 3 -> editarServicio();
+                case 4 -> eliminarServicio();
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción inválida.");
+            }
+
+        } while (opcion != 0);
+    }
+    static void menuAlojamientos() {
+        int opcion;
+
+        do {
+            System.out.println("\n----- MENÚ ALOJAMIENTOS -----");
+            System.out.println("1. Agregar alojamiento");
+            System.out.println("2. Listar alojamientos");
+            System.out.println("3. Editar alojamiento");
+            System.out.println("4. Eliminar alojamiento");
+            System.out.println("0. Volver");
+            System.out.print("Elija una opción: ");
+
+            opcion = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcion) {
+                case 1 -> agregarAlojamiento();
+                case 2 -> listarAlojamientos();
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción inválida.");
+            }
+
+        } while (opcion != 0);
+    }
     static void agregarAlojamiento() {
         // Precondición: el administrador debe haber iniciado sesión
         if (administradorActual == null) {
@@ -197,6 +264,64 @@ public class Main {
 
         } catch (SQLException e) {
             System.out.println("Error al listar los servicios: " + e.getMessage());
+        }
+    }
+    static void editarServicio() {
+        System.out.println("Ingrese el id del servicio a editar:");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("Ingrese el nuevo nombre del servicio:");
+        String nuevoNombre = sc.nextLine();
+
+        try {
+            boolean exito = servicioDAO.editarServicio(id, nuevoNombre);
+
+            if (exito) {
+                System.out.println("Servicio editado correctamente.");
+            } else {
+                System.out.println("No se encontró ningún servicio con ese id.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al editar el servicio: " + e.getMessage());
+        }
+    }
+    static void eliminarServicio() {
+        System.out.println("Ingrese el id del servicio a eliminar:");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        try {
+            boolean exito = servicioDAO.eliminarServicio(id);
+
+            if (exito) {
+                System.out.println("Servicio eliminado correctamente.");
+            } else {
+                System.out.println("No se encontró ningún servicio con ese id.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar el servicio: " + e.getMessage());
+        }
+    }
+    static void listarClientes() {
+        try {
+            List<Cliente> clientes = clienteDAO.listarClientes();
+
+            if (clientes.isEmpty()) {
+                System.out.println("No hay clientes registrados.");
+            } else {
+                System.out.println("===== CLIENTES =====");
+                for (Cliente cliente : clientes) {
+                    System.out.println(cliente.getId() + " - " + cliente.getNombre()
+                            + " | Doc: " + cliente.getDocumennto()
+                            + " | Email: " + cliente.getEmail());
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al listar los clientes: " + e.getMessage());
         }
     }
 }

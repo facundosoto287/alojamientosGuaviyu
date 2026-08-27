@@ -57,4 +57,24 @@ public class ServicioDAO {
 
         return new Servicio(id, nombre);
     }
+    public boolean eliminarServicio(int id) throws SQLException {
+        String sql = "DELETE FROM servicio WHERE id = ?";
+
+        Connection conexion = ConexionBD.obtenerConexion();
+        PreparedStatement sentencia = conexion.prepareStatement(sql);
+        sentencia.setInt(1, id);
+
+        return sentencia.executeUpdate() == 1;
+    }
+    public boolean editarServicio(int id, String nuevoNombre) throws SQLException {
+        String sql = "UPDATE servicio SET nombre = ? WHERE id = ?";
+
+        Connection conexion = ConexionBD.obtenerConexion();
+        PreparedStatement sentencia = conexion.prepareStatement(sql);
+        sentencia.setString(1, nuevoNombre);
+        sentencia.setInt(2, id);
+
+        return sentencia.executeUpdate() == 1;
+    }
 }
+

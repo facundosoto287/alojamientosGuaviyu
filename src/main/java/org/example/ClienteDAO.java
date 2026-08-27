@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteDAO {
 
@@ -101,6 +103,29 @@ public class ClienteDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public List<Cliente> listarClientes() throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
+        String sql = "SELECT id, nombre, documennto, telefono, email, procedencia, contrasena FROM cliente ORDER BY nombre";
+
+        Connection conexion = ConexionBD.obtenerConexion();
+        PreparedStatement sentencia = conexion.prepareStatement(sql);
+        ResultSet filas = sentencia.executeQuery();
+
+        while (filas.next()) {
+            Cliente cliente = new Cliente(
+                    filas.getInt("id"),
+                    filas.getString("nombre"),
+                    filas.getString("documennto"),
+                    filas.getString("telefono"),
+                    filas.getString("email"),
+                    filas.getString("procedencia"),
+                    filas.getString("contrasena")
+            );
+            clientes.add(cliente);
+        }
+
+        return clientes;
     }
     // Método auxiliar: verifica si ya existe un cliente con ese correo o documento
     private boolean existeClientePorEmailODocumento(String email, String documennto) {
