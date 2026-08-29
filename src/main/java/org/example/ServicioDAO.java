@@ -11,19 +11,13 @@ import java.sql.SQLException;
 public class ServicioDAO {
 
     public boolean agregarServicio(Servicio servicio) throws SQLException {
-        String sql = "INSERT INTO servicio (id, nombre) VALUES(?,?)";
+        String sql = "INSERT INTO servicio (nombre) VALUES (?)";
 
-        try (Connection conexion = ConexionBD.obtenerConexion();
-             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+        Connection conexion = ConexionBD.obtenerConexion();
+        PreparedStatement sentencia = conexion.prepareStatement(sql);
+        sentencia.setString(1, servicio.getNombre());
 
-            sentencia.setInt(1, servicio.getId());
-            sentencia.setString(2, servicio.getNombre());
-
-            return sentencia.executeUpdate() == 1;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return sentencia.executeUpdate() == 1;
     }
 
     public List<Servicio> listarServicios() throws SQLException {
@@ -45,7 +39,6 @@ public class ServicioDAO {
 
         return servicios;
     }
-
     // Pide los datos para un servicio nuevo por consola
     public Servicio pedirDatosNuevoServicio(Scanner sc) {
         System.out.println("Ingrese el id del servicio:");

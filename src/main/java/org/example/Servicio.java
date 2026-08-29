@@ -6,7 +6,7 @@ public class Servicio {
     private String nombre;
 
     public Servicio(int id, String nombre) {
-        this.id = id;
+        this.id=id;
         this.nombre = nombre;
     }
 

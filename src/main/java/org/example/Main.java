@@ -246,14 +246,10 @@ public class Main {
 
 
     static void agregarServicio() {
-        System.out.println("Ingrese el id del servicio:");
-        int id = sc.nextInt();
-        sc.nextLine();
-
         System.out.println("Ingrese el nombre del servicio:");
         String nombre = sc.nextLine();
 
-        Servicio servicio = new Servicio(id, nombre);
+        Servicio servicio = new Servicio(0, nombre); // el id se ignora, lo genera la base de datos
 
         try {
             boolean exito = servicioDAO.agregarServicio(servicio);
@@ -287,6 +283,8 @@ public class Main {
         }
     }
     static void editarServicio() {
+        listarServicios(); // mostramos los servicios existentes antes de pedir el id
+
         System.out.println("Ingrese el id del servicio a editar:");
         int id = sc.nextInt();
         sc.nextLine();
@@ -307,7 +305,10 @@ public class Main {
             System.out.println("Error al editar el servicio: " + e.getMessage());
         }
     }
+
     static void eliminarServicio() {
+        listarServicios(); // mostramos los servicios existentes antes de pedir el id
+
         System.out.println("Ingrese el id del servicio a eliminar:");
         int id = sc.nextInt();
         sc.nextLine();
