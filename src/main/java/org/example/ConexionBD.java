@@ -16,7 +16,7 @@ public class ConexionBD {
         try {
             // Establece la conexión mediante el Driver de MariaDB
             conexion = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("¡Conexión exitosa a la base de datos 'alojamientosguaviyu'!");
+
         } catch (SQLException e) {
             System.err.println("Error al conectar con la base de datos:");
             e.printStackTrace();

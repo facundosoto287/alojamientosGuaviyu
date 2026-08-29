@@ -108,21 +108,22 @@ public class ClienteDAO {
         List<Cliente> clientes = new ArrayList<>();
         String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena FROM cliente ORDER BY nombre";
 
-        Connection conexion = ConexionBD.obtenerConexion();
-        PreparedStatement sentencia = conexion.prepareStatement(sql);
-        ResultSet filas = sentencia.executeQuery();
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql);
+             ResultSet filas = sentencia.executeQuery()) {
 
-        while (filas.next()) {
-            Cliente cliente = new Cliente(
-                    filas.getInt("id"),
-                    filas.getString("nombre"),
-                    filas.getString("documennto"),
-                    filas.getString("telefono"),
-                    filas.getString("email"),
-                    filas.getString("procedencia"),
-                    filas.getString("contrasena")
-            );
-            clientes.add(cliente);
+            while (filas.next()) {
+                Cliente cliente = new Cliente(
+                        filas.getInt("id"),
+                        filas.getString("nombre"),
+                        filas.getString("documento"),
+                        filas.getString("telefono"),
+                        filas.getString("email"),
+                        filas.getString("procedencia"),
+                        filas.getString("contrasena")
+                );
+                clientes.add(cliente);
+            }
         }
 
         return clientes;
