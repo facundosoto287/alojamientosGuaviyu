@@ -69,5 +69,23 @@ public class ServicioDAO {
 
         return sentencia.executeUpdate() == 1;
     }
+
+    public Servicio buscarPorId(int id) throws SQLException {
+        String sql = "SELECT id, nombre FROM servicio WHERE id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, id);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                if (filas.next()) {
+                    return new Servicio(filas.getInt("id"), filas.getString("nombre"));
+                }
+            }
+        }
+
+        return null; // no existe ningún servicio con ese id
+    }
 }
 

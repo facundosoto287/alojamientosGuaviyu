@@ -86,7 +86,7 @@ public class Main {
             System.out.println("1. Gestionar clientes");
             System.out.println("2. Gestionar servicios");
             System.out.println("3. Gestionar alojamientos");
-            System.out.println("3. Cerrar sesión");
+            System.out.println("4. Cerrar sesión");
             System.out.println("0. Volver al menú principal");
             System.out.print("Elija una opción: ");
 
@@ -283,49 +283,88 @@ public class Main {
         }
     }
     static void editarServicio() {
-        listarServicios(); // mostramos los servicios existentes antes de pedir el id
+        listarServicios();
 
-        System.out.println("Ingrese el id del servicio a editar:");
-        int id = sc.nextInt();
-        sc.nextLine();
+        Servicio servicioExistente = null;
+        int id = 0;
+
+        while (servicioExistente == null) {
+            System.out.println("Ingrese el id del servicio a editar:");
+            id = sc.nextInt();
+            sc.nextLine();
+
+            try {
+                servicioExistente = servicioDAO.buscarPorId(id);
+
+                if (servicioExistente == null) {
+                    System.out.println("No se encontró ningún servicio con ese id. Intente de nuevo.");
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Error al buscar el servicio: " + e.getMessage());
+                return;
+            }
+        }
 
         System.out.println("Ingrese el nuevo nombre del servicio:");
         String nuevoNombre = sc.nextLine();
 
+        System.out.println("¿Confirma que desea editar el servicio con id " + id + " y ponerle el nombre \"" + nuevoNombre + "\"? (s/n)");
+        String confirmacion = sc.nextLine();
+
+        if (!confirmacion.equalsIgnoreCase("s")) {
+            System.out.println("Edición cancelada.");
+            return;
+        }
+
         try {
             boolean exito = servicioDAO.editarServicio(id, nuevoNombre);
-
-            if (exito) {
-                System.out.println("Servicio editado correctamente.");
-            } else {
-                System.out.println("No se encontró ningún servicio con ese id.");
-            }
-
+            System.out.println(exito ? "Servicio editado correctamente." : "No se pudo editar el servicio.");
         } catch (SQLException e) {
             System.out.println("Error al editar el servicio: " + e.getMessage());
         }
     }
 
     static void eliminarServicio() {
-        listarServicios(); // mostramos los servicios existentes antes de pedir el id
+        listarServicios();
 
-        System.out.println("Ingrese el id del servicio a eliminar:");
-        int id = sc.nextInt();
-        sc.nextLine();
+        Servicio servicioExistente = null;
+        int id = 0;
+
+        while (servicioExistente == null) {
+            System.out.println("Ingrese el id del servicio a eliminar:");
+            id = sc.nextInt();
+            sc.nextLine();
+
+            try {
+                servicioExistente = servicioDAO.buscarPorId(id);
+
+                if (servicioExistente == null) {
+                    System.out.println("No se encontró ningún servicio con ese id. Intente de nuevo.");
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Error al buscar el servicio: " + e.getMessage());
+                return;
+            }
+        }
+
+        System.out.println("¿Confirma que desea eliminar el servicio con id " + id + " (\"" + servicioExistente.getNombre() + "\")? (s/n)");
+        String confirmacion = sc.nextLine();
+
+        if (!confirmacion.equalsIgnoreCase("s")) {
+            System.out.println("Eliminación cancelada.");
+            return;
+        }
 
         try {
             boolean exito = servicioDAO.eliminarServicio(id);
-
-            if (exito) {
-                System.out.println("Servicio eliminado correctamente.");
-            } else {
-                System.out.println("No se encontró ningún servicio con ese id.");
-            }
-
+            System.out.println(exito ? "Servicio eliminado correctamente." : "No se pudo eliminar el servicio.");
         } catch (SQLException e) {
             System.out.println("Error al eliminar el servicio: " + e.getMessage());
         }
     }
+
     static void listarClientes() {
         try {
             List<Cliente> clientes = clienteDAO.listarClientes();
