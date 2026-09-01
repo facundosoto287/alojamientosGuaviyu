@@ -123,7 +123,7 @@ public class Main {
             sc.nextLine();
 
             switch (opcion) {
-                //case 1 -> registrarCliente();
+                case 1 -> registrarCliente();
                 case 2 -> listarClientes();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
@@ -362,6 +362,26 @@ public class Main {
             System.out.println(exito ? "Servicio eliminado correctamente." : "No se pudo eliminar el servicio.");
         } catch (SQLException e) {
             System.out.println("Error al eliminar el servicio: " + e.getMessage());
+        }
+    }
+
+    static void registrarCliente() {
+        Cliente datosCliente = clienteDAO.pedirDatosNuevoCliente(sc);
+
+        try {
+            Cliente nuevoCliente = clienteDAO.registrarCliente(
+                    datosCliente.getNombre(),
+                    datosCliente.getDocumennto(),
+                    datosCliente.getTelefono(),
+                    datosCliente.getEmail(),
+                    datosCliente.getProcedencia(),
+                    datosCliente.getContrasena()
+            );
+            System.out.println("Cliente registrado correctamente: " + nuevoCliente.getNombre());
+        } catch (IllegalArgumentException e) {
+            System.out.println("No se pudo registrar: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Error al registrar el cliente: " + e.getMessage());
         }
     }
 
