@@ -14,6 +14,7 @@ public class Main {
     static ServicioDAO servicioDAO = new ServicioDAO();
     static Administrador administradorActual = null;
     static ClienteDAO clienteDAO= new ClienteDAO();
+    static ReservaDao reservaDao = new ReservaDao();
 
     public static void main(String[] args) {
         int opcion;
@@ -86,7 +87,8 @@ public class Main {
             System.out.println("1. Gestionar clientes");
             System.out.println("2. Gestionar servicios");
             System.out.println("3. Gestionar alojamientos");
-            System.out.println("4. Cerrar sesión");
+            System.out.println("4. Gestionar reservas");
+            System.out.println("5. Cerrar sesión");
             System.out.println("0. Volver al menú principal");
             System.out.print("Elija una opción: ");
 
@@ -97,7 +99,8 @@ public class Main {
                 case 1 -> menuClientes();
                 case 2 -> menuServicios();
                 case 3 -> menuAlojamientos();
-                case 4 -> {
+                case 4 -> menuReservas();
+                case 5 -> {
                     cerrarSesion();
                     opcion = 0;
                 }
@@ -183,6 +186,34 @@ public class Main {
 
         } while (opcion != 0);
     }
+
+    static void menuReservas() {
+        int opcion;
+
+        do {
+            System.out.println("\n----- MENÚ RESERVAS -----");
+            System.out.println("1. Ver solicitudes pendientes");
+            System.out.println("2. Confirmar reserva");
+            System.out.println("3. Cancelar reserva");
+            System.out.println("4. Ver reservas confirmadas");
+            System.out.println("0. Volver");
+            System.out.print("Elija una opción: ");
+
+            opcion = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcion) {
+                //case 1 -> verSolicitudesPendientes();
+                case 2 -> confirmarReserva();
+                //case 3 -> cancelarReserva();
+                //case 4 -> verReservasConfirmadas();
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción inválida.");
+            }
+
+        } while (opcion != 0);
+    }
+
     static void agregarAlojamiento() {
         // Precondición: el administrador debe haber iniciado sesión
         if (administradorActual == null) {
@@ -383,6 +414,27 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Error al listar los clientes: " + e.getMessage());
         }
+    }
+
+    //RESERVAS
+
+    static void confirmarReserva(){
+
+        System.out.println("Ingrese el id de la reserva a confirmar");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("¿Desea confirmar esta reserva? (s/n)");
+        String confirmacion = sc.nextLine();
+
+        if (!confirmacion.equalsIgnoreCase("s")) {
+            System.out.println("Confirmacion cancelada.");
+            return;
+        }
+
+        boolean confirmada = reservaDao.confirmarReserva(id);
+
+        System.out.println(confirmada ? "Reserva confirmada con exito" : "No se pudo realizar la reserva");
     }
 }
 
