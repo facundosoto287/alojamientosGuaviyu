@@ -15,6 +15,7 @@ public class Main {
     static Administrador administradorActual = null;
     static ClienteDAO clienteDAO= new ClienteDAO();
     static ReservaDao reservaDao = new ReservaDao();
+    static Cliente_reservaDAO clienteReservaDAO = new Cliente_reservaDAO();
 
     public static void main(String[] args) {
         int opcion;
@@ -192,10 +193,12 @@ public class Main {
 
         do {
             System.out.println("\n----- MENÚ RESERVAS -----");
-            System.out.println("1. Ver solicitudes pendientes");
-            System.out.println("2. Confirmar reserva");
-            System.out.println("3. Cancelar reserva");
-            System.out.println("4. Ver reservas confirmadas");
+            System.out.println("1. Crear reserva");
+            System.out.println("2. Ver solicitudes pendientes");
+            System.out.println("3. Confirmar reserva");
+            System.out.println("4. Cancelar reserva");
+            System.out.println("5. Ver reservas confirmadas");
+            System.out.println("6. Ver reservas canceladas");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -203,10 +206,12 @@ public class Main {
             sc.nextLine();
 
             switch (opcion) {
-                //case 1 -> verSolicitudesPendientes();
-                case 2 -> confirmarReserva();
-                //case 3 -> cancelarReserva();
-                //case 4 -> verReservasConfirmadas();
+                case 1 -> crearReserva();
+                case 2 -> listarSolicitudesPendientes();
+                case 3 -> confirmarReserva();
+                case 4 -> cancelarReserva();
+                case 5 -> listarReservasConfirmadas();
+                case 6 -> listarReservasCanceladas();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -438,6 +443,76 @@ public class Main {
 
     //RESERVAS
 
+    static void crearReserva() {
+        // Precondición: el administrador debe haber iniciado sesión
+        if (administradorActual == null) {
+            System.out.println("Debe iniciar sesión como administrador para crear una reserva.");
+            return;
+        }
+
+        System.out.println("Ingrese el id del cliente para el cual se registra la reserva:");
+        int idCliente = sc.nextInt();
+        sc.nextLine();
+
+        listarAlojamientos();
+
+        Reserva nuevaReserva = reservaDao.pedirDatosNuevaReserva(sc);
+        int idReservaGenerado = reservaDao.crear(nuevaReserva);
+
+        if (idReservaGenerado == -1) {
+            System.out.println("No se pudo crear la reserva.");
+            return;
+        }
+
+        Cliente_reserva relacion = new Cliente_reserva(String.valueOf(idCliente), String.valueOf(idReservaGenerado));
+        boolean exitoRelacion = clienteReservaDAO.crear(relacion);
+
+        if (exitoRelacion) {
+            System.out.println("Reserva #" + idReservaGenerado + " creada y vinculada al cliente correctamente.");
+        } else {
+            System.out.println("La reserva se creó, pero no se pudo vincular al cliente (revise el id del cliente).");
+        }
+    }
+
+    static void listarSolicitudesPendientes() {
+        List<Reserva> pendientes = reservaDao.listarPendientes();
+
+        if (pendientes.isEmpty()) {
+            System.out.println("No hay solicitudes de reserva pendientes.");
+        } else {
+            System.out.println("SOLICITUDES PENDIENTES:");
+            for (Reserva r : pendientes) {
+                System.out.println(r);
+            }
+        }
+    }
+
+    static void listarReservasConfirmadas() {
+        List<Reserva> confirmadas = reservaDao.listarConfirmadas();
+
+        if (confirmadas.isEmpty()) {
+            System.out.println("No hay reservas confirmadas.");
+        } else {
+            System.out.println("RESERVAS CONFIRMADAS:");
+            for (Reserva r : confirmadas) {
+                System.out.println(r);
+            }
+        }
+    }
+
+    static void listarReservasCanceladas() {
+        List<Reserva> canceladas = reservaDao.listarPorEstado(EstadoReserva.CANCELADA);
+
+        if (canceladas.isEmpty()) {
+            System.out.println("No hay reservas canceladas.");
+        } else {
+            System.out.println("RESERVAS CANCELADAS:");
+            for (Reserva r : canceladas) {
+                System.out.println(r);
+            }
+        }
+    }
+
     static void confirmarReserva(){
 
         System.out.println("Ingrese el id de la reserva a confirmar");
@@ -455,6 +530,17 @@ public class Main {
         boolean confirmada = reservaDao.confirmarReserva(id);
 
         System.out.println(confirmada ? "Reserva confirmada con exito" : "No se pudo realizar la reserva");
+    }
+
+    static void cancelarReserva() {
+        listarSolicitudesPendientes();
+
+        System.out.println("Ingrese el id de la reserva a cancelar:");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        boolean exito = reservaDao.cancelarReserva(id);
+        System.out.println(exito ? "Reserva cancelada correctamente." : "No se pudo cancelar (verifique el id o que esté pendiente).");
     }
 }
 

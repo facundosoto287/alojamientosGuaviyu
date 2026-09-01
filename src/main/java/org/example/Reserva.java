@@ -1,21 +1,26 @@
 package org.example;
 
-import java.util.Date;
-
+import java.sql.Date;
 
 public class Reserva {
 
-    private int id,cantidadHuesedes;
-    private Date fechaIngreso,fechaSalida,fechaSolucitud;
+    private int id;
+    private Date fechaIngreso;
+    private Date fechaSalida;
+    private int cantidadHuespedes;
     private EstadoReserva estado;
+    private Date fechaSolicitud;
+    private int alojamientoId;
 
-    public Reserva(int id, int cantidadHuesedes, Date fechaIngreso, Date fechaSalida, Date fechaSolucitud, EstadoReserva estado) {
+    public Reserva(int id, Date fechaIngreso, Date fechaSalida, int cantidadHuespedes,
+                   EstadoReserva estado, Date fechaSolicitud, int alojamientoId) {
         this.id = id;
-        this.cantidadHuesedes = cantidadHuesedes;
         this.fechaIngreso = fechaIngreso;
         this.fechaSalida = fechaSalida;
-        this.fechaSolucitud = fechaSolucitud;
+        this.cantidadHuespedes = cantidadHuespedes;
         this.estado = estado;
+        this.fechaSolicitud = fechaSolicitud;
+        this.alojamientoId = alojamientoId;
     }
 
     public int getId() {
@@ -24,14 +29,6 @@ public class Reserva {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getCantidadHuesedes() {
-        return cantidadHuesedes;
-    }
-
-    public void setCantidadHuesedes(int cantidadHuesedes) {
-        this.cantidadHuesedes = cantidadHuesedes;
     }
 
     public Date getFechaIngreso() {
@@ -50,12 +47,12 @@ public class Reserva {
         this.fechaSalida = fechaSalida;
     }
 
-    public Date getFechaSolucitud() {
-        return fechaSolucitud;
+    public int getCantidadHuespedes() {
+        return cantidadHuespedes;
     }
 
-    public void setFechaSolucitud(Date fechaSolucitud) {
-        this.fechaSolucitud = fechaSolucitud;
+    public void setCantidadHuespedes(int cantidadHuespedes) {
+        this.cantidadHuespedes = cantidadHuespedes;
     }
 
     public EstadoReserva getEstado() {
@@ -64,5 +61,28 @@ public class Reserva {
 
     public void setEstado(EstadoReserva estado) {
         this.estado = estado;
+    }
+
+    public Date getFechaSolicitud() {
+        return fechaSolicitud;
+    }
+
+    public void setFechaSolicitud(Date fechaSolicitud) {
+        this.fechaSolicitud = fechaSolicitud;
+    }
+
+    public int getAlojamientoId() {
+        return alojamientoId;
+    }
+
+    public void setAlojamientoId(int alojamientoId) {
+        this.alojamientoId = alojamientoId;
+    }
+
+    @Override
+    public String toString() {
+        return "Reserva{id=" + id + ", ingreso=" + fechaIngreso + ", salida=" + fechaSalida +
+                ", huespedes=" + cantidadHuespedes + ", estado=" + estado +
+                ", solicitado=" + fechaSolicitud + ", alojamientoId=" + alojamientoId + "}";
     }
 }
