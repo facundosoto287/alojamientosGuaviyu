@@ -285,6 +285,13 @@ public class Main {
         System.out.println("Ingrese el id del alojamiento a eliminar:");
         int id = sc.nextInt();
         sc.nextLine();
+        System.out.println("¿Confirma que desea eliminar el alojamiento?(s/n)");
+        String confirmacion = sc.nextLine();
+
+        if (!confirmacion.equalsIgnoreCase("s")) {
+            System.out.println("Accion cancelada.");
+            return;
+        }
 
         boolean eliminado = alojamientoDAO.eliminarAlojamiento(id);
 
