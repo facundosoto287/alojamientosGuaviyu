@@ -170,6 +170,8 @@ public class Main {
             System.out.println("2. Listar alojamientos");
             System.out.println("3. Editar alojamiento");
             System.out.println("4. Eliminar alojamiento");
+            System.out.println("5. Asociar servicio a alojamiento");
+            System.out.println("6. Ver servicios de un alojamiento");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -181,6 +183,8 @@ public class Main {
                 case 2 -> listarAlojamientos();
                 case 3 -> modificarAlojamiento();
                 case 4 -> eliminarAlojamiento();
+                case 5 -> asociarServicioAalojamiento();
+                case 6 -> verServiciosDeUnAlojamiento();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -280,6 +284,34 @@ public class Main {
         System.out.println(eliminado ? "El alojamiento se eliminó con éxito" : "No se encontró un alojamiento con ese id");
     }
 
+    static void asociarServicioAalojamiento(){
+        System.out.println();
+
+    }
+
+    static void verServiciosDeUnAlojamiento(){
+        listarAlojamientos();
+
+        try {
+            System.out.println("Ingrese el id del alojamiento:");
+            int idAlojamiento = sc.nextInt();
+            sc.nextLine();
+
+            List<Servicio> servicios = alojamientoDAO.verServiciosDeUnAlojamiento(idAlojamiento);
+            if(servicios.isEmpty()){
+                System.out.println("El alojamiento no tiene servicios asociados");
+                return;
+            }
+
+            System.out.println("Servicios del alojamiento:");
+            for(Servicio servicio : servicios){
+                System.out.println(servicio.getId() + "-" + servicio.getNombre());
+            }
+        } catch (Exception e){
+            System.out.println("Debe ingresar un id valido");
+            sc.nextLine();
+        }
+    }
 
     static void agregarServicio() {
         System.out.println("Ingrese el nombre del servicio:");
@@ -514,6 +546,7 @@ public class Main {
     }
 
     static void confirmarReserva(){
+        listarSolicitudesPendientes();
 
         System.out.println("Ingrese el id de la reserva a confirmar");
         int id = sc.nextInt();

@@ -164,4 +164,36 @@ public class AlojamientoDAO {
 
         return new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
     }
+
+    public List<Servicio> verServiciosDeUnAlojamiento(int idAlojamiento){
+        List<Servicio> servicios = new ArrayList<>();
+
+        String sql = """
+            SELECT s.id, s.nombre
+            FROM servicio s
+            JOIN alojamiento_servicio als
+                ON s.id = als.servicio_id
+            WHERE als.alojamiento_id = ?
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+            PreparedStatement sentencia = conexion.prepareStatement(sql)){
+
+            sentencia.setInt(1, idAlojamiento);
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                while (resultado.next()){
+                    Servicio servicio = new Servicio(
+                    resultado.getInt("id"),
+                    resultado.getString("nombre")
+                    );
+                    servicios.add(servicio); //hacer un print del resultado para ver que trae
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return servicios;
+    }
 }
+
