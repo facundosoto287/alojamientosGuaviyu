@@ -122,4 +122,43 @@ public class ClienteDAO {
 
         return new Cliente(0, nombre, documento, telefono, email, procedencia);
     }
+
+    public Cliente buscarPorId(int id) throws SQLException {
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia FROM cliente WHERE id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, id);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                if (filas.next()) {
+                    return new Cliente(
+                            filas.getInt("id"),
+                            filas.getString("nombre"),
+                            filas.getString("documento"),
+                            filas.getString("telefono"),
+                            filas.getString("email"),
+                            filas.getString("procedencia")
+                    );
+                }
+            }
+        }
+
+        return null; // no existe ningún cliente con ese id
+    }
+
+    public boolean eliminarCliente(int id) throws SQLException {
+        String sql = "DELETE FROM cliente WHERE id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, id);
+
+            return sentencia.executeUpdate() == 1;
+        }
+    }
+
 }
+

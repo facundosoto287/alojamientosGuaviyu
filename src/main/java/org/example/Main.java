@@ -120,6 +120,7 @@ public class Main {
             System.out.println("\n----- MENÚ CLIENTES -----");
             System.out.println("1. Registrar cliente");
             System.out.println("2. Listar clientes");
+            System.out.println("3. Eliminar cliente");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -129,6 +130,7 @@ public class Main {
             switch (opcion) {
                 case 1 -> registrarCliente();
                 case 2 -> listarClientes();
+                case 3 -> eliminarCliente();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -518,7 +520,45 @@ public class Main {
             System.out.println("Error al listar los clientes: " + e.getMessage());
         }
     }
+    static void eliminarCliente() {
+        listarClientes();
 
+        Cliente clienteExistente = null;
+        int id = 0;
+
+        while (clienteExistente == null) {
+            System.out.println("Ingrese el id del cliente a eliminar:");
+            id = sc.nextInt();
+            sc.nextLine();
+
+            try {
+                clienteExistente = clienteDAO.buscarPorId(id);
+
+                if (clienteExistente == null) {
+                    System.out.println("No se encontró ningún cliente con ese id. Intente de nuevo.");
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Error al buscar el cliente: " + e.getMessage());
+                return;
+            }
+        }
+
+        System.out.println("¿Confirma que desea eliminar al cliente con id " + id + " (\"" + clienteExistente.getNombre() + "\")? (s/n)");
+        String confirmacion = sc.nextLine();
+
+        if (!confirmacion.equalsIgnoreCase("s")) {
+            System.out.println("Eliminación cancelada.");
+            return;
+        }
+
+        try {
+            boolean exito = clienteDAO.eliminarCliente(id);
+            System.out.println(exito ? "Cliente eliminado correctamente." : "No se pudo eliminar el cliente.");
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar el cliente: " + e.getMessage());
+        }
+    }
     // ===== RESERVAS =====
 
     static void crearReserva() {
