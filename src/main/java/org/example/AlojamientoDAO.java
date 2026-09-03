@@ -165,6 +165,30 @@ public class AlojamientoDAO {
         return new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
     }
 
+    public boolean asociarServicioAalojamiento(int idAlojamiento, int idServicio) {
+        String sql = """
+            INSERT INTO alojamiento_servicio
+            (alojamiento_id, servicio_id)
+            VALUES (?, ?)
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+            PreparedStatement sentencia = conexion.prepareStatement(sql)){
+
+            sentencia.setInt(1, idAlojamiento);
+            sentencia.setInt(2, idServicio);
+
+            int filasAfectadas = sentencia.executeUpdate();
+
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
     public List<Servicio> verServiciosDeUnAlojamiento(int idAlojamiento){
         List<Servicio> servicios = new ArrayList<>();
 
