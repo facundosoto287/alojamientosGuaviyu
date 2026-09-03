@@ -1,21 +1,18 @@
 package org.example;
 
 public class Cliente {
+
     private int id;
-    private String nombre,documennto,telefono,email,procedencia,contrasena;
+    private String nombre;
+    private String documento;
+    private String telefono;
+    private String email;
+    private String procedencia;
 
-    public String getContrasena() {
-        return contrasena;
-    }
-
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
-    }
-
-    public Cliente(int id, String nombre, String documennto, String telefono, String email, String procedencia, String contrasena ) {
+    public Cliente(int id, String nombre, String documento, String telefono, String email, String procedencia) {
         this.id = id;
         this.nombre = nombre;
-        this.documennto = documennto;
+        this.documento = documento;
         this.telefono = telefono;
         this.email = email;
         this.procedencia = procedencia;
@@ -37,12 +34,12 @@ public class Cliente {
         this.nombre = nombre;
     }
 
-    public String getDocumennto() {
-        return documennto;
+    public String getDocumento() {
+        return documento;
     }
 
-    public void setDocumennto(String documennto) {
-        this.documennto = documennto;
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public String getTelefono() {
@@ -67,5 +64,11 @@ public class Cliente {
 
     public void setProcedencia(String procedencia) {
         this.procedencia = procedencia;
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente{id=" + id + ", nombre='" + nombre + "', documento='" + documento +
+                "', telefono='" + telefono + "', email='" + email + "', procedencia='" + procedencia + "'}";
     }
 }

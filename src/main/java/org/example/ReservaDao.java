@@ -195,17 +195,51 @@ public class ReservaDao {
         int alojamientoId = sc.nextInt();
         sc.nextLine();
 
-        System.out.println("Ingrese la fecha de ingreso (YYYY-MM-DD):");
-        Date fechaIngreso = Date.valueOf(sc.nextLine());
+        Date hoy = new Date(System.currentTimeMillis());
 
-        System.out.println("Ingrese la fecha de salida (YYYY-MM-DD):");
-        Date fechaSalida = Date.valueOf(sc.nextLine());
+        Date fechaIngreso = null;
+        while (fechaIngreso == null) {
+            System.out.println("Ingrese la fecha de ingreso (YYYY-MM-DD):");
+            String textoFecha = sc.nextLine();
+
+            try {
+                Date fechaIngresada = Date.valueOf(textoFecha);
+
+                if (fechaIngresada.before(hoy)) {
+                    System.out.println("La fecha de ingreso no puede ser anterior a hoy (" + hoy + "). Intente de nuevo.");
+                } else {
+                    fechaIngreso = fechaIngresada;
+                }
+
+            } catch (IllegalArgumentException e) {
+                System.out.println("Formato de fecha inválido. Use YYYY-MM-DD. Intente de nuevo.");
+            }
+        }
+
+        Date fechaSalida = null;
+        while (fechaSalida == null) {
+            System.out.println("Ingrese la fecha de salida (YYYY-MM-DD):");
+            String textoFecha = sc.nextLine();
+
+            try {
+                Date fechaIngresada = Date.valueOf(textoFecha);
+
+                if (fechaIngresada.before(fechaIngreso)) {
+                    System.out.println("La fecha de salida no puede ser anterior a la fecha de ingreso (" + fechaIngreso + "). Intente de nuevo.");
+                } else {
+                    fechaSalida = fechaIngresada;
+                }
+
+            } catch (IllegalArgumentException e) {
+                System.out.println("Formato de fecha inválido. Use YYYY-MM-DD. Intente de nuevo.");
+            }
+        }
 
         System.out.println("Ingrese la cantidad de huéspedes:");
         int cantidadHuespedes = sc.nextInt();
         sc.nextLine();
 
-        Date fechaSolicitud = new Date(System.currentTimeMillis()); // hoy, automático
+        Date fechaSolicitud = new Date(System.currentTimeMillis());
 
         return new Reserva(0, fechaIngreso, fechaSalida, cantidadHuespedes,
                 EstadoReserva.PENDIENTE, fechaSolicitud, alojamientoId);
