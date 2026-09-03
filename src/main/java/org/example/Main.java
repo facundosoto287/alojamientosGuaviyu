@@ -292,8 +292,34 @@ public class Main {
     }
 
     static void asociarServicioAalojamiento(){
-        System.out.println();
+        listarAlojamientos();
 
+        try {
+            System.out.println("Ingrese el id del alojamiento:");
+            int idAlojamiento = sc.nextInt();
+            sc.nextLine();
+
+            listarServicios();
+
+            System.out.println("Ingrese el id del servicio:");
+            int idServicio = sc.nextInt();
+            sc.nextLine();
+
+            System.out.println("¿Confirma que desea agregar el servicio al alojamiento?(s/n)");
+            String confirmacion = sc.nextLine();
+
+            if (!confirmacion.equalsIgnoreCase("s")) {
+                System.out.println("Asociacion cancelada.");
+                return;
+            }
+
+            boolean asociado = alojamientoDAO.asociarServicioAalojamiento(idAlojamiento, idServicio);
+
+            System.out.println(asociado ? "El servicio fue asociado correctamente" : "No se pudo asociar el servicio");
+        } catch (Exception e) {
+            System.out.println("Debe ingresar ids válidos.");
+            sc.nextLine();
+        }
     }
 
     static void verServiciosDeUnAlojamiento(){
