@@ -80,17 +80,28 @@ public class AlojamientoDAO {
     }
 
     public boolean eliminarAlojamiento(int id) {
+        String eliminarServicios = """
+        DELETE FROM alojamiento_servicio
+        WHERE alojamiento_id = ?
+        """;
+
         String sql = "DELETE FROM alojamiento WHERE id = ?";
 
-        try (Connection conexion = ConexionBD.obtenerConexion();
-             PreparedStatement sentencia = conexion.prepareStatement(sql)){
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            try (PreparedStatement sentenciaServicios =
+                         conexion.prepareStatement(eliminarServicios)) {
+                sentenciaServicios.setInt(1, id);
+                sentenciaServicios.executeUpdate();
+            }
+            try (PreparedStatement sentencia =
+                         conexion.prepareStatement(sql)) {
+                sentencia.setInt(1, id);
 
-            sentencia.setInt(1, id);
+                int filasAEliminar = sentencia.executeUpdate();
 
-            int filasAeliminar = sentencia.executeUpdate();
-
-            return filasAeliminar > 0;
-        }catch(SQLException e) {
+                return filasAEliminar > 0;
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
