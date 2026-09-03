@@ -565,7 +565,24 @@ public class Main {
     }
 
     static void confirmarReserva() {
-        System.out.println("Ingrese el id de la reserva a confirmar");
+        List<Reserva> pendientes = reservaDao.listarPendientes();
+
+        if (pendientes.isEmpty()) {
+            System.out.println("No hay solicitudes de reserva pendientes para confirmar.");
+            return;
+        }
+
+        System.out.println("SOLICITUDES PENDIENTES:");
+        for (Reserva r : pendientes) {
+            System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
+                    + " | Salida: " + r.getFechaSalida()
+                    + " | Huéspedes: " + r.getCantidadHuespedes()
+                    + " | Estado: " + r.getEstado()
+                    + " | Solicitado: " + r.getFechaSolicitud()
+                    + " | Alojamiento: " + r.getAlojamientoId());
+        }
+
+        System.out.println("Ingrese el id de la reserva a confirmar:");
         int id = sc.nextInt();
         sc.nextLine();
 
@@ -573,17 +590,32 @@ public class Main {
         String confirmacion = sc.nextLine();
 
         if (!confirmacion.equalsIgnoreCase("s")) {
-            System.out.println("Confirmacion cancelada.");
+            System.out.println("Confirmación cancelada.");
             return;
         }
 
         boolean confirmada = reservaDao.confirmarReserva(id);
 
-        System.out.println(confirmada ? "Reserva confirmada con exito" : "No se pudo realizar la reserva");
+        System.out.println(confirmada ? "Reserva confirmada con éxito" : "No se pudo confirmar la reserva (verifique el id o que esté pendiente).");
     }
 
     static void cancelarReserva() {
-        listarSolicitudesPendientes();
+        List<Reserva> pendientes = reservaDao.listarPendientes();
+
+        if (pendientes.isEmpty()) {
+            System.out.println("No hay solicitudes de reserva pendientes para cancelar.");
+            return;
+        }
+
+        System.out.println("SOLICITUDES PENDIENTES:");
+        for (Reserva r : pendientes) {
+            System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
+                    + " | Salida: " + r.getFechaSalida()
+                    + " | Huéspedes: " + r.getCantidadHuespedes()
+                    + " | Estado: " + r.getEstado()
+                    + " | Solicitado: " + r.getFechaSolicitud()
+                    + " | Alojamiento: " + r.getAlojamientoId());
+        }
 
         System.out.println("Ingrese el id de la reserva a cancelar:");
         int id = sc.nextInt();
