@@ -13,7 +13,7 @@ public class Main {
     static AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
     static ServicioDAO servicioDAO = new ServicioDAO();
     static Administrador administradorActual = null;
-    static ClienteDAO clienteDAO= new ClienteDAO();
+    static ClienteDAO clienteDAO = new ClienteDAO();
     static ReservaDao reservaDao = new ReservaDao();
     static Cliente_reservaDAO clienteReservaDAO = new Cliente_reservaDAO();
 
@@ -135,6 +135,7 @@ public class Main {
 
         } while (opcion != 0);
     }
+
     static void menuServicios() {
         int opcion;
 
@@ -161,6 +162,7 @@ public class Main {
 
         } while (opcion != 0);
     }
+
     static void menuAlojamientos() {
         int opcion;
 
@@ -244,7 +246,12 @@ public class Main {
         } else {
             System.out.println("ALOJAMIENTOS:");
             for (Alojamiento a : alojamientos) {
-                System.out.println(a);
+                System.out.println(a.getId() + " - " + a.getNombre()
+                        + " | Descripción: " + a.getDescripcion()
+                        + " | Capacidad: " + a.getCapacidad()
+                        + " | Precio: " + a.getPrecio()
+                        + " | Ubicación: " + a.getUbicacion()
+                        + " | Dist. piscina: " + a.getDistanciaApiscina() + "m");
             }
         }
     }
@@ -263,8 +270,8 @@ public class Main {
         System.out.println(exito ? "Alojamiento modificado correctamente." : "No se pudo modificar (verifique el id).");
     }
 
-    static void eliminarAlojamiento(){
-        if (administradorActual == null){
+    static void eliminarAlojamiento() {
+        if (administradorActual == null) {
             System.out.println("Debe iniciar sesión como administrador para eliminar un alojamiento.");
             return;
         }
@@ -279,7 +286,6 @@ public class Main {
 
         System.out.println(eliminado ? "El alojamiento se eliminó con éxito" : "No se encontró un alojamiento con ese id");
     }
-
 
     static void agregarServicio() {
         System.out.println("Ingrese el nombre del servicio:");
@@ -318,6 +324,7 @@ public class Main {
             System.out.println("Error al listar los servicios: " + e.getMessage());
         }
     }
+
     static void editarServicio() {
         listarServicios();
 
@@ -345,7 +352,8 @@ public class Main {
         System.out.println("Ingrese el nuevo nombre del servicio:");
         String nuevoNombre = sc.nextLine();
 
-        System.out.println("¿Confirma que desea editar el servicio con id " + id + " y ponerle el nombre \"" + nuevoNombre + "\"? (s/n)");
+        System.out.println("¿Confirma que desea editar el servicio con id " + id
+                + " y ponerle el nombre \"" + nuevoNombre + "\"? (s/n)");
         String confirmacion = sc.nextLine();
 
         if (!confirmacion.equalsIgnoreCase("s")) {
@@ -385,7 +393,8 @@ public class Main {
             }
         }
 
-        System.out.println("¿Confirma que desea eliminar el servicio con id " + id + " (\"" + servicioExistente.getNombre() + "\")? (s/n)");
+        System.out.println("¿Confirma que desea eliminar el servicio con id " + id
+                + " (\"" + servicioExistente.getNombre() + "\")? (s/n)");
         String confirmacion = sc.nextLine();
 
         if (!confirmacion.equalsIgnoreCase("s")) {
@@ -407,11 +416,10 @@ public class Main {
         try {
             Cliente nuevoCliente = clienteDAO.registrarCliente(
                     datosCliente.getNombre(),
-                    datosCliente.getDocumennto(),
+                    datosCliente.getDocumento(),
                     datosCliente.getTelefono(),
                     datosCliente.getEmail(),
-                    datosCliente.getProcedencia(),
-                    datosCliente.getContrasena()
+                    datosCliente.getProcedencia()
             );
             System.out.println("Cliente registrado correctamente: " + nuevoCliente.getNombre());
         } catch (IllegalArgumentException e) {
@@ -431,8 +439,10 @@ public class Main {
                 System.out.println("===== CLIENTES =====");
                 for (Cliente cliente : clientes) {
                     System.out.println(cliente.getId() + " - " + cliente.getNombre()
-                            + " | Doc: " + cliente.getDocumennto()
-                            + " | Email: " + cliente.getEmail());
+                            + " | Doc: " + cliente.getDocumento()
+                            + " | Tel: " + cliente.getTelefono()
+                            + " | Email: " + cliente.getEmail()
+                            + " | Procedencia: " + cliente.getProcedencia());
                 }
             }
 
@@ -441,7 +451,7 @@ public class Main {
         }
     }
 
-    //RESERVAS
+    // ===== RESERVAS =====
 
     static void crearReserva() {
         // Precondición: el administrador debe haber iniciado sesión
@@ -450,9 +460,35 @@ public class Main {
             return;
         }
 
-        System.out.println("Ingrese el id del cliente para el cual se registra la reserva:");
-        int idCliente = sc.nextInt();
-        sc.nextLine();
+        List<Cliente> clientes;
+        try {
+            clientes = clienteDAO.listarClientes();
+        } catch (SQLException e) {
+            System.out.println("Error al verificar clientes: " + e.getMessage());
+            return;
+        }
+
+        if (clientes.isEmpty()) {
+            System.out.println("No hay clientes registrados. Debe registrar al menos un cliente antes de crear una reserva.");
+            return;
+        }
+
+        listarClientes();
+
+        int idCliente = -1;
+        boolean clienteValido = false;
+
+        while (!clienteValido) {
+            System.out.println("Ingrese el id del cliente para el cual se registra la reserva:");
+            idCliente = sc.nextInt();
+            sc.nextLine();
+
+            clienteValido = clienteDAO.existeClientePorId(idCliente);
+
+            if (!clienteValido) {
+                System.out.println("No existe ningún cliente con ese id. Intente de nuevo.");
+            }
+        }
 
         listarAlojamientos();
 
@@ -482,7 +518,12 @@ public class Main {
         } else {
             System.out.println("SOLICITUDES PENDIENTES:");
             for (Reserva r : pendientes) {
-                System.out.println(r);
+                System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
+                        + " | Salida: " + r.getFechaSalida()
+                        + " | Huéspedes: " + r.getCantidadHuespedes()
+                        + " | Estado: " + r.getEstado()
+                        + " | Solicitado: " + r.getFechaSolicitud()
+                        + " | Alojamiento: " + r.getAlojamientoId());
             }
         }
     }
@@ -495,7 +536,12 @@ public class Main {
         } else {
             System.out.println("RESERVAS CONFIRMADAS:");
             for (Reserva r : confirmadas) {
-                System.out.println(r);
+                System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
+                        + " | Salida: " + r.getFechaSalida()
+                        + " | Huéspedes: " + r.getCantidadHuespedes()
+                        + " | Estado: " + r.getEstado()
+                        + " | Solicitado: " + r.getFechaSolicitud()
+                        + " | Alojamiento: " + r.getAlojamientoId());
             }
         }
     }
@@ -508,13 +554,17 @@ public class Main {
         } else {
             System.out.println("RESERVAS CANCELADAS:");
             for (Reserva r : canceladas) {
-                System.out.println(r);
+                System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
+                        + " | Salida: " + r.getFechaSalida()
+                        + " | Huéspedes: " + r.getCantidadHuespedes()
+                        + " | Estado: " + r.getEstado()
+                        + " | Solicitado: " + r.getFechaSolicitud()
+                        + " | Alojamiento: " + r.getAlojamientoId());
             }
         }
     }
 
-    static void confirmarReserva(){
-
+    static void confirmarReserva() {
         System.out.println("Ingrese el id de la reserva a confirmar");
         int id = sc.nextInt();
         sc.nextLine();
@@ -543,5 +593,3 @@ public class Main {
         System.out.println(exito ? "Reserva cancelada correctamente." : "No se pudo cancelar (verifique el id o que esté pendiente).");
     }
 }
-
-
