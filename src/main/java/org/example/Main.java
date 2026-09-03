@@ -205,6 +205,7 @@ public class Main {
             System.out.println("4. Cancelar reserva");
             System.out.println("5. Ver reservas confirmadas");
             System.out.println("6. Ver reservas canceladas");
+            System.out.println("7. Ver todas las reservas");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -218,6 +219,7 @@ public class Main {
                 case 4 -> cancelarReserva();
                 case 5 -> listarReservasConfirmadas();
                 case 6 -> listarReservasCanceladas();
+                case 7 -> listarTodasLasReservas();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -584,12 +586,7 @@ public class Main {
         } else {
             System.out.println("SOLICITUDES PENDIENTES:");
             for (Reserva r : pendientes) {
-                System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
-                        + " | Salida: " + r.getFechaSalida()
-                        + " | Huéspedes: " + r.getCantidadHuespedes()
-                        + " | Estado: " + r.getEstado()
-                        + " | Solicitado: " + r.getFechaSolicitud()
-                        + " | Alojamiento: " + r.getAlojamientoId());
+                imprimirReserva(r);
             }
         }
     }
@@ -602,12 +599,7 @@ public class Main {
         } else {
             System.out.println("RESERVAS CONFIRMADAS:");
             for (Reserva r : confirmadas) {
-                System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
-                        + " | Salida: " + r.getFechaSalida()
-                        + " | Huéspedes: " + r.getCantidadHuespedes()
-                        + " | Estado: " + r.getEstado()
-                        + " | Solicitado: " + r.getFechaSolicitud()
-                        + " | Alojamiento: " + r.getAlojamientoId());
+                imprimirReserva(r);
             }
         }
     }
@@ -620,12 +612,45 @@ public class Main {
         } else {
             System.out.println("RESERVAS CANCELADAS:");
             for (Reserva r : canceladas) {
-                System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
-                        + " | Salida: " + r.getFechaSalida()
-                        + " | Huéspedes: " + r.getCantidadHuespedes()
-                        + " | Estado: " + r.getEstado()
-                        + " | Solicitado: " + r.getFechaSolicitud()
-                        + " | Alojamiento: " + r.getAlojamientoId());
+                imprimirReserva(r);
+            }
+        }
+    }
+
+    static void listarTodasLasReservas() {
+        List<Reserva> pendientes = reservaDao.listarPorEstado(EstadoReserva.PENDIENTE);
+        List<Reserva> confirmadas = reservaDao.listarPorEstado(EstadoReserva.CONFIRMADA);
+        List<Reserva> canceladas = reservaDao.listarPorEstado(EstadoReserva.CANCELADA);
+
+        if (pendientes.isEmpty() && confirmadas.isEmpty() && canceladas.isEmpty()) {
+            System.out.println("No hay reservas registradas.");
+            return;
+        }
+
+        System.out.println("\n----- PENDIENTES -----");
+        if (pendientes.isEmpty()) {
+            System.out.println("No hay reservas pendientes.");
+        } else {
+            for (Reserva r : pendientes) {
+                imprimirReserva(r);
+            }
+        }
+
+        System.out.println("\n----- CONFIRMADAS -----");
+        if (confirmadas.isEmpty()) {
+            System.out.println("No hay reservas confirmadas.");
+        } else {
+            for (Reserva r : confirmadas) {
+                imprimirReserva(r);
+            }
+        }
+
+        System.out.println("\n----- CANCELADAS -----");
+        if (canceladas.isEmpty()) {
+            System.out.println("No hay reservas canceladas.");
+        } else {
+            for (Reserva r : canceladas) {
+                imprimirReserva(r);
             }
         }
     }
@@ -640,12 +665,7 @@ public class Main {
 
         System.out.println("SOLICITUDES PENDIENTES:");
         for (Reserva r : pendientes) {
-            System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
-                    + " | Salida: " + r.getFechaSalida()
-                    + " | Huéspedes: " + r.getCantidadHuespedes()
-                    + " | Estado: " + r.getEstado()
-                    + " | Solicitado: " + r.getFechaSolicitud()
-                    + " | Alojamiento: " + r.getAlojamientoId());
+            imprimirReserva(r);
         }
 
         System.out.println("Ingrese el id de la reserva a confirmar:");
@@ -675,12 +695,7 @@ public class Main {
 
         System.out.println("SOLICITUDES PENDIENTES:");
         for (Reserva r : pendientes) {
-            System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
-                    + " | Salida: " + r.getFechaSalida()
-                    + " | Huéspedes: " + r.getCantidadHuespedes()
-                    + " | Estado: " + r.getEstado()
-                    + " | Solicitado: " + r.getFechaSolicitud()
-                    + " | Alojamiento: " + r.getAlojamientoId());
+            imprimirReserva(r);
         }
 
         System.out.println("Ingrese el id de la reserva a cancelar:");
@@ -689,5 +704,13 @@ public class Main {
 
         boolean exito = reservaDao.cancelarReserva(id);
         System.out.println(exito ? "Reserva cancelada correctamente." : "No se pudo cancelar (verifique el id o que esté pendiente).");
+    }
+    static void imprimirReserva(Reserva r) {
+        System.out.println(r.getId() + " - Ingreso: " + r.getFechaIngreso()
+                + " | Salida: " + r.getFechaSalida()
+                + " | Huéspedes: " + r.getCantidadHuespedes()
+                + " | Estado: " + r.getEstado()
+                + " | Solicitado: " + r.getFechaSolicitud()
+                + " | Alojamiento: " + r.getAlojamientoId());
     }
 }
