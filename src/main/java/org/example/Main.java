@@ -176,6 +176,7 @@ public class Main {
             System.out.println("4. Eliminar alojamiento");
             System.out.println("5. Asociar servicio a alojamiento");
             System.out.println("6. Ver servicios de un alojamiento");
+            System.out.println("7. Buscar alojamiento por nombre");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -189,6 +190,7 @@ public class Main {
                 case 4 -> eliminarAlojamiento();
                 case 5 -> asociarServicioAalojamiento();
                 case 6 -> verServiciosDeUnAlojamiento();
+                case 7 -> buscarAlojamientoPorNombre();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -354,6 +356,30 @@ public class Main {
         } catch (Exception e){
             System.out.println("Debe ingresar un id valido");
             sc.nextLine();
+        }
+    }
+
+    static void buscarAlojamientoPorNombre() {
+        System.out.println("Ingrese el nombre a buscar:");
+        String nombre = sc.nextLine();
+
+        try {
+            List<Alojamiento> resultados = alojamientoDAO.buscarPorNombre(nombre);
+
+            if (resultados.isEmpty()) {
+                System.out.println("No se encontraron alojamientos con ese nombre.");
+            } else {
+                System.out.println("===== RESULTADOS =====");
+                for (Alojamiento a : resultados) {
+                    System.out.println(a.getId() + " - " + a.getNombre()
+                            + " | Capacidad: " + a.getCapacidad()
+                            + " | Precio: " + a.getPrecio()
+                            + " | Ubicación: " + a.getUbicacion());
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al buscar el alojamiento: " + e.getMessage());
         }
     }
 

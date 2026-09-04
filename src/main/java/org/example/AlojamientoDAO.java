@@ -230,5 +230,33 @@ public class AlojamientoDAO {
         }
         return servicios;
     }
+
+    public List<Alojamiento> buscarPorNombre(String nombre) throws SQLException {
+        List<Alojamiento> alojamientos = new ArrayList<>();
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina FROM alojamiento WHERE nombre = ? ORDER BY nombre";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, nombre);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                while (filas.next()) {
+                    Alojamiento alojamiento = new Alojamiento(
+                            filas.getInt("id"),
+                            filas.getString("nombre"),
+                            filas.getString("descripcion"),
+                            filas.getInt("capacidad"),
+                            filas.getDouble("precio"),
+                            filas.getString("ubicacion"),
+                            filas.getFloat("distanciaApiscina")
+                    );
+                    alojamientos.add(alojamiento);
+                }
+            }
+        }
+
+        return alojamientos;
+    }
 }
 
