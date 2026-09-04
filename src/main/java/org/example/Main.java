@@ -210,6 +210,7 @@ public class Main {
             System.out.println("5. Ver reservas confirmadas");
             System.out.println("6. Ver reservas canceladas");
             System.out.println("7. Ver todas las reservas");
+            System.out.println("8. Buscar reserva por id");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -224,6 +225,7 @@ public class Main {
                 case 5 -> listarReservasConfirmadas();
                 case 6 -> listarReservasCanceladas();
                 case 7 -> listarTodasLasReservas();
+                case 8 -> buscarReservaPorId();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -779,4 +781,30 @@ public class Main {
                 + " | Solicitado: " + r.getFechaSolicitud()
                 + " | Alojamiento: " + r.getAlojamientoId());
     }
+
+    static void buscarReservaPorId() {
+        try {
+            System.out.println("Ingrese el id de la reserva:");
+            int id = sc.nextInt();
+            sc.nextLine();
+
+            Reserva reserva = reservaDao.buscarReservaPorId(id);
+
+            if (reserva == null) {
+                System.out.println("No se encontró una reserva con ese id.");
+                return;
+            }
+            System.out.println("Id: " + reserva.getId());
+            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
+            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
+            System.out.println("Cantidad de huéspedes: " + reserva.getCantidadHuespedes());
+            System.out.println("Estado: " + reserva.getEstado());
+            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
+            System.out.println("Id alojamiento: " + reserva.getAlojamientoId());
+        } catch (Exception e) {
+            System.out.println("Debe ingresar un id valido");
+            sc.nextLine();
+        }
+    }
+
 }
