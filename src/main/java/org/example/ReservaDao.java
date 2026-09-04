@@ -151,6 +151,42 @@ public class ReservaDao {
         }
     }
 
+    public Reserva buscarReservaPorId(int id){
+        String sql = """
+            SELECT id, fechaIngreso, fechaSalida, cantidadHuespedes,
+                   estado, fechaSolicitud, alojamiento_id
+            FROM reserva
+            WHERE id = ?
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, id);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                if (resultado.next()) {
+                    Reserva reserva = new Reserva(
+                            resultado.getInt("id"),
+                            resultado.getDate("fechaIngreso"),
+                            resultado.getDate("fechaSalida"),
+                            resultado.getInt("cantidadHuespedes"),
+                            EstadoReserva.valueOf(resultado.getString("estado")),
+                            resultado.getDate("fechaSolicitud"),
+                            resultado.getInt("alojamiento_id")
+                    );
+                    return reserva;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public List<Reserva> listarPorEstado(EstadoReserva estado) {
         List<Reserva> reservas = new ArrayList<>();
         String sql = """
