@@ -120,7 +120,7 @@ public class Main {
             System.out.println("\n----- MENÚ CLIENTES -----");
             System.out.println("1. Registrar cliente");
             System.out.println("2. Listar clientes");
-            System.out.println("3. Eliminar cliente");
+            System.out.println("3. Buscar cliente por nombre o documento");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -130,12 +130,51 @@ public class Main {
             switch (opcion) {
                 case 1 -> registrarCliente();
                 case 2 -> listarClientes();
-                case 3 -> eliminarCliente();
+                case 3 -> buscarClientePorNombreODocumento();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
 
         } while (opcion != 0);
+    }
+
+    static void buscarClientePorNombreODocumento() {
+        // Precondición: debe existir al menos un cliente registrado
+        List<Cliente> todosLosClientes;
+        try {
+            todosLosClientes = clienteDAO.listarClientes();
+        } catch (SQLException e) {
+            System.out.println("Error al verificar clientes: " + e.getMessage());
+            return;
+        }
+
+        if (todosLosClientes.isEmpty()) {
+            System.out.println("No hay clientes registrados en el sistema.");
+            return;
+        }
+
+        System.out.println("Ingrese nombre o documento a buscar:");
+        String textoBusqueda = sc.nextLine();
+
+        try {
+            List<Cliente> encontrados = clienteDAO.buscarPorNombreODocumento(textoBusqueda);
+
+            if (encontrados.isEmpty()) {
+                System.out.println("No se encontraron clientes que coincidan con \"" + textoBusqueda + "\".");
+            } else {
+                System.out.println("CLIENTES ENCONTRADOS:");
+                for (Cliente cliente : encontrados) {
+                    System.out.println(cliente.getId() + " - " + cliente.getNombre()
+                            + " | Doc: " + cliente.getDocumento()
+                            + " | Tel: " + cliente.getTelefono()
+                            + " | Email: " + cliente.getEmail()
+                            + " | Procedencia: " + cliente.getProcedencia());
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al buscar clientes: " + e.getMessage());
+        }
     }
 
     static void menuServicios() {

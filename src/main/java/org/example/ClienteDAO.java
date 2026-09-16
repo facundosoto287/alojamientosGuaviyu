@@ -148,6 +148,36 @@ public class ClienteDAO {
         return null; // no existe ningún cliente con ese id
     }
 
+    public List<Cliente> buscarPorNombreODocumento(String textoBusqueda) throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia FROM cliente " +
+                "WHERE nombre LIKE ? OR documento LIKE ? ORDER BY nombre";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            String comodin = "%" + textoBusqueda + "%";
+            sentencia.setString(1, comodin);
+            sentencia.setString(2, comodin);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                while (filas.next()) {
+                    Cliente cliente = new Cliente(
+                            filas.getInt("id"),
+                            filas.getString("nombre"),
+                            filas.getString("documento"),
+                            filas.getString("telefono"),
+                            filas.getString("email"),
+                            filas.getString("procedencia")
+                    );
+                    clientes.add(cliente);
+                }
+            }
+        }
+
+        return clientes;
+    }
+
     public boolean eliminarCliente(int id) throws SQLException {
         String sql = "DELETE FROM cliente WHERE id = ?";
 
