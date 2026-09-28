@@ -214,8 +214,9 @@ public class Main {
             System.out.println("3. Editar alojamiento");
             System.out.println("4. Eliminar alojamiento");
             System.out.println("5. Asociar servicio a alojamiento");
-            System.out.println("6. Ver servicios de un alojamiento");
-            System.out.println("7. Buscar alojamiento por nombre");
+            System.out.println("6. Desasociar servicio de un alojamiento");
+            System.out.println("7. Ver servicios de un alojamiento");
+            System.out.println("8. Buscar alojamiento por nombre");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -228,8 +229,9 @@ public class Main {
                 case 3 -> modificarAlojamiento();
                 case 4 -> eliminarAlojamiento();
                 case 5 -> asociarServicioAalojamiento();
-                case 6 -> verServiciosDeUnAlojamiento();
-                case 7 -> buscarAlojamientoPorNombre();
+                case 6 -> desasociarServicioDeUnAlojamiento();
+                case 7 -> verServiciosDeUnAlojamiento();
+                case 8 -> buscarAlojamientoPorNombre();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -372,6 +374,49 @@ public class Main {
             System.out.println(asociado ? "El servicio fue asociado correctamente" : "No se pudo asociar el servicio");
         } catch (Exception e) {
             System.out.println("Debe ingresar ids válidos.");
+            sc.nextLine();
+        }
+    }
+
+    static void desasociarServicioDeUnAlojamiento(){
+
+        listarAlojamientos();
+
+        try {
+            System.out.println("Ingrese el id del alojamiento:");
+            int idAlojamiento = sc.nextInt();
+            sc.nextLine();
+
+            List<Servicio> servicios = alojamientoDAO.verServiciosDeUnAlojamiento(idAlojamiento);
+
+            if (servicios.isEmpty()) {
+                System.out.println("El alojamiento no tiene servicios asociados");
+                return;
+            }
+
+            System.out.println("Servicios asociados");
+            for (Servicio servicio : servicios) {
+                System.out.println(
+                        servicio.getId() + " - " + servicio.getNombre()
+                );
+            }
+
+            System.out.println("Ingrese el id del servicio a desasociar");
+            int idServicio = sc.nextInt();
+            sc.nextLine();
+
+            System.out.println("¿Confirma que desea desasociar el servicio del alojamiento?(s/n)");
+            String confirmacion = sc.nextLine();
+
+            if (!confirmacion.equalsIgnoreCase("s")) {
+                System.out.println("Accion cancelada.");
+                return;
+            }
+            boolean desasociado = alojamientoDAO.desasociarServicioDeUnAlojamiento(idAlojamiento, idServicio);
+
+            System.out.println(desasociado ? "El servicio fue desasociado correctamente" : "No se pudo desasociar el servicio");
+        } catch (Exception e) {
+            System.out.println("Debe ingresar un id válido.");
             sc.nextLine();
         }
     }

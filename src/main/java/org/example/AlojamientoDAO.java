@@ -200,6 +200,30 @@ public class AlojamientoDAO {
 
     }
 
+    public boolean desasociarServicioDeUnAlojamiento(int idAlojamiento, int idServicio) {
+        String sql = """
+            DELETE FROM alojamiento_servicio
+            WHERE alojamiento_id = ?
+            AND servicio_id = ?
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idAlojamiento);
+            sentencia.setInt(2, idServicio);
+
+            int filasAfectadas = sentencia.executeUpdate();
+
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
     public List<Servicio> verServiciosDeUnAlojamiento(int idAlojamiento){
         List<Servicio> servicios = new ArrayList<>();
 
