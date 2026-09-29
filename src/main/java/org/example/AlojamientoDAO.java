@@ -282,5 +282,22 @@ public class AlojamientoDAO {
 
         return alojamientos;
     }
+
+    public boolean existeAlojamientoPorId(int id) {
+        String sql = "SELECT id FROM alojamiento WHERE id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, id);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                return resultado.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

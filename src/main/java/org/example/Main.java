@@ -271,6 +271,7 @@ public class Main {
             System.out.println("6. Ver reservas canceladas");
             System.out.println("7. Ver todas las reservas");
             System.out.println("8. Buscar reserva por id");
+            System.out.println("9. Ver reservas de un alojamiento");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -286,6 +287,7 @@ public class Main {
                 case 6 -> listarReservasCanceladas();
                 case 7 -> listarTodasLasReservas();
                 case 8 -> buscarReservaPorId();
+                case 9 -> verReservasDeAlojamiento();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -907,6 +909,42 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Debe ingresar un id valido");
             sc.nextLine();
+        }
+    }
+    static void verReservasDeAlojamiento() {
+        List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
+
+        if (alojamientos.isEmpty()) {
+            System.out.println("No hay alojamientos registrados.");
+            return;
+        }
+
+        listarAlojamientos();
+
+        int idAlojamiento = -1;
+        boolean alojamientoValido = false;
+
+        while (!alojamientoValido) {
+            System.out.println("Ingrese el id del alojamiento para ver sus reservas:");
+            idAlojamiento = sc.nextInt();
+            sc.nextLine();
+
+            alojamientoValido = alojamientoDAO.existeAlojamientoPorId(idAlojamiento);
+
+            if (!alojamientoValido) {
+                System.out.println("No existe ningún alojamiento con ese id. Intente de nuevo.");
+            }
+        }
+
+        List<Reserva> reservas = reservaDao.listarPorAlojamiento(idAlojamiento);
+
+        if (reservas.isEmpty()) {
+            System.out.println("Este alojamiento no tiene reservas registradas.");
+        } else {
+            System.out.println("RESERVAS DEL ALOJAMIENTO #" + idAlojamiento + ":");
+            for (Reserva r : reservas) {
+                imprimirReserva(r);
+            }
         }
     }
 

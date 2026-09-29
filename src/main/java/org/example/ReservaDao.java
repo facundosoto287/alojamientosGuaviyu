@@ -224,7 +224,7 @@ public class ReservaDao {
         );
     }
 
-    // ---- Método que agrupa la lectura de datos por consola ----
+    // ---- Metodo que agrupa la lectura de datos por consola ----
 
     public Reserva pedirDatosNuevaReserva(Scanner sc) {
         System.out.println("Ingrese el id del alojamiento:");
@@ -295,6 +295,33 @@ public class ReservaDao {
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
             sentencia.setInt(1, idCliente);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                while (resultado.next()) {
+                    reservas.add(mapearReserva(resultado));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reservas;
+    }
+
+    // Caso de uso: Ver reservas de un alojamiento (Administrador)
+    public List<Reserva> listarPorAlojamiento(int idAlojamiento) {
+        List<Reserva> reservas = new ArrayList<>();
+        String sql = """
+            SELECT id, fechaIngreso, fechaSalida, cantidadHuespedes, estado, fechaSolicitud, alojamiento_id
+            FROM reserva
+            WHERE alojamiento_id = ?
+            ORDER BY fechaIngreso""";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idAlojamiento);
 
             try (ResultSet resultado = sentencia.executeQuery()) {
                 while (resultado.next()) {
