@@ -236,6 +236,7 @@ public class Main {
             System.out.println("6. Desasociar servicio de un alojamiento");
             System.out.println("7. Ver servicios de un alojamiento");
             System.out.println("8. Buscar alojamiento por nombre");
+            System.out.println("9. Filtrar alojamiento por servicio");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -251,6 +252,7 @@ public class Main {
                 case 6 -> desasociarServicioDeUnAlojamiento();
                 case 7 -> verServiciosDeUnAlojamiento();
                 case 8 -> buscarAlojamientoPorNombre();
+                case 9 -> filtrarAlojamientoPorServicio();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -329,7 +331,57 @@ public class Main {
             }
         }
     }
+    static void filtrarAlojamientoPorServicio() {
+        // Precondición: deben existir servicios y al menos un alojamiento con servicios asociados
+        List<Servicio> servicios;
+        try {
+            servicios = servicioDAO.listarServicios();
+        } catch (SQLException e) {
+            System.out.println("Error al obtener los servicios: " + e.getMessage());
+            return;
+        }
 
+        if (servicios.isEmpty()) {
+            System.out.println("No hay servicios registrados en el sistema.");
+            return;
+        }
+
+        System.out.println("SERVICIOS DISPONIBLES:");
+        for (Servicio s : servicios) {
+            System.out.println(s.getId() + " - " + s.getNombre());
+        }
+
+        System.out.println("Ingrese los id de los servicios que desea (separados por coma, ej: 1,3,5):");
+        String entrada = sc.nextLine();
+
+        List<Integer> idsSeleccionados = new ArrayList<>();
+        for (String texto : entrada.split(",")) {
+            try {
+                idsSeleccionados.add(Integer.parseInt(texto.trim()));
+            } catch (NumberFormatException e) {
+                System.out.println("Se ignoró un valor inválido: " + texto);
+            }
+        }
+
+        if (idsSeleccionados.isEmpty()) {
+            System.out.println("No seleccionó ningún servicio válido.");
+            return;
+        }
+
+        List<Alojamiento> resultados = alojamientoDAO.filtrarPorServicios(idsSeleccionados);
+
+        if (resultados.isEmpty()) {
+            System.out.println("No se encontraron alojamientos con esa combinación de servicios. Intente quitar algún filtro.");
+        } else {
+            System.out.println("===== ALOJAMIENTOS ENCONTRADOS =====");
+            for (Alojamiento a : resultados) {
+                System.out.println(a.getId() + " - " + a.getNombre()
+                        + " | Capacidad: " + a.getCapacidad()
+                        + " | Precio: " + a.getPrecio()
+                        + " | Ubicación: " + a.getUbicacion());
+            }
+        }
+    }
     static void modificarAlojamiento() {
         if (administradorActual == null) {
             System.out.println("Debe iniciar sesión como administrador para modificar un alojamiento.");
@@ -616,13 +668,26 @@ public class Main {
     static void registrarCliente() {
         Cliente datosCliente = clienteDAO.pedirDatosNuevoCliente(sc);
 
+        System.out.println("¿Confirma el registro con los siguientes datos?");
+        System.out.println("Nombre: " + datosCliente.getNombre());
+        System.out.println("Documento: " + datosCliente.getDocumento());
+        System.out.println("Email: " + datosCliente.getEmail());
+        System.out.println("(s/n)");
+        String confirmacion = sc.nextLine();
+
+        if (!confirmacion.equalsIgnoreCase("s")) {
+            System.out.println("Registro cancelado.");
+            return;
+        }
+
         try {
             Cliente nuevoCliente = clienteDAO.registrarCliente(
                     datosCliente.getNombre(),
                     datosCliente.getDocumento(),
                     datosCliente.getTelefono(),
                     datosCliente.getEmail(),
-                    datosCliente.getProcedencia()
+                    datosCliente.getProcedencia(),
+                    datosCliente.getContrasena()
             );
             System.out.println("Cliente registrado correctamente: " + nuevoCliente.getNombre());
         } catch (IllegalArgumentException e) {
@@ -947,5 +1012,6 @@ public class Main {
             }
         }
     }
+
 
 }

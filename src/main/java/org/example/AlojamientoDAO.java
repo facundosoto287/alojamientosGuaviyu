@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class AlojamientoDAO {
 
@@ -282,22 +283,54 @@ public class AlojamientoDAO {
 
         return alojamientos;
     }
+    // Filtrar alojamientos que tengan TODOS los servicios seleccionados
+    public List<Alojamiento> filtrarPorServicios(List<Integer> idsServicios) {
+        List<Alojamiento> alojamientos = new ArrayList<>();
 
-    public boolean existeAlojamientoPorId(int id) {
-        String sql = "SELECT id FROM alojamiento WHERE id = ?";
+        // Armamos los "?" según la cantidad de servicios seleccionados
+        String placeholders = idsServicios.stream()
+                .map(id -> "?")
+                .collect(Collectors.joining(","));// unir varios elementos de una lista en un solo string
+
+        String sql = """
+            SELECT a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.ubicacion, a.distanciaApiscina
+            FROM alojamiento a
+            JOIN alojamiento_servicio als ON a.id = als.alojamiento_id
+            WHERE als.servicio_id IN (%s)
+            GROUP BY a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.ubicacion, a.distanciaApiscina
+            HAVING COUNT(DISTINCT als.servicio_id) = ?
+            """.formatted(placeholders);
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-            sentencia.setInt(1, id);
+            int posicion = 1;
+            for (int idServicio : idsServicios) {
+                sentencia.setInt(posicion, idServicio);
+                posicion++;
+            }
+            sentencia.setInt(posicion, idsServicios.size()); // cantidad de servicios que debe cumplir
 
             try (ResultSet resultado = sentencia.executeQuery()) {
-                return resultado.next();
+                while (resultado.next()) {
+                    Alojamiento a = new Alojamiento(
+                            resultado.getInt("id"),
+                            resultado.getString("nombre"),
+                            resultado.getString("descripcion"),
+                            resultado.getInt("capacidad"),
+                            resultado.getDouble("precio"),
+                            resultado.getString("ubicacion"),
+                            resultado.getFloat("distanciaApiscina")
+                    );
+                    alojamientos.add(a);
+                }
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+
+        return alojamientos;
     }
 }
 
