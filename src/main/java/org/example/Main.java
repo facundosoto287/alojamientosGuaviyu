@@ -121,6 +121,7 @@ public class Main {
             System.out.println("1. Registrar cliente");
             System.out.println("2. Listar clientes");
             System.out.println("3. Buscar cliente por nombre o documento");
+            System.out.println("4. Ver historial de reservas de un cliente");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -131,6 +132,7 @@ public class Main {
                 case 1 -> registrarCliente();
                 case 2 -> listarClientes();
                 case 3 -> buscarClientePorNombreODocumento();
+                case 4 -> verHistorialReservasCliente();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -176,7 +178,24 @@ public class Main {
             System.out.println("Error al buscar clientes: " + e.getMessage());
         }
     }
+    static void verHistorialReservasCliente() {
+        listarClientes();
 
+        System.out.println("Ingrese el id del cliente:");
+        int idCliente = sc.nextInt();
+        sc.nextLine();
+
+        List<Reserva> reservas = reservaDao.verHistorialPorCliente(idCliente);
+
+        if (reservas.isEmpty()) {
+            System.out.println("Este cliente no tiene reservas registradas.");
+        } else {
+            System.out.println("===== HISTORIAL DE RESERVAS =====");
+            for (Reserva r : reservas) {
+                imprimirReserva(r);
+            }
+        }
+    }
     static void menuServicios() {
         int opcion;
 

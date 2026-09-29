@@ -280,4 +280,32 @@ public class ReservaDao {
         return new Reserva(0, fechaIngreso, fechaSalida, cantidadHuespedes,
                 EstadoReserva.PENDIENTE, fechaSolicitud, alojamientoId);
     }
+
+    // Caso de uso: Ver historial de reservas de un cliente (Administrador)
+    public List<Reserva> verHistorialPorCliente(int idCliente) {
+        List<Reserva> reservas = new ArrayList<>();
+        String sql = """
+            SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado, r.fechaSolicitud, r.alojamiento_id
+            FROM reserva r
+            JOIN cliente_reserva cr ON r.id = cr.idReserva
+            WHERE cr.idCliente = ?
+            ORDER BY r.fechaSolicitud DESC""";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idCliente);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                while (resultado.next()) {
+                    reservas.add(mapearReserva(resultado));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reservas;
+    }
 }
