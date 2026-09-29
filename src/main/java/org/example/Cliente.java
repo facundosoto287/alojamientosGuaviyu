@@ -8,14 +8,16 @@ public class Cliente {
     private String telefono;
     private String email;
     private String procedencia;
+    private String contrasena;
 
-    public Cliente(int id, String nombre, String documento, String telefono, String email, String procedencia) {
+    public Cliente(int id, String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
         this.id = id;
         this.nombre = nombre;
         this.documento = documento;
         this.telefono = telefono;
         this.email = email;
         this.procedencia = procedencia;
+        this.contrasena = contrasena;
     }
 
     public int getId() {
@@ -64,6 +66,14 @@ public class Cliente {
 
     public void setProcedencia(String procedencia) {
         this.procedencia = procedencia;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     @Override
