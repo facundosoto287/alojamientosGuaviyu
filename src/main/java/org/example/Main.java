@@ -237,6 +237,7 @@ public class Main {
             System.out.println("7. Ver servicios de un alojamiento");
             System.out.println("8. Buscar alojamiento por nombre");
             System.out.println("9. Filtrar alojamiento por servicio");
+            System.out.println("10. Filtrar alojamiento por precio");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -253,6 +254,7 @@ public class Main {
                 case 7 -> verServiciosDeUnAlojamiento();
                 case 8 -> buscarAlojamientoPorNombre();
                 case 9 -> filtrarAlojamientoPorServicio();
+                case 10 -> filtrarAlojamientosPorPrecio();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -274,6 +276,8 @@ public class Main {
             System.out.println("7. Ver todas las reservas");
             System.out.println("8. Buscar reserva por id");
             System.out.println("9. Ver reservas de un alojamiento");
+            System.out.println("10. Consultar disponibilidad de un alojamiento");//cliente
+            System.out.println("11. Ver detalle de una reserva");//cliente
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -290,6 +294,8 @@ public class Main {
                 case 7 -> listarTodasLasReservas();
                 case 8 -> buscarReservaPorId();
                 case 9 -> verReservasDeAlojamiento();
+                case 10 -> consultarDisponibilidad();
+                case 11 -> verDetalleReservaCliente();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -382,6 +388,59 @@ public class Main {
             }
         }
     }
+
+    static void filtrarAlojamientosPorPrecio() {
+
+        try {
+            System.out.println("Ingrese la capacidad minima:");
+            int capacidadMinima = sc.nextInt();
+
+            System.out.println("Ingrese el precio minimo:");
+            double precioMin = sc.nextDouble();
+
+            System.out.println("Ingrese el precio maximo:");
+            double precioMax = sc.nextDouble();
+            sc.nextLine();
+
+            if (capacidadMinima < 1) {
+                System.out.println("La capacidad del alojamiento debe ser mayor a 0");
+                return;
+            }
+
+            if (precioMin < 0 || precioMax < 0) {
+                System.out.println("Los precios no pueden ser negativos");
+                return;
+            }
+
+            if (precioMin > precioMax) {
+                System.out.println("El precio minimo no puede ser mayor al maximo");
+                return;
+            }
+
+            List<Alojamiento> alojamientos = alojamientoDAO.filtrarAlojamientosporPrecio(capacidadMinima, precioMin, precioMax);
+
+            if (alojamientos.isEmpty()) {
+                System.out.println("No se encontraron alojamientos");
+                return;
+            }
+
+            System.out.println("Alojamientos encontrados:");
+
+            for (Alojamiento alojamiento : alojamientos) {
+                System.out.println(
+                        alojamiento.getId() + " - " +
+                                alojamiento.getNombre() +
+                                " | Capacidad: " + alojamiento.getCapacidad() +
+                                " | Precio: $" + alojamiento.getPrecio()
+                );
+            }
+
+        } catch (Exception e) {
+            System.out.println("Debe ingresar valores validos");
+            sc.nextLine();
+        }
+    }
+
     static void modificarAlojamiento() {
         if (administradorActual == null) {
             System.out.println("Debe iniciar sesión como administrador para modificar un alojamiento.");
@@ -1013,5 +1072,64 @@ public class Main {
         }
     }
 
+    static void consultarDisponibilidad() {
 
-}
+        listarAlojamientos();
+
+        try {
+            System.out.println("Ingrese el id del alojamiento:");
+            int idAlojamiento = sc.nextInt();
+            sc.nextLine();
+
+            List<Reserva> reservas = reservaDao.reservasConfirmadasAlojamiento(idAlojamiento);
+
+            if (reservas.isEmpty()) {
+                System.out.println("El alojamiento no tiene fechas ocupadas.");
+                return;
+            }
+
+            System.out.println("Fechas ocupadas:");
+
+            for (Reserva reserva : reservas) {
+                System.out.println("Desde " + reserva.getFechaIngreso() + " hasta " + reserva.getFechaSalida());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Debe ingresar un id valido.");
+            sc.nextLine();
+        }
+    }
+
+    static void verDetalleReservaCliente() {
+
+        try {
+            System.out.println("Ingrese el id del cliente:");
+            int idCliente = sc.nextInt();
+
+            System.out.println("Ingrese el id de la reserva:");
+            int idReserva = sc.nextInt();
+            sc.nextLine();
+
+            Reserva reserva = reservaDao.verDetalleReservaCliente(idReserva, idCliente);
+
+            if (reserva == null) {
+                System.out.println("No se encontro esa reserva para ese cliente");
+                return;
+            }
+
+            System.out.println("===== DETALLE DE LA RESERVA =====");
+            System.out.println("ID: " + reserva.getId());
+            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
+            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
+            System.out.println("Cantidad de huespedes: " + reserva.getCantidadHuespedes());
+            System.out.println("Estado: " + reserva.getEstado());
+            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
+            System.out.println("ID alojamiento: " + reserva.getAlojamientoId());
+
+        } catch (Exception e) {
+            System.out.println("Debe ingresar datos validos.");
+            sc.nextLine();
+        }
+    }
+
+} //fin main

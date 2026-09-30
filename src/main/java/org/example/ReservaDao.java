@@ -335,4 +335,79 @@ public class ReservaDao {
 
         return reservas;
     }
-}
+
+    public List<Reserva> reservasConfirmadasAlojamiento(int idAlojamiento) {
+
+        List<Reserva> reservas = new ArrayList<>();
+
+        String sql = """
+            SELECT id, fechaIngreso, fechaSalida, cantidadHuespedes,
+                   estado, fechaSolicitud, alojamiento_id
+            FROM reserva
+            WHERE alojamiento_id = ?
+            AND estado = 'CONFIRMADA'
+            ORDER BY fechaIngreso
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idAlojamiento);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                while (resultado.next()) {
+
+                    Reserva reserva = new Reserva(
+                            resultado.getInt("id"),
+                            resultado.getDate("fechaIngreso"),
+                            resultado.getDate("fechaSalida"),
+                            resultado.getInt("cantidadHuespedes"),
+                            EstadoReserva.valueOf(resultado.getString("estado")),
+                            resultado.getDate("fechaSolicitud"),
+                            resultado.getInt("alojamiento_id")
+                    );
+                    reservas.add(reserva);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservas;
+    }
+
+    public Reserva verDetalleReservaCliente(int idReserva, int idCliente) {
+
+        String sql = """
+            SELECT r.id, r.fechaIngreso, r.fechaSalida,
+                   r.cantidadHuespedes, r.estado,
+                   r.fechaSolicitud, r.alojamiento_id
+            FROM reserva r
+            JOIN cliente_reserva cr
+                ON r.id = cr.idReserva
+            WHERE r.id = ?
+            AND cr.idCliente = ?
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idReserva);
+            sentencia.setInt(2, idCliente);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                if (resultado.next()) {
+                    return mapearReserva(resultado);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+} //fin dao
+

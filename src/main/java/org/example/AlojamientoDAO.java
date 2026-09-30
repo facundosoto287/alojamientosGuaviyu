@@ -332,6 +332,53 @@ public class AlojamientoDAO {
 
         return alojamientos;
     }
+
+    public List<Alojamiento> filtrarAlojamientosporPrecio(
+            int capacidadMinima,
+            double precioMin,
+            double precioMax
+    ) {
+
+        List<Alojamiento> alojamientos = new ArrayList<>();
+
+        String sql = """
+            SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina
+            FROM alojamiento
+            WHERE capacidad >= ?
+            AND precio BETWEEN ? AND ?
+            ORDER BY precio
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, capacidadMinima);
+            sentencia.setDouble(2, precioMin);
+            sentencia.setDouble(3, precioMax);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                while (resultado.next()) {
+
+                    Alojamiento alojamiento = new Alojamiento(
+                            resultado.getInt("id"),
+                            resultado.getString("nombre"),
+                            resultado.getString("descripcion"),
+                            resultado.getInt("capacidad"),
+                            resultado.getDouble("precio"),
+                            resultado.getString("ubicacion"),
+                            resultado.getFloat("distanciaApiscina")
+                    );
+                    alojamientos.add(alojamiento);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return alojamientos;
+    }
+
     public boolean existeAlojamientoPorId(int id) {
         String sql = "SELECT id FROM alojamiento WHERE id = ?";
 
