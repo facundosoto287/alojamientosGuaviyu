@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
 
@@ -173,7 +175,7 @@ public class Main {
                 case 11 -> cancelarSolicitudReserva();
                 case 12 -> editarPerfil();
                 case 13 -> verDetalleReservaCliente();
-               // case 14 -> enviarSolicitudWhatsApp();
+                //case 14 -> enviarSolicitudWhatsApp();
                 case 15 -> filtrarAlojamientoPorServicio();
                 case 16 -> {
                     cerrarSesion();
@@ -1492,5 +1494,63 @@ public class Main {
             sc.nextLine();
         }
     }
+
+//    static void enviarSolicitudWhatsApp() {
+//
+//        if (clienteActual == null) {
+//            System.out.println("No hay una sesion de cliente activa");
+//            return;
+//        }
+//
+//        verMisReservas();
+//
+//        try {
+//            System.out.println("Ingrese el id de la reserva que desea enviar:");
+//            int idReserva = sc.nextInt();
+//            sc.nextLine();
+//
+//            Reserva reserva = reservaDao.verDetalleReservaCliente(idReserva, clienteActual.getId());
+//
+//            if (reserva == null) {
+//                System.out.println("No se encontro esa reserva");
+//                return;
+//            }
+//
+//            Alojamiento alojamiento = alojamientoDAO.buscarAlojamientoPorNombre(reserva.getAlojamientoId());
+//
+//            if (alojamiento == null) {
+//                System.out.println("No se encontro el alojamiento asociado");
+//                return;
+//            }
+//
+//            String numeroWhatsApp = "598XXXXXXXX";
+//
+//            String link = generarMensajeWhatsApp(reserva, clienteActual, alojamiento, numeroWhatsApp);
+//
+//            System.out.println("Link para enviar la solicitud:");
+//            System.out.println(link);
+//
+//        } catch (Exception e) {
+//            System.out.println("Debe ingresar un id valido");
+//            sc.nextLine();
+//        }
+//    }
+//
+//    public static String generarMensajeWhatsApp(Reserva reserva, Cliente cliente, Alojamiento alojamiento, String numeroWhatsApp) {  //Funcion auxiliar para la solicitud de reserva por whatsapp
+//
+//        String mensaje = "Hola, quisiera consultar por una reserva.\n\n" +
+//                        "Alojamiento: " + alojamiento.getNombre() + "\n" +
+//                        "ID del alojamiento: " + alojamiento.getId() + "\n" +
+//                        "Fecha de ingreso: " + reserva.getFechaIngreso() + "\n" +
+//                        "Fecha de salida: " + reserva.getFechaSalida() + "\n" +
+//                        "Cantidad de huéspedes: " + reserva.getCantidadHuespedes() + "\n" +
+//                        "Cliente: " + cliente.getNombre() + "\n" +
+//                        "Procedencia: " + cliente.getProcedencia() + "\n" +
+//                        "Teléfono: " + cliente.getTelefono();
+//
+//        String mensajeCodificado = URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+//
+//        return "https://wa.me/" + numeroWhatsApp + "?text=" + mensajeCodificado;
+//    }
 
 } //fin main
