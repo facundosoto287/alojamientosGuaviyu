@@ -311,6 +311,7 @@ public class Main {
             System.out.println("6. Desasociar servicio de un alojamiento");
             System.out.println("7. Ver servicios de un alojamiento");
             System.out.println("8. Buscar alojamiento por nombre");
+            System.out.println("9. Consultar Disponibilidad de Alojamiento");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -326,6 +327,7 @@ public class Main {
                 case 6 -> desasociarServicioDeUnAlojamiento();
                 case 7 -> verServiciosDeUnAlojamiento();
                 case 8 -> buscarAlojamientoPorNombre();
+                case 9 -> consultarDisponibilidadAdmin();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -452,6 +454,49 @@ public class Main {
                         + " | Capacidad: " + a.getCapacidad()
                         + " | Precio: " + a.getPrecio()
                         + " | Ubicación: " + a.getUbicacion());
+            }
+        }
+    }
+
+    static void consultarDisponibilidadAdmin() {
+        // Precondición: el administrador debe haber iniciado sesión
+        if (administradorActual == null) {
+            System.out.println("Debe iniciar sesión como administrador para consultar disponibilidad.");
+            return;
+        }
+
+        List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
+
+        if (alojamientos.isEmpty()) {
+            System.out.println("No hay alojamientos registrados.");
+            return;
+        }
+
+        listarAlojamientos();
+
+        int idAlojamiento = -1;
+        boolean alojamientoValido = false;
+
+        while (!alojamientoValido) {
+            System.out.println("Ingrese el id del alojamiento:");
+            idAlojamiento = sc.nextInt();
+            sc.nextLine();
+
+            alojamientoValido = alojamientoDAO.existeAlojamientoPorId(idAlojamiento);
+
+            if (!alojamientoValido) {
+                System.out.println("No existe ningún alojamiento con ese id. Intente de nuevo.");
+            }
+        }
+
+        List<Reserva> reservas = reservaDao.reservasConfirmadasAlojamiento(idAlojamiento);
+
+        if (reservas.isEmpty()) {
+            System.out.println("El alojamiento no tiene fechas ocupadas.");
+        } else {
+            System.out.println("FECHAS OCUPADAS DEL ALOJAMIENTO #" + idAlojamiento + ":");
+            for (Reserva reserva : reservas) {
+                System.out.println("Desde " + reserva.getFechaIngreso() + " hasta " + reserva.getFechaSalida());
             }
         }
     }
