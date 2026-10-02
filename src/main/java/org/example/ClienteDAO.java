@@ -235,4 +235,17 @@ public class ClienteDAO {
         }
     }
 
+    public boolean actualizarPerfil(int id, String telefono, String email, String procedencia)
+            throws SQLException {
+        String sql = "UPDATE cliente SET telefono = ?, email = ?, procedencia = ? WHERE id = ?";
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, telefono);
+            sentencia.setString(2, email);
+            sentencia.setString(3, procedencia);
+            sentencia.setInt(4, id);
+            return sentencia.executeUpdate() == 1;
+        }
+    }
+
 }

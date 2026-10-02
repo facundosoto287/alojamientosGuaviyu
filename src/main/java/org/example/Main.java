@@ -2,7 +2,6 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -165,14 +164,14 @@ public class Main {
             switch (opcion) {
                 //case 2 -> verAlojamientos();
                 case 3 -> filtrarAlojamientosPorPrecio();
-                //case 4 -> // verInformacionAlojamiento();
-               //case 5 -> verUbicacionAlojamientos();
+                case 4 ->  verInformacionAlojamiento();
+                case 5 -> verUbicacionAlojamientos();
                 case 6->consultarDisponibilidad();
-               // case 7 -> solicitarReserva();
+                case 7 -> solicitarReserva();
                 case 8 -> registrarCliente();
                 case 10 -> verMisReservas();
                 //case 11 -> cancelarSolicitudReserva();
-                //case 12 ->  editarPerfil();
+                case 12 ->  editarPerfil();
                 case 13 -> verDetalleReservaCliente();
                // case 14 -> enviarSolicitudWhatsApp();
                 case 15 -> filtrarAlojamientoPorServicio();
@@ -1267,6 +1266,195 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Debe ingresar datos validos.");
             sc.nextLine();
+        }
+    }
+
+    //==========CASOS DE USO CLIENTES==========
+    static void verUbicacionAlojamientos() {
+        List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
+        if (alojamientos.isEmpty()) {
+            System.out.println("No hay alojamientos con ubicación registrada.");
+            return;
+        }
+
+        System.out.println("\n=== UBICACIÓN DE LOS ALOJAMIENTOS ===");
+        for (Alojamiento a : alojamientos) {
+            System.out.printf("%d. %s | Ubicación: %s | Distancia a piscina: %.1f m%n",
+                    a.getId(), a.getNombre(), a.getUbicacion(), a.getDistanciaApiscina());
+        }
+        System.out.println("\nNota: el proyecto guarda texto de ubicación y distancia, no coordenadas para dibujar un mapa.");
+    }
+
+    static void verInformacionAlojamiento() {
+        List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
+        if (alojamientos.isEmpty()) {
+            System.out.println("No hay alojamientos registrados.");
+            return;
+        }
+
+        System.out.println("\n=== ALOJAMIENTOS ===");
+        for (Alojamiento a : alojamientos) {
+            System.out.printf("%d. %s (capacidad: %d)%n", a.getId(), a.getNombre(), a.getCapacidad());
+        }
+
+        System.out.print("Ingresá el ID del alojamiento: ");
+        int id = leerEnteroPositivo();
+        try {
+            Alojamiento a = alojamientoDAO.buscarPorIdALO(id);
+            if (a == null) {
+                System.out.println("No existe un alojamiento con ese ID.");
+                return;
+            }
+
+            System.out.println("\n=== DETALLE DEL ALOJAMIENTO ===");
+            System.out.println("Nombre: " + a.getNombre());
+            System.out.println("Descripción: " + a.getDescripcion());
+            System.out.println("Capacidad: " + a.getCapacidad() + " personas");
+            System.out.printf("Precio: %.2f%n", a.getPrecio());
+            System.out.println("Ubicación: " + a.getUbicacion());
+            System.out.printf("Distancia a piscina: %.1f m%n", a.getDistanciaApiscina());
+
+            List<Servicio> servicios = alojamientoDAO.verServiciosDeUnAlojamiento(id);
+            System.out.println("Servicios:");
+            if (servicios.isEmpty()) {
+                System.out.println("  Sin servicios asociados.");
+            } else {
+                for (Servicio servicio : servicios) {
+                    System.out.println("  - " + servicio.getNombre());
+                }
+            }
+            System.out.println("Fotografías: el modelo/base actual no tiene una columna o tabla de imágenes.");
+        } catch (SQLException e) {
+            System.out.println("No se pudo consultar el alojamiento: " + e.getMessage());
+        }
+    }
+
+    static void solicitarReserva() {
+        if (clienteActual == null) {
+            System.out.println("Tenés que iniciar sesión como cliente para solicitar una reserva.");
+            return;
+        }
+
+        List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
+        if (alojamientos.isEmpty()) {
+            System.out.println("No hay alojamientos disponibles para reservar.");
+            return;
+        }
+
+        System.out.println("\n=== ALOJAMIENTOS ===");
+        for (Alojamiento a : alojamientos) {
+            System.out.printf("%d. %s | Capacidad: %d | Precio: %.2f%n",
+                    a.getId(), a.getNombre(), a.getCapacidad(), a.getPrecio());
+        }
+
+        System.out.print("ID del alojamiento: ");
+        int idAlojamiento = leerEnteroPositivo();
+        Alojamiento alojamiento;
+        try {
+            alojamiento = alojamientoDAO.buscarPorIdALO(idAlojamiento);
+        } catch (SQLException e) {
+            System.out.println("No se pudo consultar el alojamiento: " + e.getMessage());
+            return;
+        }
+        if (alojamiento == null) {
+            System.out.println("Ese alojamiento no existe.");
+            return;
+        }
+
+        java.time.LocalDate ingreso;
+        java.time.LocalDate salida;
+        try {
+            System.out.print("Fecha de ingreso (AAAA-MM-DD): ");
+            ingreso = java.time.LocalDate.parse(sc.nextLine().trim());
+            System.out.print("Fecha de salida (AAAA-MM-DD): ");
+            salida = java.time.LocalDate.parse(sc.nextLine().trim());
+        } catch (java.time.format.DateTimeParseException e) {
+            System.out.println("Fecha inválida. Usá el formato AAAA-MM-DD.");
+            return;
+        }
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        if (ingreso.isBefore(hoy) || !salida.isAfter(ingreso)) {
+            System.out.println("La fecha de ingreso debe ser hoy o posterior y la salida debe ser posterior al ingreso.");
+            return;
+        }
+
+        System.out.print("Cantidad de huéspedes: ");
+        int huespedes = leerEnteroPositivo();
+        if (huespedes > alojamiento.getCapacidad()) {
+            System.out.println("La capacidad máxima de este alojamiento es " + alojamiento.getCapacidad() + ".");
+            return;
+        }
+
+        Reserva reserva = new Reserva(
+                0,
+                java.sql.Date.valueOf(ingreso),
+                java.sql.Date.valueOf(salida),
+                huespedes,
+                EstadoReserva.PENDIENTE,
+                java.sql.Date.valueOf(hoy),
+                idAlojamiento
+        );
+
+        try {
+            int idReserva = reservaDao.crearSolicitudReserva(reserva, clienteActual.getId());
+            if (idReserva > 0) {
+                System.out.println("Solicitud pendiente creada. Número de reserva: " + idReserva);
+            } else {
+                System.out.println("El alojamiento ya tiene una solicitud pendiente o reserva confirmada en esas fechas.");
+            }
+        } catch (SQLException e) {
+            System.out.println("No se pudo crear la solicitud: " + e.getMessage());
+        }
+    }
+
+    static void editarPerfil() {
+        if (clienteActual == null) {
+            System.out.println("Tenés que iniciar sesión como cliente.");
+            return;
+        }
+
+        System.out.println("Dejá un campo vacío para conservar el valor actual.");
+        System.out.print("Teléfono [" + clienteActual.getTelefono() + "]: ");
+        String telefono = sc.nextLine().trim();
+        if (telefono.isEmpty()) telefono = clienteActual.getTelefono();
+
+        System.out.print("Email [" + clienteActual.getEmail() + "]: ");
+        String email = sc.nextLine().trim();
+        if (email.isEmpty()) email = clienteActual.getEmail();
+        if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            System.out.println("El email no tiene un formato válido.");
+            return;
+        }
+
+        System.out.print("Procedencia [" + clienteActual.getProcedencia() + "]: ");
+        String procedencia = sc.nextLine().trim();
+        if (procedencia.isEmpty()) procedencia = clienteActual.getProcedencia();
+
+        try {
+            if (clienteDAO.actualizarPerfil(clienteActual.getId(), telefono, email, procedencia)) {
+                clienteActual.setTelefono(telefono);
+                clienteActual.setEmail(email);
+                clienteActual.setProcedencia(procedencia);
+                System.out.println("Perfil actualizado correctamente.");
+            } else {
+                System.out.println("No se encontró el perfil para actualizar.");
+            }
+        } catch (SQLException e) {
+            System.out.println("No se pudo actualizar. Revisá que el email no esté usado por otro cliente. " + e.getMessage());
+        }
+    }
+
+    // Auxiliar para que una entrada no numérica no rompa el menú.
+    static int leerEnteroPositivo() {
+        while (true) {
+            String texto = sc.nextLine().trim();
+            try {
+                int valor = Integer.parseInt(texto);
+                if (valor > 0) return valor;
+            } catch (NumberFormatException ignored) {
+                // Se muestra el mensaje de abajo.
+            }
+            System.out.print("Ingresá un número entero mayor que cero: ");
         }
     }
 

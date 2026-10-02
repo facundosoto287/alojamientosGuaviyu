@@ -396,5 +396,17 @@ public class AlojamientoDAO {
             return false;
         }
     }
+
+    public Alojamiento buscarPorIdALO(int id) throws SQLException {
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina " +
+                "FROM alojamiento WHERE id = ?";
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setInt(1, id);
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                return resultado.next() ? mapearAlojamiento(resultado) : null;
+            }
+        }
+    }
 }
 

@@ -409,5 +409,64 @@ public class ReservaDao {
         return null;
     }
 
+    public int crearSolicitudReserva(Reserva reserva, int idCliente) throws SQLException {
+        String sqlConflicto = "SELECT COUNT(*) FROM reserva " +
+                "WHERE alojamiento_id = ? AND estado IN ('PENDIENTE', 'CONFIRMADA') " +
+                "AND fechaIngreso < ? AND fechaSalida > ?";
+        String sqlReserva = "INSERT INTO reserva " +
+                "(fechaIngreso, fechaSalida, cantidadHuespedes, estado, fechaSolicitud, alojamiento_id) " +
+                "VALUES (?, ?, ?, 'PENDIENTE', ?, ?)";
+        String sqlRelacion = "INSERT INTO cliente_reserva (idCliente, idReserva) VALUES (?, ?)";
+
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            conexion.setAutoCommit(false);
+            try {
+                try (PreparedStatement verificar = conexion.prepareStatement(sqlConflicto)) {
+                    verificar.setInt(1, reserva.getAlojamientoId());
+                    verificar.setDate(2, reserva.getFechaSalida());
+                    verificar.setDate(3, reserva.getFechaIngreso());
+                    try (ResultSet filas = verificar.executeQuery()) {
+                        if (filas.next() && filas.getInt(1) > 0) {
+                            conexion.rollback();
+                            return -1;
+                        }
+                    }
+                }
+
+                int idReserva;
+                try (PreparedStatement insertar = conexion.prepareStatement(
+                        sqlReserva, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                    insertar.setDate(1, reserva.getFechaIngreso());
+                    insertar.setDate(2, reserva.getFechaSalida());
+                    insertar.setInt(3, reserva.getCantidadHuespedes());
+                    insertar.setDate(4, reserva.getFechaSolicitud());
+                    insertar.setInt(5, reserva.getAlojamientoId());
+                    if (insertar.executeUpdate() != 1) {
+                        conexion.rollback();
+                        return -1;
+                    }
+                    try (ResultSet claves = insertar.getGeneratedKeys()) {
+                        if (!claves.next()) {
+                            conexion.rollback();
+                            return -1;
+                        }
+                        idReserva = claves.getInt(1);
+                    }
+                }
+
+                try (PreparedStatement relacion = conexion.prepareStatement(sqlRelacion)) {
+                    relacion.setInt(1, idCliente);
+                    relacion.setInt(2, idReserva);
+                    relacion.executeUpdate();
+                }
+                conexion.commit();
+                return idReserva;
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
+            }
+        }
+    }
+
 } //fin dao
 
