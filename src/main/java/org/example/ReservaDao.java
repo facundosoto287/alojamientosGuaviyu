@@ -468,5 +468,32 @@ public class ReservaDao {
         }
     }
 
+    public boolean cancelarSolicitudCliente(int idReserva, int idCliente) {
+
+        String sql = """
+            UPDATE reserva r
+            JOIN cliente_reserva cr
+                ON r.id = cr.idReserva
+            SET r.estado = 'CANCELADA'
+            WHERE r.id = ?
+            AND cr.idCliente = ?
+            AND r.estado = 'PENDIENTE'
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idReserva);
+            sentencia.setInt(2, idCliente);
+
+            int filasAfectadas = sentencia.executeUpdate();
+
+            return filasAfectadas > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 } //fin dao
 
