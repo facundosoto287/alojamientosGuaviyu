@@ -10,7 +10,6 @@ public class Alojamiento {
     private String ubicacion;
     private float distanciaApiscina;
 
-
     public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, String ubicacion, float distanciaApiscina) {
         this.id = id;
         this.nombre = nombre;
@@ -77,10 +76,10 @@ public class Alojamiento {
         this.distanciaApiscina = distanciaApiscina;
     }
 
-    //Solo exitos
     @Override
     public String toString() {
         return "Alojamiento{id=" + id + ", nombre='" + nombre + "', descripcion='" + descripcion +
-                "', capacidad=" + capacidad + ", precio=" + precio + ", ubicacion='" + ubicacion + "'}";
+                "', capacidad=" + capacidad + ", precio=" + precio + ", ubicacion='" + ubicacion +
+                "', distanciaApiscina=" + distanciaApiscina + "}";
     }
 }

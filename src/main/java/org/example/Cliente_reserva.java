@@ -2,13 +2,11 @@ package org.example;
 
 public class Cliente_reserva {
 
-    private String idCliente,idReserva;
-    private boolean hizoReserva;
+    private String idCliente, idReserva;
 
-    public Cliente_reserva(String idCliente, String idReserva, boolean hizoReserva) {
+    public Cliente_reserva(String idCliente, String idReserva) {
         this.idCliente = idCliente;
         this.idReserva = idReserva;
-        this.hizoReserva = hizoReserva;
     }
 
     public String getIdCliente() {
@@ -25,13 +23,5 @@ public class Cliente_reserva {
 
     public void setIdReserva(String idReserva) {
         this.idReserva = idReserva;
-    }
-
-    public boolean isHizoReserva() {
-        return hizoReserva;
-    }
-
-    public void setHizoReserva(boolean hizoReserva) {
-        this.hizoReserva = hizoReserva;
     }
 }
