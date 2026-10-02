@@ -170,7 +170,7 @@ public class Main {
                 case 6->consultarDisponibilidad();
                // case 7 -> solicitarReserva();
                 case 8 -> registrarCliente();
-                //case 10 -> verMisReservas();
+                case 10 -> verMisReservas();
                 //case 11 -> cancelarSolicitudReserva();
                 //case 12 ->  editarPerfil();
                 case 13 -> verDetalleReservaCliente();
@@ -1136,6 +1136,32 @@ public class Main {
             for (Reserva r : reservas) {
                 imprimirReserva(r);
             }
+        }
+    }
+
+    static void verMisReservas() {     //CLIENTE
+        if (clienteActual == null) {
+            System.out.println("No hay una sesion de cliente activa");
+            return;
+        }
+        List<Reserva> reservas = reservaDao.verHistorialPorCliente(clienteActual.getId());
+
+        if (reservas.isEmpty()) {
+            System.out.println("No tienes reservas hechas");
+            return;
+        }
+
+        System.out.println("\n===== MIS RESERVAS =====");
+
+        for (Reserva reserva : reservas) {
+            System.out.println("------------------------------");
+            System.out.println("ID reserva: " + reserva.getId());
+            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
+            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
+            System.out.println("Cantidad de huéspedes: " + reserva.getCantidadHuespedes());
+            System.out.println("Estado: " + reserva.getEstado());
+            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
+            System.out.println("ID alojamiento: " + reserva.getAlojamientoId());
         }
     }
 
