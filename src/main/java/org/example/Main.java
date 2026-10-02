@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
 
@@ -147,8 +149,8 @@ public class Main {
             System.out.println("4. Ver información de alojamiento");
             System.out.println("5. Ver ubicación de los alojamientos");
             System.out.println("6. Consultar disponibilidad");
-            System.out.println("8. Registrarse como cliente");
             System.out.println("7. Solicitar reserva");
+            System.out.println("8. Registrarse como cliente");
             System.out.println("10. Ver mis reservas");
             System.out.println("11. Cancelar solicitud de reserva");
             System.out.println("12. Editar perfil");
@@ -164,16 +166,16 @@ public class Main {
             switch (opcion) {
                 //case 2 -> verAlojamientos();
                 case 3 -> filtrarAlojamientosPorPrecio();
-                case 4 ->  verInformacionAlojamiento();
+                case 4 -> verInformacionAlojamiento();
                 case 5 -> verUbicacionAlojamientos();
-                case 6->consultarDisponibilidad();
+                case 6-> consultarDisponibilidad();
                 case 7 -> solicitarReserva();
                 case 8 -> registrarCliente();
                 case 10 -> verMisReservas();
-                //case 11 -> cancelarSolicitudReserva();
-                case 12 ->  editarPerfil();
+                case 11 -> cancelarSolicitudReserva();
+                case 12 -> editarPerfil();
                 case 13 -> verDetalleReservaCliente();
-               // case 14 -> enviarSolicitudWhatsApp();
+                //case 14 -> enviarSolicitudWhatsApp();
                 case 15 -> filtrarAlojamientoPorServicio();
                 case 16 -> {
                     cerrarSesion();
@@ -182,7 +184,6 @@ public class Main {
                 case 0 -> System.out.println("Volviendo al menú principal...");
                 default -> System.out.println("Opción inválida.");
             }
-
         } while (opcion != 0 && clienteActual != null);
     }
 
@@ -500,57 +501,6 @@ public class Main {
         }
     }
 
-    static void filtrarAlojamientosPorPrecio() {
-
-        try {
-            System.out.println("Ingrese la capacidad minima:");
-            int capacidadMinima = sc.nextInt();
-
-            System.out.println("Ingrese el precio minimo:");
-            double precioMin = sc.nextDouble();
-
-            System.out.println("Ingrese el precio maximo:");
-            double precioMax = sc.nextDouble();
-            sc.nextLine();
-
-            if (capacidadMinima < 1) {
-                System.out.println("La capacidad del alojamiento debe ser mayor a 0");
-                return;
-            }
-
-            if (precioMin < 0 || precioMax < 0) {
-                System.out.println("Los precios no pueden ser negativos");
-                return;
-            }
-
-            if (precioMin > precioMax) {
-                System.out.println("El precio minimo no puede ser mayor al maximo");
-                return;
-            }
-
-            List<Alojamiento> alojamientos = alojamientoDAO.filtrarAlojamientosporPrecio(capacidadMinima, precioMin, precioMax);
-
-            if (alojamientos.isEmpty()) {
-                System.out.println("No se encontraron alojamientos");
-                return;
-            }
-
-            System.out.println("Alojamientos encontrados:");
-
-            for (Alojamiento alojamiento : alojamientos) {
-                System.out.println(
-                        alojamiento.getId() + " - " +
-                                alojamiento.getNombre() +
-                                " | Capacidad: " + alojamiento.getCapacidad() +
-                                " | Precio: $" + alojamiento.getPrecio()
-                );
-            }
-
-        } catch (Exception e) {
-            System.out.println("Debe ingresar valores validos");
-            sc.nextLine();
-        }
-    }
 
     static void modificarAlojamiento() {
         if (administradorActual == null) {
@@ -1183,92 +1133,6 @@ public class Main {
         }
     }
 
-    static void verMisReservas() {     //CLIENTE
-        if (clienteActual == null) {
-            System.out.println("No hay una sesion de cliente activa");
-            return;
-        }
-        List<Reserva> reservas = reservaDao.verHistorialPorCliente(clienteActual.getId());
-
-        if (reservas.isEmpty()) {
-            System.out.println("No tienes reservas hechas");
-            return;
-        }
-
-        System.out.println("\n===== MIS RESERVAS =====");
-
-        for (Reserva reserva : reservas) {
-            System.out.println("------------------------------");
-            System.out.println("ID reserva: " + reserva.getId());
-            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
-            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
-            System.out.println("Cantidad de huéspedes: " + reserva.getCantidadHuespedes());
-            System.out.println("Estado: " + reserva.getEstado());
-            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
-            System.out.println("ID alojamiento: " + reserva.getAlojamientoId());
-        }
-    }
-
-    static void consultarDisponibilidad() {
-
-        listarAlojamientos();
-
-        try {
-            System.out.println("Ingrese el id del alojamiento:");
-            int idAlojamiento = sc.nextInt();
-            sc.nextLine();
-
-            List<Reserva> reservas = reservaDao.reservasConfirmadasAlojamiento(idAlojamiento);
-
-            if (reservas.isEmpty()) {
-                System.out.println("El alojamiento no tiene fechas ocupadas.");
-                return;
-            }
-
-            System.out.println("Fechas ocupadas:");
-
-            for (Reserva reserva : reservas) {
-                System.out.println("Desde " + reserva.getFechaIngreso() + " hasta " + reserva.getFechaSalida());
-            }
-
-        } catch (Exception e) {
-            System.out.println("Debe ingresar un id valido.");
-            sc.nextLine();
-        }
-    }
-
-    static void verDetalleReservaCliente() {
-
-        try {
-            System.out.println("Ingrese el id del cliente:");
-            int idCliente = sc.nextInt();
-
-            System.out.println("Ingrese el id de la reserva:");
-            int idReserva = sc.nextInt();
-            sc.nextLine();
-
-            Reserva reserva = reservaDao.verDetalleReservaCliente(idReserva, idCliente);
-
-            if (reserva == null) {
-                System.out.println("No se encontro esa reserva para ese cliente");
-                return;
-            }
-
-            System.out.println("===== DETALLE DE LA RESERVA =====");
-            System.out.println("ID: " + reserva.getId());
-            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
-            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
-            System.out.println("Cantidad de huespedes: " + reserva.getCantidadHuespedes());
-            System.out.println("Estado: " + reserva.getEstado());
-            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
-            System.out.println("ID alojamiento: " + reserva.getAlojamientoId());
-
-        } catch (Exception e) {
-            System.out.println("Debe ingresar datos validos.");
-            sc.nextLine();
-        }
-    }
-
     //==========CASOS DE USO CLIENTES==========
     static void verUbicacionAlojamientos() {
         List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
@@ -1457,5 +1321,236 @@ public class Main {
             System.out.print("Ingresá un número entero mayor que cero: ");
         }
     }
+
+    static void filtrarAlojamientosPorPrecio() { //CU 3 cliente
+
+        try {
+            System.out.println("Ingrese la capacidad minima:");
+            int capacidadMinima = sc.nextInt();
+
+            System.out.println("Ingrese el precio minimo:");
+            double precioMin = sc.nextDouble();
+
+            System.out.println("Ingrese el precio maximo:");
+            double precioMax = sc.nextDouble();
+            sc.nextLine();
+
+            if (capacidadMinima < 1) {
+                System.out.println("La capacidad del alojamiento debe ser mayor a 0");
+                return;
+            }
+
+            if (precioMin < 0 || precioMax < 0) {
+                System.out.println("Los precios no pueden ser negativos");
+                return;
+            }
+
+            if (precioMin > precioMax) {
+                System.out.println("El precio minimo no puede ser mayor al maximo");
+                return;
+            }
+
+            List<Alojamiento> alojamientos = alojamientoDAO.filtrarAlojamientosporPrecio(capacidadMinima, precioMin, precioMax);
+
+            if (alojamientos.isEmpty()) {
+                System.out.println("No se encontraron alojamientos");
+                return;
+            }
+
+            System.out.println("Alojamientos encontrados:");
+
+            for (Alojamiento alojamiento : alojamientos) {
+                System.out.println(
+                        alojamiento.getId() + " - " +
+                                alojamiento.getNombre() +
+                                " | Capacidad: " + alojamiento.getCapacidad() +
+                                " | Precio: $" + alojamiento.getPrecio()
+                );
+            }
+
+        } catch (Exception e) {
+            System.out.println("Debe ingresar valores validos");
+            sc.nextLine();
+        }
+    }
+
+    static void consultarDisponibilidad() { //CU 6 cliente
+
+        listarAlojamientos();
+
+        try {
+            System.out.println("Ingrese el id del alojamiento:");
+            int idAlojamiento = sc.nextInt();
+            sc.nextLine();
+
+            List<Reserva> reservas = reservaDao.reservasConfirmadasAlojamiento(idAlojamiento);
+
+            if (reservas.isEmpty()) {
+                System.out.println("El alojamiento no tiene fechas ocupadas.");
+                return;
+            }
+
+            System.out.println("Fechas ocupadas:");
+
+            for (Reserva reserva : reservas) {
+                System.out.println("Desde " + reserva.getFechaIngreso() + " hasta " + reserva.getFechaSalida());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Debe ingresar un id valido.");
+            sc.nextLine();
+        }
+    }
+
+    static void verMisReservas() {     //CU 10 cliente
+        if (clienteActual == null) {
+            System.out.println("No hay una sesion de cliente activa");
+            return;
+        }
+        List<Reserva> reservas = reservaDao.verHistorialPorCliente(clienteActual.getId());
+
+        if (reservas.isEmpty()) {
+            System.out.println("No tienes reservas hechas");
+            return;
+        }
+
+        System.out.println("\n===== MIS RESERVAS =====");
+
+        for (Reserva reserva : reservas) {
+            System.out.println("------------------------------");
+            System.out.println("ID reserva: " + reserva.getId());
+            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
+            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
+            System.out.println("Cantidad de huéspedes: " + reserva.getCantidadHuespedes());
+            System.out.println("Estado: " + reserva.getEstado());
+            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
+            System.out.println("ID alojamiento: " + reserva.getAlojamientoId());
+        }
+    }
+
+    static void verDetalleReservaCliente() { //CU 13 cliente
+        if (clienteActual == null) {
+            System.out.println("No hay una sesion de cliente activa");
+            return;
+        }
+
+        try {
+            System.out.println("Ingrese el id de la reserva:");
+            int idReserva = sc.nextInt();
+            sc.nextLine();
+
+            Reserva reserva = reservaDao.verDetalleReservaCliente(idReserva, clienteActual.getId());
+
+            if (reserva == null) {
+                System.out.println("No se encontro la reserva o no pertenece al cliente");
+                return;
+            }
+
+            System.out.println("\n===== DETALLE DE LA RESERVA =====");
+            System.out.println("ID: " + reserva.getId());
+            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
+            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
+            System.out.println("Cantidad de huéspedes: " + reserva.getCantidadHuespedes());
+            System.out.println("Estado: " + reserva.getEstado());
+            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
+            System.out.println("ID alojamiento: " + reserva.getAlojamientoId());
+
+        } catch (Exception e) {
+            System.out.println("Debe ingresar un id valido");
+            sc.nextLine();
+        }
+    }
+
+    static void cancelarSolicitudReserva() {  //CU 11 cliente
+        if (clienteActual == null) {
+            System.out.println("No hay una sesión de cliente activa.");
+            return;
+        }
+
+        verMisReservas();
+
+        try {
+            System.out.println("Ingrese el id de la reserva que desea cancelar:");
+            int idReserva = sc.nextInt();
+            sc.nextLine();
+
+            System.out.println("¿Desea cancelar esta solicitud? (s/n)");
+            String confirmacion = sc.nextLine();
+
+            if (!confirmacion.equalsIgnoreCase("s")) {
+                System.out.println("Operacion cancelada");
+                return;
+            }
+
+            boolean cancelada = reservaDao.cancelarSolicitudCliente(idReserva, clienteActual.getId());
+
+            if (cancelada) {
+                System.out.println("Solicitud cancelada correctamente");
+            } else {
+                System.out.println("No se pudo cancelar la solicitud");
+            }
+        } catch (Exception e) {
+            System.out.println("Debe ingresar un id valido");
+            sc.nextLine();
+        }
+    }
+
+//    static void enviarSolicitudWhatsApp() {
+//
+//        if (clienteActual == null) {
+//            System.out.println("No hay una sesion de cliente activa");
+//            return;
+//        }
+//
+//        verMisReservas();
+//
+//        try {
+//            System.out.println("Ingrese el id de la reserva que desea enviar:");
+//            int idReserva = sc.nextInt();
+//            sc.nextLine();
+//
+//            Reserva reserva = reservaDao.verDetalleReservaCliente(idReserva, clienteActual.getId());
+//
+//            if (reserva == null) {
+//                System.out.println("No se encontro esa reserva");
+//                return;
+//            }
+//
+//            Alojamiento alojamiento = alojamientoDAO.buscarAlojamientoPorNombre(reserva.getAlojamientoId());
+//
+//            if (alojamiento == null) {
+//                System.out.println("No se encontro el alojamiento asociado");
+//                return;
+//            }
+//
+//            String numeroWhatsApp = "598XXXXXXXX";
+//
+//            String link = generarMensajeWhatsApp(reserva, clienteActual, alojamiento, numeroWhatsApp);
+//
+//            System.out.println("Link para enviar la solicitud:");
+//            System.out.println(link);
+//
+//        } catch (Exception e) {
+//            System.out.println("Debe ingresar un id valido");
+//            sc.nextLine();
+//        }
+//    }
+//
+//    public static String generarMensajeWhatsApp(Reserva reserva, Cliente cliente, Alojamiento alojamiento, String numeroWhatsApp) {  //Funcion auxiliar para la solicitud de reserva por whatsapp
+//
+//        String mensaje = "Hola, quisiera consultar por una reserva.\n\n" +
+//                        "Alojamiento: " + alojamiento.getNombre() + "\n" +
+//                        "ID del alojamiento: " + alojamiento.getId() + "\n" +
+//                        "Fecha de ingreso: " + reserva.getFechaIngreso() + "\n" +
+//                        "Fecha de salida: " + reserva.getFechaSalida() + "\n" +
+//                        "Cantidad de huéspedes: " + reserva.getCantidadHuespedes() + "\n" +
+//                        "Cliente: " + cliente.getNombre() + "\n" +
+//                        "Procedencia: " + cliente.getProcedencia() + "\n" +
+//                        "Teléfono: " + cliente.getTelefono();
+//
+//        String mensajeCodificado = URLEncoder.encode(mensaje, StandardCharsets.UTF_8);
+//
+//        return "https://wa.me/" + numeroWhatsApp + "?text=" + mensajeCodificado;
+//    }
 
 } //fin main
