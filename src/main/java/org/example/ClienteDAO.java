@@ -10,6 +10,44 @@ import java.util.Scanner;
 
 public class ClienteDAO {
 
+    public Cliente iniciarSesion(String correo, String contrasena) {
+
+        String sql = """
+            SELECT id, nombre, documento, telefono, email, procedencia, contrasena
+            FROM cliente
+            WHERE email = ?
+            AND contrasena = ?
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, correo);
+            sentencia.setString(2, contrasena);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                if (resultado.next()) {
+
+                    Cliente cliente = new Cliente(
+                            resultado.getInt("id"),
+                            resultado.getString("nombre"),
+                            resultado.getString("documento"),
+                            resultado.getString("telefono"),
+                            resultado.getString("email"),
+                            resultado.getString("procedencia"),
+                            resultado.getString("contrasena")
+                    );
+                    return cliente;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     public Cliente registrarCliente(String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
 
         if (nombre.isBlank() || documento.isBlank() || email.isBlank() || contrasena.isBlank()) {

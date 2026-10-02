@@ -16,6 +16,7 @@ public class Main {
     static ClienteDAO clienteDAO = new ClienteDAO();
     static ReservaDao reservaDao = new ReservaDao();
     static Cliente_reservaDAO clienteReservaDAO = new Cliente_reservaDAO();
+    static Cliente clienteActual = null;
 
     public static void main(String[] args) {
         int opcion;
@@ -27,7 +28,8 @@ public class Main {
 
             switch (opcion) {
                 case 1 -> iniciarSesion();
-                case 2 -> cerrarSesion();
+                case 2 -> iniciarSesionCliente();
+                case 3 -> cerrarSesion();
                 case 0 -> System.out.println("Saliendo del programa...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -37,8 +39,9 @@ public class Main {
 
     static void mostrarMenu() {
         System.out.println("\n===== MENÚ =====");
-        System.out.println("1. Iniciar sesión");
-        System.out.println("2. Cerrar sesión");
+        System.out.println("1. Iniciar sesión como admin");
+        System.out.println("2. Iniciar sesión como cliente");
+        System.out.println("3. Cerrar sesión");
         System.out.println("0. Salir");
         System.out.print("Elija una opción: ");
     }
@@ -61,6 +64,29 @@ public class Main {
             administradorActual = admin;
             System.out.println("Bienvenido, " + admin.getNombre() + ". Sesión iniciada correctamente.");
             menuAdministrador();
+        } else {
+            System.out.println("Correo o contraseña incorrectos.");
+        }
+    }
+
+    static void iniciarSesionCliente() {
+        if (clienteActual != null) {
+            System.out.println("Ya hay una sesión activa: " + clienteActual.getNombre());
+            return;
+        }
+
+        System.out.println("Ingrese su correo:");
+        String correo = sc.nextLine();
+
+        System.out.println("Ingrese su contraseña:");
+        String contrasena = sc.nextLine();
+
+        Cliente cliente = clienteDAO.iniciarSesion(correo, contrasena);
+
+        if (cliente != null) {
+            clienteActual = cliente;
+            System.out.println("Bienvenido, " + cliente.getNombre() + ". Sesión iniciada correctamente.");
+            menuClientesActivos();
         } else {
             System.out.println("Correo o contraseña incorrectos.");
         }
@@ -110,6 +136,55 @@ public class Main {
             }
 
         } while (opcion != 0 && administradorActual != null);
+    }
+
+    static void menuClientesActivos() {
+        int opcion;
+
+        do {
+            System.out.println("\n===== MENU CLIENTES=====");
+            System.out.println("2. Ver alojamientos");
+            System.out.println("3. Filtrar alojamientos por precio");
+            System.out.println("4. Ver información de alojamiento");
+            System.out.println("5. Ver ubicación de los alojamientos");
+            System.out.println("6. Consultar disponibilidad");
+            System.out.println("8. Registrarse como cliente");
+            System.out.println("7. Solicitar reserva");
+            System.out.println("10. Ver mis reservas");
+            System.out.println("11. Cancelar solicitud de reserva");
+            System.out.println("12. Editar perfil");
+            System.out.println("13. Ver detalle de una solicitud de reserva");
+            System.out.println("14. Enviar solicitud por WhatsApp");
+            System.out.println("15. Filtrar alojamiento por servicio");
+            System.out.println("0. Cerrar sesión");
+            System.out.print("Elija una opción: ");
+
+            opcion = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcion) {
+                //case 2 -> verAlojamientos();
+                case 3 -> filtrarAlojamientosPorPrecio();
+                //case 4 -> // verInformacionAlojamiento();
+               //case 5 -> verUbicacionAlojamientos();
+                case 6->consultarDisponibilidad();
+               // case 7 -> solicitarReserva();
+                case 8 -> registrarCliente();
+                //case 10 -> verMisReservas();
+                //case 11 -> cancelarSolicitudReserva();
+                //case 12 ->  editarPerfil();
+                case 13 -> verDetalleReservaCliente();
+               // case 14 -> enviarSolicitudWhatsApp();
+                case 15 -> filtrarAlojamientoPorServicio();
+                case 16 -> {
+                    cerrarSesion();
+                    opcion = 0;
+                }
+                case 0 -> System.out.println("Volviendo al menú principal...");
+                default -> System.out.println("Opción inválida.");
+            }
+
+        } while (opcion != 0 && clienteActual != null);
     }
 
     // ===== Submenú de Cliente =====
@@ -236,8 +311,6 @@ public class Main {
             System.out.println("6. Desasociar servicio de un alojamiento");
             System.out.println("7. Ver servicios de un alojamiento");
             System.out.println("8. Buscar alojamiento por nombre");
-            System.out.println("9. Filtrar alojamiento por servicio");
-            System.out.println("10. Filtrar alojamiento por precio");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -253,8 +326,6 @@ public class Main {
                 case 6 -> desasociarServicioDeUnAlojamiento();
                 case 7 -> verServiciosDeUnAlojamiento();
                 case 8 -> buscarAlojamientoPorNombre();
-                case 9 -> filtrarAlojamientoPorServicio();
-                case 10 -> filtrarAlojamientosPorPrecio();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -276,8 +347,6 @@ public class Main {
             System.out.println("7. Ver todas las reservas");
             System.out.println("8. Buscar reserva por id");
             System.out.println("9. Ver reservas de un alojamiento");
-            System.out.println("10. Consultar disponibilidad de un alojamiento");//cliente
-            System.out.println("11. Ver detalle de una reserva");//cliente
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
 
@@ -294,8 +363,6 @@ public class Main {
                 case 7 -> listarTodasLasReservas();
                 case 8 -> buscarReservaPorId();
                 case 9 -> verReservasDeAlojamiento();
-                case 10 -> consultarDisponibilidad();
-                case 11 -> verDetalleReservaCliente();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
