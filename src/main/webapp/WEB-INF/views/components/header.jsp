@@ -12,13 +12,12 @@
 <header class="site-header">
     <div class="header-container">
 
-        <a href="${pageContext.request.contextPath}/alojamientos" class="brand">
+        <a href="${pageContext.request.contextPath}/inicio" class="brand">
             Alojamientos Guaviyú
         </a>
 
         <nav class="main-nav">
             <a href="${pageContext.request.contextPath}/inicio">Inicio</a>
-            <a href="${pageContext.request.contextPath}/alojamientos">Alojamientos</a>
             <a href="${pageContext.request.contextPath}/mapa">Mapa</a>
             <a href="${pageContext.request.contextPath}/mis-reservas">Mis reservas</a>
             <a href="${pageContext.request.contextPath}/sobre-nosotros">Sobre nosotros</a>
