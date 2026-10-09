@@ -82,7 +82,13 @@ public class Main {
         System.out.println("Ingrese su contraseña:");
         String contrasena = sc.nextLine();
 
-        Cliente cliente = clienteDAO.iniciarSesion(correo, contrasena);
+        Cliente cliente;
+        try {
+            cliente = clienteDAO.iniciarSesion(correo, contrasena);
+        } catch (SQLException e) {
+            System.out.println("No se pudo conectar con la base de datos: " + e.getMessage());
+            return;
+        }
 
         if (cliente != null) {
             clienteActual = cliente;
