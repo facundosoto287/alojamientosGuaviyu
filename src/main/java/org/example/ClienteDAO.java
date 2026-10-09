@@ -1,60 +1,102 @@
 package org.example;
 
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class ClienteDAO {
 
-    public Cliente iniciarSesion(String correo, String contrasena) {
+    /** Costo de BCrypt: 12 tarda ~0,2 s por intento, suficiente para frenar ataques de fuerza bruta. */
+    private static final int COSTO_BCRYPT = 12;
 
+    /** Hash de relleno: se usa cuando el email no existe, para que la respuesta tarde lo mismo. */
+    private static final String HASH_RELLENO = BCrypt.hashpw("relleno", BCrypt.gensalt(COSTO_BCRYPT));
+
+    // ===================== INICIO DE SESIÓN =====================
+
+    /**
+     * Devuelve el cliente si el email y la contraseña son correctos, o null si no lo son.
+     * La contraseña ya NO se compara en el SQL: se busca por email y se verifica el hash con BCrypt.
+     * Si falla la base de datos lanza SQLException (antes se tragaba el error y parecía "contraseña incorrecta").
+     */
+    public Cliente iniciarSesion(String correo, String contrasena) throws SQLException {
+        if (correo == null || contrasena == null || correo.isBlank() || contrasena.isEmpty()) {
+            return null;
+        }
+
+        Cliente cliente = buscarPorEmail(normalizarEmail(correo));
+
+        if (cliente == null) {
+            BCrypt.checkpw(contrasena, HASH_RELLENO); // mismo tiempo de respuesta que con un email real
+            return null;
+        }
+
+        String guardada = cliente.getContrasena();
+
+        if (esHashBCrypt(guardada)) {
+            return BCrypt.checkpw(contrasena, guardada) ? cliente : null;
+        }
+
+        // Transición: clientes viejos con la contraseña guardada en texto plano.
+        // Si coincide, se reemplaza por su hash para que la próxima vez ya use BCrypt.
+        if (guardada != null && iguales(contrasena, guardada)) {
+            String hash = hashear(contrasena);
+            actualizarContrasena(cliente.getId(), hash);
+            cliente.setContrasena(hash);
+            return cliente;
+        }
+
+        return null;
+    }
+
+    public Cliente buscarPorEmail(String email) throws SQLException {
         String sql = """
             SELECT id, nombre, documento, telefono, email, procedencia, contrasena
             FROM cliente
             WHERE email = ?
-            AND contrasena = ?
             """;
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-            sentencia.setString(1, correo);
-            sentencia.setString(2, contrasena);
+            sentencia.setString(1, email);
 
-            try (ResultSet resultado = sentencia.executeQuery()) {
-
-                if (resultado.next()) {
-
-                    Cliente cliente = new Cliente(
-                            resultado.getInt("id"),
-                            resultado.getString("nombre"),
-                            resultado.getString("documento"),
-                            resultado.getString("telefono"),
-                            resultado.getString("email"),
-                            resultado.getString("procedencia"),
-                            resultado.getString("contrasena")
-                    );
-                    return cliente;
-                }
+            try (ResultSet fila = sentencia.executeQuery()) {
+                return fila.next() ? mapearCliente(fila) : null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
+    // ===================== REGISTRO =====================
 
+    /**
+     * Registra un cliente guardando el hash de la contraseña.
+     * Recibe la contraseña en texto (lo que escribió el usuario) y la hashea acá adentro.
+     * Lanza IllegalArgumentException con un mensaje para mostrar si faltan datos o el email/documento ya existe.
+     */
     public Cliente registrarCliente(String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
 
-        if (nombre.isBlank() || documento.isBlank() || email.isBlank() || contrasena.isBlank()) {
+        if (esVacio(nombre) || esVacio(documento) || esVacio(email) || contrasena == null || contrasena.isEmpty()) {
             throw new IllegalArgumentException("Faltan datos obligatorios.");
         }
 
-        String sqlVerificar = "SELECT id FROM cliente WHERE email = ? OR documento = ?";
+        nombre = nombre.trim();
+        documento = documento.trim();
+        email = normalizarEmail(email);
+        telefono = esVacio(telefono) ? null : telefono.trim();
+        procedencia = esVacio(procedencia) ? null : procedencia.trim();
+
+        String sqlVerificar = "SELECT email FROM cliente WHERE email = ? OR documento = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement verificar = conexion.prepareStatement(sqlVerificar)) {
@@ -64,7 +106,9 @@ public class ClienteDAO {
 
             try (ResultSet resultado = verificar.executeQuery()) {
                 if (resultado.next()) {
-                    throw new IllegalArgumentException("Ya existe un cliente con ese email o documento.");
+                    throw new IllegalArgumentException(email.equalsIgnoreCase(resultado.getString("email"))
+                            ? "Ya existe una cuenta con ese correo electrónico."
+                            : "Ya existe una cuenta con ese documento.");
                 }
             }
 
@@ -72,6 +116,7 @@ public class ClienteDAO {
             throw new RuntimeException(e);
         }
 
+        String hash = hashear(contrasena);
         String sqlInsertar = "INSERT INTO cliente (nombre, documento, telefono, email, procedencia, contrasena) VALUES (?,?,?,?,?,?)";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -82,7 +127,7 @@ public class ClienteDAO {
             sentencia.setString(3, telefono);
             sentencia.setString(4, email);
             sentencia.setString(5, procedencia);
-            sentencia.setString(6, contrasena);
+            sentencia.setString(6, hash);
 
             sentencia.executeUpdate();
 
@@ -93,12 +138,27 @@ public class ClienteDAO {
                 }
             }
 
-            return new Cliente(id, nombre, documento, telefono, email, procedencia, contrasena);
+            return new Cliente(id, nombre, documento, telefono, email, procedencia, hash);
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            // Dos registros simultáneos con el mismo email/documento (lo frena el UNIQUE de la tabla)
+            throw new IllegalArgumentException("Ya existe una cuenta con ese correo o documento.");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
+    public boolean actualizarContrasena(int id, String hash) throws SQLException {
+        String sql = "UPDATE cliente SET contrasena = ? WHERE id = ?";
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, hash);
+            sentencia.setInt(2, id);
+            return sentencia.executeUpdate() == 1;
+        }
+    }
+
+    // ===================== MÉTODOS QUE YA EXISTÍAN =====================
 
     public List<Cliente> listarClientes() throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
@@ -109,16 +169,7 @@ public class ClienteDAO {
              ResultSet filas = sentencia.executeQuery()) {
 
             while (filas.next()) {
-                Cliente cliente = new Cliente(
-                        filas.getInt("id"),
-                        filas.getString("nombre"),
-                        filas.getString("documento"),
-                        filas.getString("telefono"),
-                        filas.getString("email"),
-                        filas.getString("procedencia"),
-                        filas.getString("contrasena")
-                );
-                clientes.add(cliente);
+                clientes.add(mapearCliente(filas));
             }
         }
 
@@ -163,6 +214,7 @@ public class ClienteDAO {
         System.out.println("Ingrese la contraseña:");
         String contrasena = sc.nextLine();
 
+        // Acá va en texto: registrarCliente() la convierte en hash antes de guardarla
         return new Cliente(0, nombre, documento, telefono, email, procedencia, contrasena);
     }
 
@@ -176,15 +228,7 @@ public class ClienteDAO {
 
             try (ResultSet filas = sentencia.executeQuery()) {
                 if (filas.next()) {
-                    return new Cliente(
-                            filas.getInt("id"),
-                            filas.getString("nombre"),
-                            filas.getString("documento"),
-                            filas.getString("telefono"),
-                            filas.getString("email"),
-                            filas.getString("procedencia"),
-                            filas.getString("contrasena")
-                    );
+                    return mapearCliente(filas);
                 }
             }
         }
@@ -206,16 +250,7 @@ public class ClienteDAO {
 
             try (ResultSet filas = sentencia.executeQuery()) {
                 while (filas.next()) {
-                    Cliente cliente = new Cliente(
-                            filas.getInt("id"),
-                            filas.getString("nombre"),
-                            filas.getString("documento"),
-                            filas.getString("telefono"),
-                            filas.getString("email"),
-                            filas.getString("procedencia"),
-                            filas.getString("contrasena")
-                    );
-                    clientes.add(cliente);
+                    clientes.add(mapearCliente(filas));
                 }
             }
         }
@@ -241,11 +276,46 @@ public class ClienteDAO {
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
             sentencia.setString(1, telefono);
-            sentencia.setString(2, email);
+            sentencia.setString(2, normalizarEmail(email));
             sentencia.setString(3, procedencia);
             sentencia.setInt(4, id);
             return sentencia.executeUpdate() == 1;
         }
     }
 
+    // ===================== AUXILIARES =====================
+
+    private Cliente mapearCliente(ResultSet fila) throws SQLException {
+        return new Cliente(
+                fila.getInt("id"),
+                fila.getString("nombre"),
+                fila.getString("documento"),
+                fila.getString("telefono"),
+                fila.getString("email"),
+                fila.getString("procedencia"),
+                fila.getString("contrasena")
+        );
+    }
+
+    private static String hashear(String contrasena) {
+        return BCrypt.hashpw(contrasena, BCrypt.gensalt(COSTO_BCRYPT));
+    }
+
+    private static boolean esHashBCrypt(String valor) {
+        // jBCrypt genera hashes "$2a$..." de 60 caracteres
+        return valor != null && valor.length() == 60 && valor.startsWith("$2a$");
+    }
+
+    /** Compara en tiempo constante (no corta en el primer carácter distinto). */
+    private static boolean iguales(String a, String b) {
+        return MessageDigest.isEqual(a.getBytes(StandardCharsets.UTF_8), b.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String normalizarEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private static boolean esVacio(String texto) {
+        return texto == null || texto.isBlank();
+    }
 }

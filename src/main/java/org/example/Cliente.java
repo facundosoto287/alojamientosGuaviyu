@@ -8,6 +8,9 @@ public class Cliente {
     private String telefono;
     private String email;
     private String procedencia;
+
+    // Guarda el HASH BCrypt de la contraseña (ej: "$2a$12$..."), nunca la contraseña en texto.
+    // Al guardar el cliente en la sesión web se pone en null para no tenerlo en memoria sin necesidad.
     private String contrasena;
 
     public Cliente(int id, String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
@@ -74,6 +77,14 @@ public class Cliente {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+
+    /** Primer nombre, para el saludo del encabezado ("Hola, Brandon"). */
+    public String getPrimerNombre() {
+        if (nombre == null || nombre.isBlank()) {
+            return "";
+        }
+        return nombre.trim().split("\\s+")[0];
     }
 
     @Override
