@@ -347,7 +347,7 @@ public class Main {
             System.out.println("5. Ver reservas confirmadas");
             System.out.println("6. Ver reservas canceladas");
             System.out.println("7. Ver todas las reservas");
-            System.out.println("8. Buscar reserva por id");
+            System.out.println("8. Buscar reserva por nombre de un cliente");
             System.out.println("9. Ver reservas de un alojamiento");
             System.out.println("0. Volver");
             System.out.print("Elija una opción: ");
