@@ -363,7 +363,7 @@ public class Main {
                 case 5 -> listarReservasConfirmadas();
                 case 6 -> listarReservasCanceladas();
                 case 7 -> listarTodasLasReservas();
-                case 8 -> buscarReservaPorId();
+                case 8 -> buscarReservasPorCliente();
                 case 9 -> verReservasDeAlojamiento();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
@@ -1072,30 +1072,31 @@ public class Main {
                 + " | Alojamiento: " + r.getAlojamientoId());
     }
 
-    static void buscarReservaPorId() {
-        try {
-            System.out.println("Ingrese el id de la reserva:");
-            int id = sc.nextInt();
-            sc.nextLine();
+    static void buscarReservasPorCliente() {
 
-            Reserva reserva = reservaDao.buscarReservaPorId(id);
+        System.out.println("Ingrese el nombre del cliente:");
+        String nombreCliente = sc.nextLine();
 
-            if (reserva == null) {
-                System.out.println("No se encontró una reserva con ese id.");
-                return;
-            }
-            System.out.println("Id: " + reserva.getId());
-            System.out.println("Fecha de ingreso: " + reserva.getFechaIngreso());
-            System.out.println("Fecha de salida: " + reserva.getFechaSalida());
-            System.out.println("Cantidad de huéspedes: " + reserva.getCantidadHuespedes());
+        List<Reserva> reservas = reservaDao.buscarReservasPorCliente(nombreCliente);
+
+        if (reservas.isEmpty()) {
+            System.out.println("No se encontraron reservas para ese cliente");
+            return;
+        }
+
+        System.out.println("===== RESERVAS ENCONTRADAS =====");
+
+        for (Reserva reserva : reservas) {
+            System.out.println("----------------------------");
+            System.out.println("ID: " + reserva.getId());
+            System.out.println("Ingreso: " + reserva.getFechaIngreso());
+            System.out.println("Salida: " + reserva.getFechaSalida());
+            System.out.println("Huéspedes: " + reserva.getCantidadHuespedes());
             System.out.println("Estado: " + reserva.getEstado());
-            System.out.println("Fecha de solicitud: " + reserva.getFechaSolicitud());
-            System.out.println("Id alojamiento: " + reserva.getAlojamientoId());
-        } catch (Exception e) {
-            System.out.println("Debe ingresar un id valido");
-            sc.nextLine();
+            System.out.println("Alojamiento ID: " + reserva.getAlojamientoId());
         }
     }
+
     static void verReservasDeAlojamiento() {
         List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
 

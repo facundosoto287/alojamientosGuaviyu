@@ -151,32 +151,32 @@ public class ReservaDao {
         }
     }
 
-    public Reserva buscarReservaPorId(int id){
+    public List<Reserva> buscarReservasPorCliente(String nombreCliente) {
+
+        List<Reserva> reservas = new ArrayList<>();
+
         String sql = """
-            SELECT id, fechaIngreso, fechaSalida, cantidadHuespedes,
-                   estado, fechaSolicitud, alojamiento_id
-            FROM reserva
-            WHERE id = ?
+            SELECT r.id, r.fechaIngreso, r.fechaSalida,
+                   r.cantidadHuespedes, r.estado,
+                   r.fechaSolicitud, r.alojamiento_id
+            FROM reserva r
+            JOIN cliente_reserva cr
+                ON r.id = cr.idReserva
+            JOIN cliente c
+                ON cr.idCliente = c.id
+            WHERE c.nombre LIKE ?
+            ORDER BY r.fechaSolicitud DESC
             """;
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-            sentencia.setInt(1, id);
+            sentencia.setString(1, "%" + nombreCliente + "%");
 
             try (ResultSet resultado = sentencia.executeQuery()) {
 
-                if (resultado.next()) {
-                    Reserva reserva = new Reserva(
-                            resultado.getInt("id"),
-                            resultado.getDate("fechaIngreso"),
-                            resultado.getDate("fechaSalida"),
-                            resultado.getInt("cantidadHuespedes"),
-                            EstadoReserva.valueOf(resultado.getString("estado")),
-                            resultado.getDate("fechaSolicitud"),
-                            resultado.getInt("alojamiento_id")
-                    );
-                    return reserva;
+                while (resultado.next()) {
+                    reservas.add(mapearReserva(resultado));
                 }
             }
 
@@ -184,7 +184,7 @@ public class ReservaDao {
             e.printStackTrace();
         }
 
-        return null;
+        return reservas;
     }
 
     public List<Reserva> listarPorEstado(EstadoReserva estado) {
