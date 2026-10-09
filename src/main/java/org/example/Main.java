@@ -919,6 +919,48 @@ public class Main {
         listarAlojamientos();
 
         Reserva nuevaReserva = reservaDao.pedirDatosNuevaReserva(sc);
+
+        if (nuevaReserva == null
+                || nuevaReserva.getFechaIngreso() == null
+                || nuevaReserva.getFechaSalida() == null
+                || !nuevaReserva.getFechaIngreso().before(nuevaReserva.getFechaSalida())) {
+            System.out.println("Las fechas ingresadas no son válidas.");
+            return;
+        }
+
+        if (nuevaReserva.getCantidadHuespedes() <= 0) {
+            System.out.println("La cantidad de huéspedes debe ser mayor que cero.");
+            return;
+        }
+
+        try {
+            int capacidad = alojamientoDAO.obtenerCapacidad(nuevaReserva.getAlojamientoId());
+
+            if (capacidad == -1) {
+                System.out.println("No existe el alojamiento seleccionado.");
+                return;
+            }
+
+            if (nuevaReserva.getCantidadHuespedes() > capacidad) {
+                System.out.println(
+                        "El alojamiento admite hasta " + capacidad + " huéspedes."
+                );
+                return;
+            }
+
+            if (reservaDao.existeSuperposicion(
+                    nuevaReserva.getAlojamientoId(),
+                    nuevaReserva.getFechaIngreso(),
+                    nuevaReserva.getFechaSalida())) {
+                System.out.println("El alojamiento ya tiene una reserva para esas fechas.");
+                return;
+            }
+        } catch (SQLException e) {
+            System.out.println("No se pudo validar la reserva: " + e.getMessage());
+            return;
+        }
+
+// Si pasó las validaciones, continuar con la creación:
         int idReservaGenerado = reservaDao.crear(nuevaReserva);
 
         if (idReservaGenerado == -1) {

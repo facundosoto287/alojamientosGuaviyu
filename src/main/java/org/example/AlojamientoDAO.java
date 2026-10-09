@@ -177,6 +177,23 @@ public class AlojamientoDAO {
         return new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
     }
 
+    public int obtenerCapacidad(int alojamientoId) throws SQLException {
+        String sql = "SELECT capacidad FROM alojamiento WHERE id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, alojamientoId);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                if (resultado.next()) {
+                    return resultado.getInt("capacidad");
+                }
+                return -1; // No existe ese alojamiento
+            }
+        }
+    }
+
     public boolean asociarServicioAalojamiento(int idAlojamiento, int idServicio) {
         String sql = """
             INSERT INTO alojamiento_servicio

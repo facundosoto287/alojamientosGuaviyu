@@ -46,6 +46,34 @@ public class ReservaDao {
         }
     }
 
+    public boolean existeSuperposicion(
+            int alojamientoId,
+            java.sql.Date fechaIngreso,
+            java.sql.Date fechaSalida
+        ) throws SQLException {
+        String sql = """
+        SELECT 1
+        FROM reserva
+        WHERE alojamiento_id = ?
+          AND estado IN ('PENDIENTE', 'CONFIRMADA')
+          AND fechaIngreso < ?
+          AND fechaSalida > ?
+        LIMIT 1
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, alojamientoId);
+            sentencia.setDate(2, fechaSalida);
+            sentencia.setDate(3, fechaIngreso);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                return resultado.next();
+            }
+        }
+    }
+
     // Ver solicitudes pendientes (caso de uso del administrador)
     public List<Reserva> listarPendientes() {
         List<Reserva> pendientes = new ArrayList<>();
