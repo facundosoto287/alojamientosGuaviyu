@@ -1,0 +1,89 @@
+.site-header {
+    font-family: system-ui, "Segoe UI", sans-serif;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    text-decoration: none;
+    color: #084298;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #084298;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.main-nav a:hover {
+    color: #0d6efd;
+}
+
+.header-user a {
+    text-decoration: none;
+    color: #084298;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.site-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    text-decoration: none;
+    color: #084298;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.main-nav {
+    display: flex;
+    gap: 32px;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #084298;
+    font-weight: 600;
+}
+
+.main-nav a:hover {
+    color: #0d6efd;
+}
+
+.header-user a {
+    text-decoration: none;
+    color: #084298;
+    font-weight: 600;
+}

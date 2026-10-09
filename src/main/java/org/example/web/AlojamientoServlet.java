@@ -20,6 +20,9 @@ public class AlojamientoServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
+
         List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
         request.setAttribute("alojamientos", alojamientos);
 
