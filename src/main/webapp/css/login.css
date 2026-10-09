@@ -1,0 +1,291 @@
+/* Estilos de la página de login/registro (/login y /registro).
+   El encabezado se estiliza en header.css. */
+
+/* ============================================================
+   Alojamientos Guaviyú - estilos generales
+   ============================================================ */
+
+:root {
+    --azul-900: #0b2a66;   /* títulos */
+    --azul-700: #0b47b8;   /* botones */
+    --azul-600: #1157d6;   /* hover */
+    --azul-100: #e8f0fd;   /* fondos suaves */
+    --naranja: #f5a524;
+    --texto: #1d2a3f;
+    --texto-suave: #5b6880;
+    --linea: #dde3ee;
+    --rojo: #c62d2d;
+    --rojo-fondo: #fdecec;
+    --papel: #ffffff;
+    --pagina: #f4f7fb;
+    --radio: 14px;
+    --sombra: 0 18px 50px rgba(11, 42, 102, .18);
+    --fuente-titulos: "Poppins", "Segoe UI", system-ui, sans-serif;
+    --fuente-texto: "Nunito Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--pagina);
+    color: var(--texto);
+    font: 16px/1.5 var(--fuente-texto);
+}
+
+h1, h2, h3 { font-family: var(--fuente-titulos); color: var(--azul-900); line-height: 1.15; }
+
+a { color: var(--azul-700); }
+
+/* ===================== BOTONES Y FORMULARIOS ===================== */
+
+.btn-primario {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    margin-top: 1.4rem;
+    padding: .9rem 1.2rem;
+    border: 0;
+    border-radius: 10px;
+    background: var(--azul-700);
+    color: #fff;
+    font: 700 1.05rem var(--fuente-texto);
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(11, 71, 184, .28);
+    transition: background .15s;
+}
+.btn-primario:hover { background: var(--azul-600); }
+.btn-primario:focus-visible { outline: 3px solid var(--naranja); outline-offset: 2px; }
+
+label {
+    display: block;
+    margin: 1rem 0 .35rem;
+    font-weight: 700;
+    font-size: .92rem;
+    color: var(--texto);
+}
+
+.input-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon > svg {
+    position: absolute;
+    left: .85rem;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--azul-700);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+.input-icon input,
+.input-icon select {
+    width: 100%;
+    padding: .72rem .9rem .72rem 2.7rem;
+    border: 1px solid var(--linea);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--texto);
+    font: inherit;
+    font-size: .95rem;
+}
+
+.input-icon select { appearance: none; cursor: pointer;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d2a3f' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right .8rem center / 18px; }
+
+.input-icon input::placeholder { color: #8a95a8; }
+
+.input-icon input:focus,
+.input-icon select:focus {
+    outline: none;
+    border-color: var(--azul-700);
+    box-shadow: 0 0 0 3px rgba(11, 71, 184, .15);
+}
+
+.input-icon.con-error input,
+.input-icon.con-error select { border-color: var(--rojo); }
+
+.ver-pass {
+    position: absolute;
+    right: .55rem;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+.ver-pass svg { width: 20px; height: 20px; fill: none; stroke: var(--texto); stroke-width: 1.8; }
+.ver-pass.visible svg { stroke: var(--azul-700); }
+.input-icon input[type="password"],
+.input-icon input[data-pass] { padding-right: 2.8rem; }
+
+.error-campo { margin: .3rem 0 0; color: var(--rojo); font-size: .85rem; }
+
+.alerta {
+    margin: 1rem 0 0;
+    padding: .75rem .9rem;
+    border-radius: 10px;
+    background: var(--rojo-fondo);
+    color: var(--rojo);
+    font-weight: 600;
+    font-size: .92rem;
+}
+
+.muted { color: var(--texto-suave); }
+
+/* ===================== LOGIN ===================== */
+
+.auth-hero {
+    min-height: calc(100vh - 80px);
+    padding: 2.5rem max(1.25rem, calc((100% - 1200px) / 2));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 760px);
+    gap: 2.5rem;
+    align-items: center;
+    /* Si ponen una foto en webapp/img/hero.jpg se usa; si no, queda el degradé de atardecer */
+    background:
+        linear-gradient(90deg, rgba(255, 246, 232, .88) 0%, rgba(255, 246, 232, .55) 38%, rgba(255, 246, 232, 0) 60%),
+        url("../img/hero.jpg") center / cover no-repeat,
+        linear-gradient(180deg, #2f5fb3 0%, #f08a3c 48%, #fbc46b 62%, #1e6f8f 63%, #10465f 100%);
+}
+
+.auth-intro { max-width: 560px; }
+
+.eyebrow {
+    margin: 0;
+    font: 700 .8rem var(--fuente-titulos);
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--azul-900);
+}
+.eyebrow::after {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 3px;
+    margin-top: .6rem;
+    background: var(--naranja);
+    border-radius: 2px;
+}
+
+.auth-intro h1 {
+    margin: 1.2rem 0 .8rem;
+    font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+    font-weight: 800;
+    color: #111a2c;
+}
+
+.lead { margin: 0; font-size: 1.2rem; color: #22314a; }
+
+.perks {
+    list-style: none;
+    padding: 0;
+    margin: 1.8rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    font-weight: 600;
+    font-size: .92rem;
+    color: #1b2840;
+}
+.perks li { display: flex; align-items: center; gap: .6rem; }
+.perk-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--azul-900);
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+.perk-icon svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.auth-card {
+    background: var(--papel);
+    border-radius: 22px;
+    box-shadow: var(--sombra);
+    padding: 1.6rem 2rem 1.6rem;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 3px solid var(--linea);
+}
+.auth-tabs a {
+    text-align: center;
+    padding: .55rem 0 .8rem;
+    margin-bottom: -3px;
+    border-bottom: 3px solid transparent;
+    font: 600 1.3rem var(--fuente-titulos);
+    color: var(--azul-900);
+    text-decoration: none;
+}
+.auth-tabs a.activo { color: var(--azul-700); border-bottom-color: var(--azul-700); }
+
+.auth-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.4rem;
+    padding-top: 1.6rem;
+}
+.auth-col + .auth-col { border-left: 1px solid var(--linea); padding-left: 2.4rem; }
+
+.auth-col h2 { margin: 0 0 .35rem; font-size: 1.55rem; }
+.auth-col > p.muted { margin: 0 0 .4rem; }
+
+.auth-banner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.6rem;
+    padding: .9rem 1.1rem;
+    border-radius: 14px;
+    background: var(--azul-100);
+}
+.auth-banner strong { color: var(--azul-700); font-size: 1rem; }
+.auth-banner p { margin: .1rem 0 0; font-size: .9rem; color: var(--texto); }
+.banner-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: #fff; display: grid; place-items: center; flex: none;
+}
+.banner-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--azul-700); stroke-width: 1.8; stroke-linecap: round; }
+
+/* ===================== PANTALLAS CHICAS ===================== */
+
+@media (max-width: 1100px) {
+    .auth-hero { grid-template-columns: 1fr; }
+    .auth-intro { max-width: none; }
+    .auth-hero {
+        background:
+            linear-gradient(180deg, rgba(255, 246, 232, .9) 0%, rgba(255, 246, 232, .6) 100%),
+            url("../img/hero.jpg") center / cover no-repeat,
+            linear-gradient(180deg, #2f5fb3 0%, #f08a3c 48%, #fbc46b 62%, #1e6f8f 63%, #10465f 100%);
+    }
+}
+
+
+@media (max-width: 720px) {
+    .auth-hero { padding: 1.5rem 16px; }
+    .auth-intro h1 { font-size: 2rem; }
+    .perks { display: none; }
+    .auth-card { padding: 1.2rem 1.1rem; }
+    .auth-tabs a { font-size: 1.1rem; }
+
+    /* En celular se ve una sola columna: la de la pestaña elegida */
+    .auth-columns { grid-template-columns: 1fr; }
+    .auth-col + .auth-col { border-left: 0; padding-left: 0; }
+    .auth-card[data-pestana="login"] [data-col="registro"],
+    .auth-card[data-pestana="registro"] [data-col="login"] { display: none; }
+}
