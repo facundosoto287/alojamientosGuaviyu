@@ -3,6 +3,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<link rel="stylesheet"
+     href="${pageContext.request.contextPath}/css/header.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Alojamientos | Termas de Guaviyú</title>
@@ -10,8 +12,7 @@
         :root { color-scheme: light; --ink: #18302b; --muted: #60736d; --green: #176b55; --line: #dce8e2; --paper: #fff; --page: #f3f7f4; }
         * { box-sizing: border-box; }
         body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.5 system-ui, "Segoe UI", sans-serif; }
-        header { background: #123c32; color: white; padding: 1.1rem max(1.25rem, calc((100% - 1100px) / 2)); }
-        header a { color: white; text-decoration: none; font-weight: 700; letter-spacing: .02em; }
+
         main { max-width: 1100px; margin: 0 auto; padding: 2.2rem 1.25rem 3rem; }
         .intro { margin-bottom: 1.5rem; }
         h1 { margin: 0 0 .35rem; font-size: clamp(1.8rem, 4vw, 2.5rem); }
@@ -28,7 +29,8 @@
     </style>
 </head>
 <body>
-<header><a href="${pageContext.request.contextPath}/alojamientos">Termas de Guaviyú</a></header>
+<%@ include file="components/header.jsp" %>
+
 <main>
     <section class="intro">
         <h1>Alojamientos</h1>

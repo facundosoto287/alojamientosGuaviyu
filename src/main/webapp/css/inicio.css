@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    font-family: system-ui, "Segoe UI", sans-serif;
+}
+
+.banner {
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #0d6efd;
+}
+
+.banner-content {
+    max-width: 850px;
+    color: white;
+}
+
+.banner h1 {
+    margin: 0 0 15px;
+    font-size: 48px;
+}
+
+.banner p {
+    margin: 0;
+    font-size: 20px;
+}
