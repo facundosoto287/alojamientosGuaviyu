@@ -96,6 +96,18 @@ public class ClienteDAO {
         telefono = esVacio(telefono) ? null : telefono.trim();
         procedencia = esVacio(procedencia) ? null : procedencia.trim();
 
+        // Validar cédula y celular antes de tocar la base de datos
+        if (!cedulaValida(documento)) {
+            throw new IllegalArgumentException("La cédula ingresada no es válida.");
+        }
+        if (telefono != null && !celularValido(telefono)) {
+            throw new IllegalArgumentException("El celular debe tener 9 dígitos y empezar con 09.");
+        }
+
+        // Guardar solo los números, así "1.234.567-2" y "12345672" cuentan como la misma cédula
+        documento = soloNumeros(documento);
+        telefono = telefono == null ? null : soloNumeros(telefono);
+
         String sqlVerificar = "SELECT email FROM cliente WHERE email = ? OR documento = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -281,6 +293,57 @@ public class ClienteDAO {
             sentencia.setInt(4, id);
             return sentencia.executeUpdate() == 1;
         }
+    }
+
+    // ===================== VALIDACIONES =====================
+
+    /**
+     * Valida una cédula uruguaya con su dígito verificador.
+     * Acepta "1.234.567-2", "1234567-2" o "12345672".
+     */
+    public boolean cedulaValida(String cedula) {
+        if (cedula == null) {
+            return false;
+        }
+
+        // Me quedo solo con los números
+        String numeros = soloNumeros(cedula);
+
+        // Tiene que tener 7 u 8 dígitos (las cédulas viejas tienen 7)
+        if (!numeros.matches("\\d{7,8}")) {
+            return false;
+        }
+
+        // Si tiene 7, le agrego un 0 adelante para que siempre sean 8
+        if (numeros.length() == 7) {
+            numeros = "0" + numeros;
+        }
+
+        // Cada uno de los primeros 7 dígitos se multiplica por su peso
+        int[] pesos = {2, 9, 8, 7, 6, 3, 4};
+        int suma = 0;
+        for (int i = 0; i < 7; i++) {
+            suma += Character.getNumericValue(numeros.charAt(i)) * pesos[i];
+        }
+
+        // El dígito verificador es lo que le falta a la suma para llegar a la próxima decena
+        int digitoCalculado = (10 - (suma % 10)) % 10;
+        int digitoIngresado = Character.getNumericValue(numeros.charAt(7));
+
+        return digitoCalculado == digitoIngresado;
+    }
+
+    /** Valida un celular uruguayo: 9 dígitos que empiezan con 09 (ej: 099 123 456). */
+    public boolean celularValido(String celular) {
+        if (celular == null) {
+            return false;
+        }
+        return soloNumeros(celular).matches("09\\d{7}");
+    }
+
+    /** Saca puntos, guiones y espacios: "099 123-456" queda "099123456". */
+    private static String soloNumeros(String texto) {
+        return texto.replace(".", "").replace("-", "").replace(" ", "").trim();
     }
 
     // ===================== AUXILIARES =====================
