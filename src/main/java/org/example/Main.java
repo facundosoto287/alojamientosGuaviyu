@@ -157,6 +157,7 @@ public class Main {
             System.out.println("13. Ver detalle de una solicitud de reserva");
             System.out.println("14. Enviar solicitud por WhatsApp");
             System.out.println("15. Filtrar alojamiento por servicio");
+            System.out.println("16. Ver perfil");
             System.out.println("0. Cerrar sesión");
             System.out.print("Elija una opción: ");
 
@@ -177,7 +178,8 @@ public class Main {
                 case 13 -> verDetalleReservaCliente();
                 //case 14 -> enviarSolicitudWhatsApp();
                 case 15 -> filtrarAlojamientoPorServicio();
-                case 16 -> {
+                case 16 -> verPerfil();
+                case 17 -> {
                     cerrarSesion();
                     opcion = 0;
                 }
@@ -456,6 +458,19 @@ public class Main {
                         + " | Ubicación: " + a.getUbicacion());
             }
         }
+    }
+
+    static void verPerfil() {
+        if (clienteActual == null) {
+            System.out.println("Debe iniciar sesión primero");
+            return;
+        }
+        System.out.println("===== MI PERFIL =====");
+        System.out.println("Nombre: " + clienteActual.getNombre());
+        System.out.println("Documento: " + clienteActual.getDocumento());
+        System.out.println("Teléfono: " + clienteActual.getTelefono());
+        System.out.println("Email: " + clienteActual.getEmail());
+        System.out.println("Procedencia: " + clienteActual.getProcedencia());
     }
 
     static void consultarDisponibilidadAdmin() {
