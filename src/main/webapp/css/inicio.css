@@ -1,9 +1,13 @@
-body {
-    margin: 0;
-    font-family: system-ui, "Segoe UI", sans-serif;
+* {
+    box-sizing: border-box;
 }
 
-.banner {
+body {
+    margin: 0;
+    font-family: Poppins, "Segoe UI", sans-serif;
+}
+
+.banner {   /* Contenedor principal del banner */
     min-height: 420px;
     display: flex;
     align-items: center;
@@ -13,17 +17,295 @@ body {
     background-color: #0d6efd;
 }
 
-.banner-content {
+.banner-content {   /* Contenido interno del banner */
     max-width: 850px;
     color: white;
 }
 
-.banner h1 {
+.banner h1 {    /* Título principal del banner */
     margin: 0 0 15px;
     font-size: 48px;
 }
 
-.banner p {
+.banner p {     /* Texto secundario del banner */
     margin: 0;
     font-size: 20px;
+}
+
+/*cards del alojamiento*/
+.alojamientos-inicio {
+    font-family: "Poppins", sans-serif;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 50px 20px;
+}
+
+.alojamientos-titulo {  /* Separación inferior del título de la sección */
+    margin-bottom: 25px;
+}
+
+.alojamientos-titulo h2 {   /* Título "Conocé nuestros alojamientos" */
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0 0 8px;
+    font-size: 32px;
+    color: #0b3d91;
+}
+
+.alojamientos-titulo p {    /* Texto debajo del título de alojamientos */
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0;
+    color: #667788;
+    font-weight: 200;
+}
+
+.alojamientos-grid {    /* Grilla donde se muestran las cards de alojamientos */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.alojamiento-card {     /* Contenedor visual de cada alojamiento */
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.alojamiento-card-imagen img {      /* Imagen de cada alojamiento */
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    display: block;
+}
+
+.alojamiento-card-contenido {   /* Contenido interno de la card */
+    padding: 20px;
+}
+
+.alojamiento-card h3 {      /* Nombre del alojamiento */
+    margin: 0 0 14px;
+    font-size: 23px;
+    color: #123b73;
+}
+
+.alojamiento-card .descripcion {    /* Descripción del alojamiento */
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0 0 15px;
+    font-size: 14px;
+    color: #667788;
+}
+
+.alojamiento-card-datos {       /* Datos generales como capacidad */
+    margin: 12px 0;
+    font-size: 14px;
+    color: #4b6075;
+}
+
+.alojamiento-card-datos strong {        /* Datos destacados dentro de la card */
+    color: #27384a;
+}
+
+.boton-detalle {        /* Botón para acceder al detalle del alojamiento */
+    font-family: "Poppins", sans-serif;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 14px;
+
+    text-decoration: none;
+    background-color: #0d6efd;
+    color: white;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.boton-detalle:hover {      /* Cambio de color al pasar el mouse por Ver detalle */
+    font-family: "Poppins", sans-serif;
+    background-color: #0758b8;
+}
+
+.servicios-card {       /* Contenedor de servicios asociados */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin: 15px 0;
+}
+
+.servicio-item {        /* Texto de cada servicio */
+    font-size: 13px;
+    color: #4b6075;
+}
+
+.card-footer {      /* Fila inferior con precio y botón de detalle */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-top: 16px;
+    padding-top: 14px;
+
+    border-top: 1px solid #edf0f3;
+}
+
+.precio-card {      /* Contenedor del precio */
+    font-family: "Nunito Sans", sans-serif;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.precio-card strong {       /* Precio del alojamiento */
+    font-size: 23px;
+    color: #123b73;
+}
+
+.precio-card span {     /* Texto "por noche" */
+    font-size: 13px;
+    color: #788796;
+}
+
+/*boton de busqueda alojamientos*/
+.buscador-inicio {
+    max-width: 1150px;
+    margin: -105px auto 45px;
+    padding: 24px;
+
+    background-color: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+
+    position: relative;
+    z-index: 2;
+}
+
+.campo-buscador {       /* Contenedor individual de cada filtro */
+    font-family: "Nunito Sans", sans-serif;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Campos de entrada del buscador */
+.campo-buscador input {
+    font-family: "Nunito Sans", sans-serif;
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+
+    border: 1px solid #d9e1ea;
+    border-radius: 10px;
+
+    background-color: #f9fbfd;
+    color: #27415c;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+}
+
+.campo-buscador input:focus {   /* Estilo cuando el usuario selecciona un campo */
+    font-family: "Nunito Sans", sans-serif;
+    border-color: #0d6efd;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.10);
+}
+
+.campo-buscador input[type="date"] {    /* Cursor para los campos de fecha */
+    cursor: pointer;
+}
+
+.campo-buscador input[type="date"]::-webkit-calendar-picker-indicator {     /* Ícono del calendario de los inputs de fecha */
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.campo-buscador label {  /*titulos filtros*/
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #284d70;
+}
+
+.boton-buscar {     /* Cambio de color al pasar el mouse por Buscar */
+    font-family: "Poppins", sans-serif;
+    height: 44px;
+    padding: 0 24px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #0d6efd;
+    color: white;
+
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.boton-limpiar {    /* Botón para eliminar los filtros aplicados */
+    font-family: "Poppins", sans-serif;
+    height: 44px;
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #0d6efd;
+    border-radius: 8px;
+
+    background-color: white;
+    color: #0d6efd;
+
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.boton-limpiar:hover {  /* Cambio visual al pasar el mouse por Limpiar filtros */
+    background-color: #f0f6ff;
+}
+
+.boton-buscar:hover {   /* Cambio de color al pasar el mouse por Buscar */
+    background-color: #0b5ed7;
+}
+
+/*DISEÑO RESPONSIVE*/
+@media (max-width: 900px) { /* Ajustes para tablets y pantallas medianas */
+    .buscador-inicio {
+        flex-wrap: wrap;
+    }
+
+    .campo-buscador {
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 900px) {
+    .alojamientos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) { /* Ajustes para celulares */
+    .alojamientos-grid {
+        grid-template-columns: 1fr;
+    }
 }
