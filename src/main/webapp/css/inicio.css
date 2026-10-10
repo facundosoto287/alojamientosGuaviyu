@@ -7,14 +7,89 @@ body {
     font-family: Poppins, "Segoe UI", sans-serif;
 }
 
-.banner {   /* Contenedor principal del banner */
+.banner {
     min-height: 420px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 40px 20px;
-    background-color: #0d6efd;
+
+    background-image:
+            linear-gradient(rgba(0, 45, 100, 0.45), rgba(0, 45, 100, 0.45)),
+            url("../img/banner-guaviyu1.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Detalles informativos del banner */
+/* Contenedor de los detalles del banner */
+.banner-detalles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    margin-top: 35px;
+}
+
+/* Cada detalle del banner */
+.banner-detalle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* Íconos de los detalles */
+.banner-detalle svg {
+    width: 42px;
+    height: 42px;
+    padding: 8px;
+
+    border: 2px solid;
+    border-radius: 50%;
+
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.detalle-azul {
+    color: #2f80ed;
+}
+
+.detalle-azul svg {
+    stroke: #2f80ed;
+    border-color: #2f80ed;
+}
+
+.detalle-verde {
+    color: #2e9d55;
+}
+
+.detalle-verde svg {
+    stroke: #2e9d55;
+    border-color: #2e9d55;
+}
+
+.detalle-naranja {
+    color: #f28c28;
+}
+
+.detalle-naranja svg {
+    stroke: #f28c28;
+    border-color: #f28c28;
 }
 
 .banner-content {   /* Contenido interno del banner */
@@ -35,9 +110,13 @@ body {
 /*cards del alojamiento*/
 .alojamientos-inicio {
     font-family: "Poppins", sans-serif;
+    background-color: #eef6ff;
+    padding: 50px 20px;
+}
+
+.alojamientos-contenido {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 50px 20px;
 }
 
 .alojamientos-titulo {  /* Separación inferior del título de la sección */
@@ -140,8 +219,23 @@ body {
 }
 
 .servicio-item {        /* Texto de cada servicio */
+    font-family: "Nunito Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 13px;
     color: #4b6075;
+}
+
+.servicio-item svg {    /* Tamaño de los logos */
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #0d6efd;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
 }
 
 .card-footer {      /* Fila inferior con precio y botón de detalle */
@@ -308,4 +402,11 @@ body {
     .alojamientos-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.alojamiento-card-imagen img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    display: block;
 }

@@ -3,11 +3,20 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <header class="site-header">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap"
+      rel="stylesheet">
     <div class="header-container">
 
-        <a href="${ctx}/inicio" class="brand">
-            Alojamientos Guaviyú
-        </a>
+    <a href="${ctx}/inicio" class="brand">
+        <img src="${ctx}/img/logoAlojamientosGuaviyu.png"
+             alt="Alojamientos Guaviyú"
+             class="logo-header-img">
+
+        <div class="brand-texto">
+            <span>Alojamientos</span>
+            <span>Guaviyú</span>
+        </div>
+    </a>
 
         <nav class="main-nav">
             <a href="${ctx}/inicio">Inicio</a>
