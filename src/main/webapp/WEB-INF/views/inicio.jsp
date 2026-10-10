@@ -36,14 +36,58 @@
 
 <section class="banner">
     <div class="banner-content">
+
         <h1>Tu descanso te espera en Guaviyú</h1>
+
         <p>
             Aquí vas a encontrar el alojamiento ideal para disfrutar de las Termas de Guaviyú
         </p>
+
+        <%-- Características destacadas del destino --%>
+        <div class="banner-detalles">
+
+            <%-- A metros de las termas --%>
+            <div class="banner-detalle detalle-azul">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 16c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>
+                    <path d="M3 20c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>
+                    <path d="M8 14V7a3 3 0 0 1 6 0"/>
+                </svg>
+
+                <span>A metros de las termas</span>
+            </div>
+
+
+            <%-- Naturaleza --%>
+            <div class="banner-detalle detalle-verde">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 19C5 10 11 4 20 4c0 9-6 15-15 15z"/>
+                    <path d="M5 19l8-8"/>
+                </svg>
+
+                <span>Naturaleza todo el año</span>
+            </div>
+
+
+            <%-- Familias, parejas y grupos --%>
+            <div class="banner-detalle detalle-naranja">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                    <path d="M17 11a2.5 2.5 0 1 0 0-5"/>
+                    <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/>
+                    <path d="M16 14c2.8 0 5 1.6 5 4"/>
+                </svg>
+
+                <span>Alojamientos para familias, parejas y grupos</span>
+            </div>
+
+        </div>
+
     </div>
 </section>
 
 <section class="alojamientos-inicio">
+<div class="alojamientos-contenido">
 
        <form class="buscador-inicio"
              action="${pageContext.request.contextPath}/inicio"
@@ -108,10 +152,22 @@
         <c:forEach var="alojamiento" items="${alojamientos}">
             <article class="alojamiento-card">
 
+
+            <%-- Imagen fija para el alojamiento 6 --%>
+            <c:if test="${alojamiento.id == 1}">
+                <div class="alojamiento-card-imagen">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
+                         alt="Imagen de ${alojamiento.nombre}">
+                </div>
+            </c:if>
+
+            <%-- Imagen por defecto para los demás --%>
+            <c:if test="${alojamiento.id != 1}">
                 <div class="alojamiento-card-imagen">
                     <img src="${pageContext.request.contextPath}/img/alojamiento-default.jpg"
                          alt="Imagen de ${alojamiento.nombre}">
                 </div>
+            </c:if>
 
                 <div class="alojamiento-card-contenido">
                     <h3>
@@ -130,19 +186,127 @@
                         </c:choose>
                     </p>
 
+
+                    <%--logos de los servicios--%>
                     <div class="servicios-card">
 
+                        <%-- Capacidad --%>
+                        <span class="servicio-item">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14c2.8 0 5 1.6 5 4"/>
+                            </svg>
+
+                            <c:out value="${alojamiento.capacidad}"/> personas
+                        </span>
+
+                        <%-- Servicios asociados al alojamiento --%>
                         <c:set var="servicios"
                                value="${serviciosPorAlojamiento[alojamiento.id]}" />
+
                         <c:forEach var="servicio"
                                    items="${servicios}"
                                    begin="0"
-                                   end="3">
+                                   end="2">
 
-                          <span class="servicio-item">
-                              <c:out value="${servicio.nombre}" />
-                          </span>
+                            <span class="servicio-item">
+
+                                <c:choose>
+
+                                    <%-- Wifi --%>
+                                    <c:when test="${servicio.nombre == 'Wifi'}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M5 12.5a10 10 0 0 1 14 0"/>
+                                            <path d="M8 16a6 6 0 0 1 8 0"/>
+                                            <path d="M11 19a2 2 0 0 1 2 0"/>
+                                        </svg>
+                                    </c:when>
+
+                                    <%-- Vajilla --%>
+                                    <c:when test="${servicio.nombre == 'Vajilla'}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="10" cy="12" r="5"/>
+                                            <path d="M17 4v16"/>
+                                            <path d="M19 4v6"/>
+                                            <path d="M15 4v6"/>
+                                        </svg>
+                                    </c:when>
+
+                                    <%-- Aire acondicionado --%>
+                                    <c:when test="${servicio.nombre == 'Aire acondicionado'}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 2v20"/>
+                                            <path d="M4 7l16 10"/>
+                                            <path d="M20 7L4 17"/>
+                                        </svg>
+                                    </c:when>
+
+                                    <%-- Parrilla --%>
+                                    <c:when test="${servicio.nombre == 'Parrilla'}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M5 10h14"/>
+                                            <path d="M7 10c0 5 2 7 5 7s5-2 5-7"/>
+                                            <path d="M9 17l-2 4"/>
+                                            <path d="M15 17l2 4"/>
+                                            <path d="M9 5c0-1 1-2 1-3"/>
+                                            <path d="M14 5c0-1 1-2 1-3"/>
+                                        </svg>
+                                    </c:when>
+
+                                    <%-- Estacionamiento --%>
+                                    <c:when test="${servicio.nombre == 'Estacionamiento'}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <rect x="4" y="3" width="16" height="18" rx="2"/>
+                                            <path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>
+                                            <path d="M9 13h4"/>
+                                        </svg>
+                                    </c:when>
+
+                                    <%-- Ropa de cama --%>
+                                    <c:when test="${servicio.nombre == 'Ropa de cama'}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M3 18V9"/>
+                                            <path d="M3 14h18"/>
+                                            <path d="M21 18V11"/>
+                                            <path d="M6 9h5v5H6z"/>
+                                            <path d="M11 10h7a3 3 0 0 1 3 3v1"/>
+                                        </svg>
+                                    </c:when>
+
+                                    <%-- Televisión --%>
+                                    <c:when test="${servicio.nombre == 'Televisión'}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <rect x="3" y="6" width="18" height="12" rx="2"/>
+                                            <path d="M9 21h6"/>
+                                            <path d="M12 18v3"/>
+                                        </svg>
+                                    </c:when>
+
+                                    <%-- Servicio no reconocido --%>
+                                    <c:otherwise>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8"/>
+                                            <path d="M8 12l3 3 5-6"/>
+                                        </svg>
+                                    </c:otherwise>
+
+                                </c:choose>
+
+                                <c:out value="${servicio.nombre}"/>
+
+                            </span>
+
                         </c:forEach>
+
+                        <%-- Distancia a la piscina --%>
+                        <span class="servicio-item">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 16c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>
+                                <path d="M3 20c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>
+                                <path d="M8 14V7a3 3 0 0 1 6 0"/>
+                            </svg>
+                            <c:out value="${alojamiento.distanciaApiscina}"/> m de la piscina
+                        </span>
+
                     </div>
 
                     <div class="card-footer">
@@ -163,6 +327,7 @@
         </c:forEach>
 
     </div>
+</div>
 </section>
 <script src="${pageContext.request.contextPath}/js/inicio.js"></script>
 </body>
