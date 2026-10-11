@@ -28,6 +28,8 @@
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/footer.css">
+    <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/inicio.css">
 </head>
 
@@ -95,57 +97,108 @@
 
            <div class="campo-buscador">
                <label for="fechaIngreso">Check-in</label>
-               <input type="date"
-               id="fechaIngreso"
-               name="fechaIngreso"
-               value="${param.fechaIngreso}"
-               required>
+
+               <div class="input-con-icono">
+                   <svg viewBox="0 0 24 24" aria-hidden="true">
+                       <rect x="3" y="5" width="18" height="16" rx="2"/>
+                       <path d="M8 3v4"/>
+                       <path d="M16 3v4"/>
+                       <path d="M3 10h18"/>
+                   </svg>
+
+                   <input type="date"
+                          id="fechaIngreso"
+                          name="fechaIngreso"
+                          value="${param.fechaIngreso}"
+                          required>
+               </div>
            </div>
 
            <div class="campo-buscador">
                <label for="fechaSalida">Check-out</label>
-               <input type="date"
-               id="fechaSalida"
-               name="fechaSalida"
-               value="${param.fechaSalida}"
-               required>
+
+               <div class="input-con-icono">
+                   <svg viewBox="0 0 24 24" aria-hidden="true">
+                       <rect x="3" y="5" width="18" height="16" rx="2"/>
+                       <path d="M8 3v4"/>
+                       <path d="M16 3v4"/>
+                       <path d="M3 10h18"/>
+                   </svg>
+
+                   <input type="date"
+                          id="fechaSalida"
+                          name="fechaSalida"
+                          value="${param.fechaSalida}"
+                          required>
+               </div>
            </div>
 
            <div class="campo-buscador">
                <label for="huespedes">Huéspedes</label>
-               <input type="number"
-               id="huespedes"
-               name="huespedes"
-               min="1"
-               placeholder="2"
-               value="${param.huespedes}"
-               required>
+
+               <div class="input-con-icono">
+                   <svg viewBox="0 0 24 24" aria-hidden="true">
+                       <circle cx="12" cy="8" r="3"/>
+                       <path d="M6 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/>
+                   </svg>
+
+                   <input type="number"
+                          id="huespedes"
+                          name="huespedes"
+                          min="1"
+                          placeholder="2"
+                          value="${param.huespedes}"
+                          required>
+               </div>
            </div>
 
            <div class="campo-buscador">
                <label for="precioMax">Precio máximo</label>
-               <input type="number"
-               id="precioMax"
-               name="precioMax"
-               min="0"
-               placeholder="$"
-               value="${param.precioMax}"
-               required>
 
+               <div class="input-con-icono">
+                   <svg viewBox="0 0 24 24" aria-hidden="true">
+                       <path d="M20 13l-7 7-9-9V4h7z"/>
+                       <circle cx="8.5" cy="8.5" r="1.5"/>
+                   </svg>
+
+                   <input type="number"
+                          id="precioMax"
+                          name="precioMax"
+                          min="0"
+                          placeholder="$"
+                          value="${param.precioMax}"
+                          required>
+               </div>
            </div>
 
            <button type="submit" class="boton-buscar">
+               <svg viewBox="0 0 24 24" aria-hidden="true">
+                   <circle cx="11" cy="11" r="7"/>
+                   <path d="M20 20l-4-4"/>
+               </svg>
+
                Buscar alojamientos
            </button>
+
            <a class="boton-limpiar"
               href="${pageContext.request.contextPath}/inicio">
+
+               <svg viewBox="0 0 24 24" aria-hidden="true">
+                   <path d="M4 4v6h6"/>
+                   <path d="M20 11a8 8 0 1 0-2.3 5.7"/>
+               </svg>
+
                Limpiar filtros
            </a>
-
        </form>
 
-    <h2>Conocé nuestros alojamientos</h2>
-    <p>¡Las mejores opciones para disfrutar tu estadía en las termas!</p>
+    <div class="alojamientos-titulo">
+        <span class="titulo-etiqueta">Alojamientos Guaviyú</span>
+
+        <h2>Conocé nuestros alojamientos</h2>
+
+        <p>¡Las mejores opciones para disfrutar tu estadía en las termas!</p>
+    </div>
 
     <div class="alojamientos-grid">
 
@@ -154,15 +207,15 @@
 
 
             <%-- Imagen fija para el alojamiento 6 --%>
-            <c:if test="${alojamiento.id == 1}">
+            <c:if test="${alojamiento.id == 5}">
                 <div class="alojamiento-card-imagen">
-                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
+                    <img src="${pageContext.request.contextPath}/img/grandiosa1.jpg"
                          alt="Imagen de ${alojamiento.nombre}">
                 </div>
             </c:if>
 
             <%-- Imagen por defecto para los demás --%>
-            <c:if test="${alojamiento.id != 1}">
+            <c:if test="${alojamiento.id != 5}">
                 <div class="alojamiento-card-imagen">
                     <img src="${pageContext.request.contextPath}/img/alojamiento-default.jpg"
                          alt="Imagen de ${alojamiento.nombre}">
@@ -330,5 +383,6 @@
 </div>
 </section>
 <script src="${pageContext.request.contextPath}/js/inicio.js"></script>
+<%@ include file="components/footer.jsp" %>
 </body>
 
