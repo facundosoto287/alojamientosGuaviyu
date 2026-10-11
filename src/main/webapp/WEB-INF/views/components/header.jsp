@@ -3,8 +3,7 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <header class="site-header">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap"
-      rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
     <div class="header-container">
 
     <a href="${ctx}/inicio" class="brand">

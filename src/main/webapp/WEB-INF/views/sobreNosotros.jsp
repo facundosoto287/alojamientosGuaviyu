@@ -18,6 +18,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${ctx}/css/header.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
     <link rel="stylesheet" href="${ctx}/css/sobreNosotros.css">
 </head>
 <body>
@@ -115,6 +116,6 @@
         </div>
     </section>
 </main>
-
+<%@ include file="components/footer.jsp" %>
 </body>
 </html>

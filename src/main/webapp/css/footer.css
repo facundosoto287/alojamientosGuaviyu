@@ -1,0 +1,152 @@
+.site-footer {
+    margin-top: 60px;
+    background-color: #07477f;
+    color: white;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+
+/* Contenido principal del footer */
+.footer-contenido {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 25px 35px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 55px;
+}
+
+
+/* Logo y nombre */
+.footer-logo-bloque {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.footer-logo {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.footer-nombre {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.footer-nombre span {
+    font-size: 13px;
+}
+
+.footer-nombre strong {
+    margin-top: 3px;
+    font-family: "Poppins", sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* Texto de descripción */
+.footer-marca p {
+    max-width: 340px;
+    margin: 0;
+    color: #e1edf7;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Títulos de cada columna */
+.footer-columna h4 {
+    margin: 0 0 16px;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+}
+
+/* Links de navegación */
+.footer-columna > a:not(.footer-item) {
+    display: block;
+    margin-bottom: 9px;
+    color: #e1edf7;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.footer-columna > a:not(.footer-item):hover {
+    color: white;
+}
+
+/* Elementos con ícono */
+.footer-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 12px;
+    color: #e1edf7;
+    font-size: 14px;
+}
+
+
+/* Íconos */
+.footer-item svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+
+/* Redes sociales */
+.footer-red {
+    text-decoration: none;
+}
+
+
+.footer-red:hover {
+    color: white;
+}
+
+
+/* Parte inferior */
+.footer-inferior {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    text-align: center;
+}
+
+.footer-inferior p {
+    margin: 0;
+
+    color: #d2e3f1;
+
+    font-size: 12px;
+}
+
+
+/*RESPONSIVE*/
+
+@media (max-width: 900px) {
+    .footer-contenido {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 35px;
+    }
+}
+
+
+@media (max-width: 600px) {
+    .footer-contenido {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
