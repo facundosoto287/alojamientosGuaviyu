@@ -115,16 +115,64 @@
 
 /*MENÚ HAMBURGUESA*/
 
+/* ========================================
+   MENÚ HAMBURGUESA
+   ======================================== */
+
 .menu-hamburguesa {
     display: none;
+
+    width: 44px;
+    height: 44px;
+
+    padding: 8px;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    z-index: 1200;
 }
 
+.menu-hamburguesa span {
+    display: block;
+
+    width: 26px;
+    height: 3px;
+
+    margin: 5px auto;
+
+    background: #0b3d91;
+
+    border-radius: 3px;
+
+    transition: transform 0.25s ease,
+    opacity 0.25s ease,
+    background 0.25s ease;
+}
+
+
+/* Desktop */
 .menu-responsive {
     display: flex;
     align-items: center;
+
     gap: 30px;
 }
 
+
+/* Logo interno del menú oculto en PC */
+.menu-logo-mobile {
+    display: none;
+}
+
+
+/* Íconos ocultos en PC */
+.main-nav a svg,
+.header-user a svg {
+    display: none;
+}
 
 /*RESPONSIVE*/
 
@@ -140,44 +188,138 @@
         width: 100%;
 
         padding: 12px 18px;
+
+        box-sizing: border-box;
     }
 
-    /* Mostrar hamburguesa */
+
+    /* Hamburguesa */
     .menu-hamburguesa {
         display: block;
         flex-shrink: 0;
     }
 
-    /* Menú cerrado */
-    .menu-responsive {
-        position: absolute;
+    /* Cuando el menú se abre, el mismo botón queda encima */
+    .menu-hamburguesa.activo {
+        display: block;
+        position: fixed;
 
-        top: 100%;
-        left: 0;
+        top: 18px;
+        right: 18px;
+
+        z-index: 10000;
+    }
+
+    .menu-hamburguesa.activo span {
+        background: #ffffff;
+    }
+
+    .menu-hamburguesa.activo span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu-hamburguesa.activo span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-hamburguesa.activo span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* Menú pantalla completa */
+    .menu-responsive {
+        position: fixed;
+
+        top: 0;
+        left: -100%;
 
         width: 100%;
+        height: 100dvh;
 
-        display: none;
+        box-sizing: border-box;
+
+        display: flex;
         flex-direction: column;
         align-items: stretch;
 
-        gap: 0;
+        gap: 20px;
 
-        padding: 12px 18px;
+        padding: 24px 22px;
 
-        background: #0b3d91;
+        background: #06172d;
 
-        border-top: 1px solid rgba(255, 255, 255, 0.20);
+        box-shadow: 8px 0 25px rgba(0, 0, 0, 0.30);
 
-        box-shadow: 0 8px 18px rgba(0, 45, 90, 0.18);
+        z-index: 9999;
 
-        z-index: 1000;
+        transition: left 0.3s ease;
+
+        overflow-y: auto;
     }
+
 
     /* Menú abierto */
     .menu-responsive.activo {
-        display: flex;
+        left: 0;
     }
+
+
+    /* Logo + botón cerrar */
+    .menu-logo-mobile {
+        display: flex;
+        align-items: center;
+
+        width: 100%;
+
+        box-sizing: border-box;
+
+        gap: 10px;
+
+        margin-bottom: 12px;
+    }
+
+
+    .logo-menu-mobile {
+        width: 58px;
+        height: 58px;
+
+        object-fit: contain;
+
+        flex-shrink: 0;
+    }
+
+
+    .brand-texto-menu {
+        display: flex;
+        flex-direction: column;
+
+        min-width: 0;
+
+        font-family: "Libre Baskerville", serif;
+
+        color: white;
+
+        line-height: 1;
+    }
+
+
+    .brand-texto-menu span:first-child {
+        font-size: 13px;
+        font-weight: 700;
+
+        letter-spacing: 1px;
+
+        text-transform: uppercase;
+    }
+
+
+    .brand-texto-menu span:last-child {
+        margin-top: 3px;
+
+        font-size: 25px;
+        font-weight: 700;
+    }
+
 
     /* Navegación */
     .main-nav {
@@ -190,58 +332,116 @@
         gap: 0;
     }
 
+
     .main-nav a {
+        display: flex;
+        align-items: center;
+
+        gap: 14px;
+
         width: 100%;
 
-        padding: 12px 5px;
+        padding: 15px 4px;
 
         color: white;
 
-        font-size: 16px;
+        font-size: 17px;
+        font-weight: 600;
 
-        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        text-decoration: none;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .main-nav a:last-child {
-        border-bottom: none;
+
+    /* Íconos celestes */
+    .main-nav a svg,
+    .header-user a svg {
+        display: block;
+
+        width: 21px;
+        height: 21px;
+
+        fill: none;
+
+        stroke: #63c7f5;
+        stroke-width: 2;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
+
+        flex-shrink: 0;
     }
+
+
+    .main-nav a:hover {
+        color: #63c7f5;
+    }
+
 
     /* Usuario */
     .header-user {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
 
         width: 100%;
 
-        padding-top: 10px;
+        gap: 0;
 
-        gap: 8px;
+        padding-top: 0;
     }
 
-    .header-user a,
+
+    .header-user a {
+        display: flex;
+        align-items: center;
+
+        gap: 14px;
+
+        width: 100%;
+
+        padding: 15px 4px;
+
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 17px;
+        font-weight: 600;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+
     .header-saludo,
     .link-button {
         color: white;
     }
 
-    /* Hover */
-    .main-nav a:hover,
-    .header-user a:hover,
-    .link-button:hover {
-        background: rgba(255, 255, 255, 0.12);
+
+    .logout-form {
+        width: 100%;
+        margin: 0;
     }
 
-    /* Animación de la hamburguesa */
-    .menu-hamburguesa.activo span:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
-    }
 
-    .menu-hamburguesa.activo span:nth-child(2) {
-        opacity: 0;
-    }
+    .link-button {
+        width: 100%;
 
-    .menu-hamburguesa.activo span:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
+        padding: 15px 4px;
+
+        text-align: left;
+
+        background: transparent;
+
+        border: none;
+
+        color: white;
+
+        font-size: 17px;
+        font-weight: 600;
+
+        cursor: pointer;
     }
 }

@@ -37,25 +37,67 @@
         <div class="menu-responsive"
              id="menuNavegacion">
 
+            <div class="menu-logo-mobile">
+
+                <img src="${ctx}/img/logoAlojamientosGuaviyu.png"
+                     alt="Alojamientos Guaviyú"
+                     class="logo-menu-mobile">
+
+                <div class="brand-texto-menu">
+                    <span>Alojamientos</span>
+                    <span>Guaviyú</span>
+                </div>
+            </div>
+
+
             <nav class="main-nav">
 
                 <a href="${ctx}/inicio">
-                    Inicio
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 10.5 12 3l9 7.5"/>
+                        <path d="M5 9.5V21h14V9.5"/>
+                    </svg>
+
+                    <span>Inicio</span>
                 </a>
+
 
                 <a href="${ctx}/mapa">
-                    Mapa
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 21s6-5.7 6-11a6 6 0 1 0-12 0c0 5.3 6 11 6 11z"/>
+                        <circle cx="12" cy="10" r="2.5"/>
+                    </svg>
+
+                    <span>Mapa</span>
                 </a>
+
 
                 <a href="${ctx}/mis-reservas">
-                    Mis reservas
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="16" rx="2"/>
+                        <path d="M8 3v4M16 3v4M3 10h18"/>
+                    </svg>
+
+                    <span>Mis reservas</span>
                 </a>
 
+
                 <a href="${ctx}/sobre-nosotros">
-                    Sobre nosotros
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 10v6"/>
+                        <circle cx="12" cy="7" r="1"/>
+                    </svg>
+
+                    <span>Sobre nosotros</span>
                 </a>
 
             </nav>
+
 
             <div class="header-user">
 
@@ -85,10 +127,18 @@
 
                     </c:when>
 
+
                     <c:otherwise>
 
                         <a href="${ctx}/login">
-                            Iniciar sesión
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="8" r="4"/>
+                                <path d="M4 21c1.8-4 5-6 8-6s6.2 2 8 6"/>
+                            </svg>
+
+                            <span>Iniciar sesión</span>
+
                         </a>
 
                     </c:otherwise>
@@ -98,7 +148,6 @@
             </div>
 
         </div>
-
     </div>
     <script src="${ctx}/js/header.js" defer></script>
 </header>
