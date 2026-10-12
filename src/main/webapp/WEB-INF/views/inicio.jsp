@@ -14,6 +14,8 @@
 <html lang="es">
 <head>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -106,10 +108,12 @@
                        <path d="M3 10h18"/>
                    </svg>
 
-                   <input type="date"
+                   <input type="text"
                           id="fechaIngreso"
                           name="fechaIngreso"
                           value="${param.fechaIngreso}"
+                          placeholder="Seleccionar fecha"
+                          autocomplete="off"
                           required>
                </div>
            </div>
@@ -125,11 +129,13 @@
                        <path d="M3 10h18"/>
                    </svg>
 
-                   <input type="date"
-                          id="fechaSalida"
-                          name="fechaSalida"
-                          value="${param.fechaSalida}"
-                          required>
+                   <input type="text"
+                           id="fechaSalida"
+                           name="fechaSalida"
+                           value="${param.fechaSalida}"
+                           placeholder="Seleccionar fecha"
+                           autocomplete="off"
+                           required>
                </div>
            </div>
 
@@ -382,7 +388,11 @@
     </div>
 </div>
 </section>
-<script src="${pageContext.request.contextPath}/js/inicio.js"></script>
 <%@ include file="components/footer.jsp" %>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+<script src="${pageContext.request.contextPath}/js/inicio.js"></script>
 </body>
 
