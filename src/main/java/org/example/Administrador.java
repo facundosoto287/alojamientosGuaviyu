@@ -11,7 +11,7 @@ public class Administrador {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
-        this.contrasenia = contrasenia;
+        this.contrasenia = contrasena;
     }
 
     public int getId() {

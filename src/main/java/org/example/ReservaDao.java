@@ -139,12 +139,91 @@ public class ReservaDao {
 
 
 
+    /** Resultado de intentar confirmar una reserva. */
+    public enum ResultadoConfirmacion { CONFIRMADA, NO_PENDIENTE, FECHAS_OCUPADAS, ERROR }
+
     public boolean confirmarReserva(int id) {
+        return confirmarReservaConResultado(id) == ResultadoConfirmacion.CONFIRMADA;
+    }
+
+    /**
+     * Confirma una reserva PENDIENTE solo si sus fechas no se superponen con otra reserva CONFIRMADA
+     * del mismo alojamiento. Todo ocurre en una transacción, bloqueando la fila del alojamiento para que
+     * dos confirmaciones simultáneas no ocupen las mismas fechas.
+     */
+    public ResultadoConfirmacion confirmarReservaConResultado(int id) {
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            conexion.setAutoCommit(false);
+            try {
+                int alojamientoId;
+                Date ingreso;
+                Date salida;
+
+                try (PreparedStatement leer = conexion.prepareStatement(
+                        "SELECT alojamiento_id, fechaIngreso, fechaSalida FROM reserva WHERE id = ? AND estado = 'PENDIENTE'")) {
+                    leer.setInt(1, id);
+                    try (ResultSet fila = leer.executeQuery()) {
+                        if (!fila.next()) {
+                            conexion.rollback();
+                            return ResultadoConfirmacion.NO_PENDIENTE;
+                        }
+                        alojamientoId = fila.getInt("alojamiento_id");
+                        ingreso = fila.getDate("fechaIngreso");
+                        salida = fila.getDate("fechaSalida");
+                    }
+                }
+
+                try (PreparedStatement bloquear = conexion.prepareStatement(
+                        "SELECT id FROM alojamiento WHERE id = ? FOR UPDATE")) {
+                    bloquear.setInt(1, alojamientoId);
+                    bloquear.executeQuery().close();
+                }
+
+                try (PreparedStatement conflicto = conexion.prepareStatement("""
+                        SELECT 1 FROM reserva
+                        WHERE alojamiento_id = ? AND id <> ? AND estado = 'CONFIRMADA'
+                          AND fechaIngreso < ? AND fechaSalida > ?
+                        LIMIT 1""")) {
+                    conflicto.setInt(1, alojamientoId);
+                    conflicto.setInt(2, id);
+                    conflicto.setDate(3, salida);
+                    conflicto.setDate(4, ingreso);
+                    try (ResultSet fila = conflicto.executeQuery()) {
+                        if (fila.next()) {
+                            conexion.rollback();
+                            return ResultadoConfirmacion.FECHAS_OCUPADAS;
+                        }
+                    }
+                }
+
+                try (PreparedStatement confirmar = conexion.prepareStatement(
+                        "UPDATE reserva SET estado = 'CONFIRMADA' WHERE id = ? AND estado = 'PENDIENTE'")) {
+                    confirmar.setInt(1, id);
+                    if (confirmar.executeUpdate() == 0) {
+                        conexion.rollback();
+                        return ResultadoConfirmacion.NO_PENDIENTE;
+                    }
+                }
+
+                conexion.commit();
+                return ResultadoConfirmacion.CONFIRMADA;
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResultadoConfirmacion.ERROR;
+        }
+    }
+
+    /** Cancela una reserva PENDIENTE o CONFIRMADA. Si estaba confirmada, sus fechas vuelven a quedar libres. */
+    public boolean cancelarReserva(int id) {
         String sql = """
                 UPDATE reserva
-                SET estado = 'CONFIRMADA'
+                SET estado = 'CANCELADA'
                 WHERE id = ?
-                AND estado = 'PENDIENTE'""";
+                AND estado IN ('PENDIENTE', 'CONFIRMADA')""";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -159,24 +238,158 @@ public class ReservaDao {
         }
     }
 
-    public boolean cancelarReserva(int id) {
-        String sql = """
-                UPDATE reserva
-                SET estado = 'CANCELADA'
-                WHERE id = ?
-                AND estado = 'PENDIENTE'""";
+    // ===================== PANEL DE ADMINISTRADOR =====================
+
+    /**
+     * Crea una reserva desde el panel (por ejemplo, la de un cliente que reservó por teléfono o WhatsApp)
+     * y la vincula al cliente, todo en una transacción. El estado inicial lo elige el administrador:
+     * CONFIRMADA bloquea las fechas de inmediato; PENDIENTE queda como solicitud.
+     * Lanza IllegalArgumentException con un mensaje para mostrar si los datos no son válidos.
+     */
+    public int crearReservaAdmin(Reserva reserva, int idCliente) throws SQLException {
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            conexion.setAutoCommit(false);
+            try {
+                int capacidad;
+                try (PreparedStatement bloquear = conexion.prepareStatement(
+                        "SELECT capacidad FROM alojamiento WHERE id = ? FOR UPDATE")) {
+                    bloquear.setInt(1, reserva.getAlojamientoId());
+                    try (ResultSet fila = bloquear.executeQuery()) {
+                        if (!fila.next()) {
+                            throw new IllegalArgumentException("El alojamiento seleccionado no existe.");
+                        }
+                        capacidad = fila.getInt(1);
+                    }
+                }
+
+                if (reserva.getCantidadHuespedes() > capacidad) {
+                    throw new IllegalArgumentException("El alojamiento admite hasta " + capacidad + " huéspedes.");
+                }
+
+                try (PreparedStatement existeCliente = conexion.prepareStatement("SELECT 1 FROM cliente WHERE id = ?")) {
+                    existeCliente.setInt(1, idCliente);
+                    try (ResultSet fila = existeCliente.executeQuery()) {
+                        if (!fila.next()) {
+                            throw new IllegalArgumentException("El cliente seleccionado no existe.");
+                        }
+                    }
+                }
+
+                try (PreparedStatement conflicto = conexion.prepareStatement("""
+                        SELECT estado FROM reserva
+                        WHERE alojamiento_id = ? AND estado IN ('PENDIENTE', 'CONFIRMADA')
+                          AND fechaIngreso < ? AND fechaSalida > ?
+                        LIMIT 1""")) {
+                    conflicto.setInt(1, reserva.getAlojamientoId());
+                    conflicto.setDate(2, reserva.getFechaSalida());
+                    conflicto.setDate(3, reserva.getFechaIngreso());
+                    try (ResultSet fila = conflicto.executeQuery()) {
+                        if (fila.next()) {
+                            throw new IllegalArgumentException("PENDIENTE".equals(fila.getString(1))
+                                    ? "Hay una solicitud pendiente para esas fechas. Confirmala o cancelala primero."
+                                    : "El alojamiento ya está reservado en esas fechas.");
+                        }
+                    }
+                }
+
+                int idReserva;
+                try (PreparedStatement insertar = conexion.prepareStatement("""
+                        INSERT INTO reserva (fechaIngreso, fechaSalida, cantidadHuespedes, estado, fechaSolicitud, alojamiento_id)
+                        VALUES (?, ?, ?, ?, ?, ?)""", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                    insertar.setDate(1, reserva.getFechaIngreso());
+                    insertar.setDate(2, reserva.getFechaSalida());
+                    insertar.setInt(3, reserva.getCantidadHuespedes());
+                    insertar.setString(4, reserva.getEstado().name());
+                    insertar.setDate(5, reserva.getFechaSolicitud());
+                    insertar.setInt(6, reserva.getAlojamientoId());
+                    insertar.executeUpdate();
+                    try (ResultSet claves = insertar.getGeneratedKeys()) {
+                        if (!claves.next()) {
+                            throw new SQLException("No se obtuvo el id de la reserva creada.");
+                        }
+                        idReserva = claves.getInt(1);
+                    }
+                }
+
+                try (PreparedStatement relacion = conexion.prepareStatement(
+                        "INSERT INTO cliente_reserva (idCliente, idReserva) VALUES (?, ?)")) {
+                    relacion.setInt(1, idCliente);
+                    relacion.setInt(2, idReserva);
+                    relacion.executeUpdate();
+                }
+
+                conexion.commit();
+                return idReserva;
+            } catch (SQLException | RuntimeException e) {
+                conexion.rollback();
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Lista reservas con el nombre del alojamiento y los datos del cliente. Todos los filtros son opcionales:
+     * estado (null = todos), alojamiento (null = todos), cliente (null = todos) y texto
+     * (parte del nombre o del documento del cliente).
+     */
+    public List<ReservaDetalle> listarDetalle(EstadoReserva estado, Integer alojamientoId, Integer clienteId, String textoCliente) {
+        StringBuilder sql = new StringBuilder("""
+                SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado, r.fechaSolicitud,
+                       r.alojamiento_id, a.nombre AS alojamiento, c.id AS cliente_id, c.nombre AS cliente, c.documento
+                FROM reserva r
+                LEFT JOIN alojamiento a ON a.id = r.alojamiento_id
+                LEFT JOIN cliente_reserva cr ON cr.idReserva = r.id
+                LEFT JOIN cliente c ON c.id = cr.idCliente
+                WHERE 1 = 1""");
+        List<Object> parametros = new ArrayList<>();
+
+        if (estado != null) {
+            sql.append(" AND r.estado = ?");
+            parametros.add(estado.name());
+        }
+        if (alojamientoId != null) {
+            sql.append(" AND r.alojamiento_id = ?");
+            parametros.add(alojamientoId);
+        }
+        if (clienteId != null) {
+            sql.append(" AND c.id = ?");
+            parametros.add(clienteId);
+        }
+        if (textoCliente != null && !textoCliente.isBlank()) {
+            sql.append(" AND (c.nombre LIKE ? OR c.documento LIKE ?)");
+            String comodin = "%" + textoCliente.trim() + "%";
+            parametros.add(comodin);
+            parametros.add(comodin);
+        }
+        sql.append(" ORDER BY r.fechaSolicitud DESC, r.id DESC");
+
+        List<ReservaDetalle> lista = new ArrayList<>();
 
         try (Connection conexion = ConexionBD.obtenerConexion();
-             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+             PreparedStatement sentencia = conexion.prepareStatement(sql.toString())) {
 
-            sentencia.setInt(1, id);
+            for (int i = 0; i < parametros.size(); i++) {
+                sentencia.setObject(i + 1, parametros.get(i));
+            }
 
-            return sentencia.executeUpdate() > 0;
+            try (ResultSet fila = sentencia.executeQuery()) {
+                while (fila.next()) {
+                    int idCliente = fila.getInt("cliente_id");
+                    boolean sinCliente = fila.wasNull();
+                    lista.add(new ReservaDetalle(
+                            mapearReserva(fila),
+                            fila.getString("alojamiento"),
+                            sinCliente ? null : idCliente,
+                            fila.getString("cliente"),
+                            fila.getString("documento")));
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return lista;
     }
 
     public List<Reserva> buscarReservasPorCliente(String nombreCliente) {

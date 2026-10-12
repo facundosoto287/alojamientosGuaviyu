@@ -80,27 +80,50 @@ public class AlojamientoDAO {
         }
     }
 
-    public boolean eliminarAlojamiento(int id) {
-        String eliminarServicios = """
-        DELETE FROM alojamiento_servicio
-        WHERE alojamiento_id = ?
-        """;
+    /** Cantidad de reservas (en cualquier estado) que tiene el alojamiento. */
+    public int contarReservas(int idAlojamiento) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM reserva WHERE alojamiento_id = ?";
 
-        String sql = "DELETE FROM alojamiento WHERE id = ?";
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-        try (Connection conexion = ConexionBD.obtenerConexion()) {
-            try (PreparedStatement sentenciaServicios =
-                         conexion.prepareStatement(eliminarServicios)) {
-                sentenciaServicios.setInt(1, id);
-                sentenciaServicios.executeUpdate();
+            sentencia.setInt(1, idAlojamiento);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                return filas.next() ? filas.getInt(1) : 0;
             }
-            try (PreparedStatement sentencia =
-                         conexion.prepareStatement(sql)) {
-                sentencia.setInt(1, id);
+        }
+    }
 
-                int filasAEliminar = sentencia.executeUpdate();
+    /**
+     * Elimina el alojamiento y sus servicios asociados en una sola transacción.
+     * Si el alojamiento tiene reservas no borra nada y devuelve false.
+     */
+    public boolean eliminarAlojamiento(int id) {
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            if (contarReservas(id) > 0) {
+                return false;
+            }
 
-                return filasAEliminar > 0;
+            conexion.setAutoCommit(false);
+            try {
+                try (PreparedStatement sentenciaServicios = conexion.prepareStatement(
+                        "DELETE FROM alojamiento_servicio WHERE alojamiento_id = ?")) {
+                    sentenciaServicios.setInt(1, id);
+                    sentenciaServicios.executeUpdate();
+                }
+
+                boolean eliminado;
+                try (PreparedStatement sentencia = conexion.prepareStatement("DELETE FROM alojamiento WHERE id = ?")) {
+                    sentencia.setInt(1, id);
+                    eliminado = sentencia.executeUpdate() > 0;
+                }
+
+                conexion.commit();
+                return eliminado;
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -275,12 +298,12 @@ public class AlojamientoDAO {
 
     public List<Alojamiento> buscarPorNombre(String nombre) throws SQLException {
         List<Alojamiento> alojamientos = new ArrayList<>();
-        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina FROM alojamiento WHERE nombre = ? ORDER BY nombre";
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina FROM alojamiento WHERE nombre LIKE ? ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-            sentencia.setString(1, nombre);
+            sentencia.setString(1, "%" + nombre + "%");
 
             try (ResultSet filas = sentencia.executeQuery()) {
                 while (filas.next()) {

@@ -105,7 +105,8 @@
                     <label for="reg-documento">Documento</label>
                     <div class="input-icon ${not empty registroErrores.documento ? 'con-error' : ''}">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM7 10h4M7 14h10M15 9h2"/></svg>
-                        <input type="text" id="reg-documento" name="documento" placeholder="Cédula de identidad"
+                        <input type="text" id="reg-documento" name="documento" placeholder="Cédula de identidad (ej. 1.234.567-2)"
+                               autocomplete="off" inputmode="numeric" pattern="[0-9.\-\s]+" title="Solo números, puntos o guiones"
                                maxlength="20" required value="${fn:escapeXml(registro.documento)}">
                     </div>
                     <c:if test="${not empty registroErrores.documento}"><p class="error-campo"><c:out value="${registroErrores.documento}"/></p></c:if>
@@ -114,7 +115,7 @@
                     <div class="input-icon ${not empty registroErrores.telefono ? 'con-error' : ''}">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"/></svg>
                         <input type="tel" id="reg-telefono" name="telefono" placeholder="Ej. 099 123 456"
-                               autocomplete="tel" maxlength="30" value="${fn:escapeXml(registro.telefono)}">
+                               autocomplete="tel" inputmode="tel" pattern="[0-9\s\-]+" title="Celular de 9 dígitos que empieza con 09" maxlength="30" value="${fn:escapeXml(registro.telefono)}">
                     </div>
                     <c:if test="${not empty registroErrores.telefono}"><p class="error-campo"><c:out value="${registroErrores.telefono}"/></p></c:if>
 

@@ -13,6 +13,9 @@ public class Cliente {
     // Al guardar el cliente en la sesión web se pone en null para no tenerlo en memoria sin necesidad.
     private String contrasena;
 
+    // true si el cliente todavía usa la contraseña por defecto y debe cambiarla antes de seguir navegando
+    private boolean debeCambiarContrasena;
+
     public Cliente(int id, String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
         this.id = id;
         this.nombre = nombre;
@@ -77,6 +80,14 @@ public class Cliente {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+
+    public boolean isDebeCambiarContrasena() {
+        return debeCambiarContrasena;
+    }
+
+    public void setDebeCambiarContrasena(boolean debeCambiarContrasena) {
+        this.debeCambiarContrasena = debeCambiarContrasena;
     }
 
     /** Primer nombre, para el saludo del encabezado ("Hola, Brandon"). */

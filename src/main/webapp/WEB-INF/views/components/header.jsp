@@ -28,6 +28,7 @@
             <c:choose>
                 <c:when test="${not empty sessionScope.clienteSesion}">
                     <span class="header-saludo">Hola, <c:out value="${sessionScope.clienteSesion.primerNombre}"/></span>
+                    <a href="${ctx}/cambiar-contrasena">Cambiar contraseña</a>
                     <form action="${ctx}/logout" method="post" class="logout-form">
                         <button type="submit" class="link-button">Cerrar sesión</button>
                     </form>

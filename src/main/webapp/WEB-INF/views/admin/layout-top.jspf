@@ -1,0 +1,66 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title><c:out value="${tituloPagina}"/> | Panel Guaviyú</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${ctx}/css/admin.css">
+</head>
+<body class="admin">
+
+<header class="adm-header">
+    <a class="adm-brand" href="${base}/inicio">
+        <img src="${ctx}/img/logoAlojamientosGuaviyu.png" alt="Alojamientos Guaviyú" class="adm-logo">
+        <span class="adm-brand-texto">
+            <strong>Alojamientos Guaviyú</strong>
+            <small>Panel de administración</small>
+        </span>
+    </a>
+
+    <div class="adm-usuario">
+        <span class="adm-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-3.3 3.6-5.5 8-5.5s8 2.2 8 5.5"/></svg>
+        </span>
+        <span class="adm-usuario-nombre">Administrador</span>
+        <form action="${base}/logout" method="post" class="adm-salir">
+            <input type="hidden" name="_csrf" value="${csrf}">
+            <button type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M15 8l4 4-4 4M19 12H9"/></svg>
+                Cerrar sesión
+            </button>
+        </form>
+    </div>
+</header>
+
+<div class="adm-shell">
+    <aside class="adm-lateral">
+        <nav aria-label="Secciones del panel">
+            <a href="${base}/inicio" class="${seccion == 'inicio' ? 'activo' : ''}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10"/></svg>Inicio</a>
+            <a href="${base}/alojamientos" class="${seccion == 'alojamientos' ? 'activo' : ''}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V9l9-6 9 6v11M9 20v-6h6v6"/></svg>Alojamientos</a>
+            <a href="${base}/servicios" class="${seccion == 'servicios' ? 'activo' : ''}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M6 18a6 6 0 0 1 12 0M12 8V6M10 6h4"/></svg>Servicios</a>
+            <a href="${base}/reservas" class="${seccion == 'reservas' ? 'activo' : ''}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></svg>Reservas</a>
+            <a href="${base}/clientes" class="${seccion == 'clientes' ? 'activo' : ''}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14c2.8 0 5 1.6 5 4"/></svg>Clientes</a>
+            <a href="${base}/disponibilidad" class="${seccion == 'disponibilidad' ? 'activo' : ''}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v14H4zM4 10h16M9 15l2 2 4-4"/></svg>Disponibilidad</a>
+        </nav>
+    </aside>
+
+    <main class="adm-contenido">
+        <div class="adm-panel">
+            <c:if test="${not empty avisoTexto}">
+                <div class="aviso aviso-${avisoTipo}" role="${avisoTipo == 'error' ? 'alert' : 'status'}">
+                    <span><c:out value="${avisoTexto}"/></span>
+                    <button type="button" class="aviso-cerrar" aria-label="Cerrar aviso" data-cerrar-aviso>&times;</button>
+                </div>
+            </c:if>

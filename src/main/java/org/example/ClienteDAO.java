@@ -19,6 +19,9 @@ public class ClienteDAO {
     /** Costo de BCrypt: 12 tarda ~0,2 s por intento, suficiente para frenar ataques de fuerza bruta. */
     private static final int COSTO_BCRYPT = 12;
 
+    /** Contraseña inicial de los clientes que registra el administrador; deben cambiarla en su primer ingreso. */
+    public static final String CONTRASENA_POR_DEFECTO = "alojamientosguaviyu";
+
     /** Hash de relleno: se usa cuando el email no existe, para que la respuesta tarde lo mismo. */
     private static final String HASH_RELLENO = BCrypt.hashpw("relleno", BCrypt.gensalt(COSTO_BCRYPT));
 
@@ -61,7 +64,7 @@ public class ClienteDAO {
 
     public Cliente buscarPorEmail(String email) throws SQLException {
         String sql = """
-            SELECT id, nombre, documento, telefono, email, procedencia, contrasena
+            SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena
             FROM cliente
             WHERE email = ?
             """;
@@ -85,6 +88,19 @@ public class ClienteDAO {
      * Lanza IllegalArgumentException con un mensaje para mostrar si faltan datos o el email/documento ya existe.
      */
     public Cliente registrarCliente(String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
+        return registrar(nombre, documento, telefono, email, procedencia, contrasena, false);
+    }
+
+    /**
+     * Registro hecho por el administrador: la cuenta queda con la contraseña por defecto
+     * y marcada para que el cliente la cambie en su primer ingreso.
+     */
+    public Cliente registrarClienteDesdeAdmin(String nombre, String documento, String telefono, String email, String procedencia) {
+        return registrar(nombre, documento, telefono, email, procedencia, CONTRASENA_POR_DEFECTO, true);
+    }
+
+    private Cliente registrar(String nombre, String documento, String telefono, String email, String procedencia,
+                              String contrasena, boolean debeCambiarContrasena) {
 
         if (esVacio(nombre) || esVacio(documento) || esVacio(email) || contrasena == null || contrasena.isEmpty()) {
             throw new IllegalArgumentException("Faltan datos obligatorios.");
@@ -129,7 +145,7 @@ public class ClienteDAO {
         }
 
         String hash = hashear(contrasena);
-        String sqlInsertar = "INSERT INTO cliente (nombre, documento, telefono, email, procedencia, contrasena) VALUES (?,?,?,?,?,?)";
+        String sqlInsertar = "INSERT INTO cliente (nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena) VALUES (?,?,?,?,?,?,?)";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sqlInsertar, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -140,6 +156,7 @@ public class ClienteDAO {
             sentencia.setString(4, email);
             sentencia.setString(5, procedencia);
             sentencia.setString(6, hash);
+            sentencia.setBoolean(7, debeCambiarContrasena);
 
             sentencia.executeUpdate();
 
@@ -150,13 +167,42 @@ public class ClienteDAO {
                 }
             }
 
-            return new Cliente(id, nombre, documento, telefono, email, procedencia, hash);
+            Cliente nuevo = new Cliente(id, nombre, documento, telefono, email, procedencia, hash);
+            nuevo.setDebeCambiarContrasena(debeCambiarContrasena);
+            return nuevo;
 
         } catch (SQLIntegrityConstraintViolationException e) {
             // Dos registros simultáneos con el mismo email/documento (lo frena el UNIQUE de la tabla)
             throw new IllegalArgumentException("Ya existe una cuenta con ese correo o documento.");
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Cambia la contraseña de un cliente verificando la actual. Quita la marca de "debe cambiarla".
+     * Lanza IllegalArgumentException con un mensaje para mostrar si la actual no coincide o la nueva no sirve.
+     */
+    public void cambiarContrasena(int id, String actual, String nueva) throws SQLException {
+        Cliente cliente = buscarPorId(id);
+        if (cliente == null) {
+            throw new IllegalArgumentException("No encontramos tu cuenta.");
+        }
+
+        String guardada = cliente.getContrasena();
+        boolean actualCorrecta = esHashBCrypt(guardada)
+                ? BCrypt.checkpw(actual == null ? "" : actual, guardada)
+                : guardada != null && actual != null && iguales(actual, guardada);
+        if (!actualCorrecta) {
+            throw new IllegalArgumentException("La contraseña actual no es correcta.");
+        }
+
+        String sql = "UPDATE cliente SET contrasena = ?, debe_cambiar_contrasena = 0 WHERE id = ?";
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, hashear(nueva));
+            sentencia.setInt(2, id);
+            sentencia.executeUpdate();
         }
     }
 
@@ -174,7 +220,7 @@ public class ClienteDAO {
 
     public List<Cliente> listarClientes() throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena FROM cliente ORDER BY nombre";
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena FROM cliente ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql);
@@ -231,7 +277,7 @@ public class ClienteDAO {
     }
 
     public Cliente buscarPorId(int id) throws SQLException {
-        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena FROM cliente WHERE id = ?";
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena FROM cliente WHERE id = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -250,7 +296,7 @@ public class ClienteDAO {
 
     public List<Cliente> buscarPorNombreODocumento(String textoBusqueda) throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena FROM cliente " +
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena FROM cliente " +
                 "WHERE nombre LIKE ? OR documento LIKE ? ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -270,7 +316,27 @@ public class ClienteDAO {
         return clientes;
     }
 
+    /** true si el cliente tiene al menos una reserva (en cualquier estado). */
+    public boolean tieneReservas(int id) throws SQLException {
+        String sql = "SELECT 1 FROM cliente_reserva WHERE idCliente = ? LIMIT 1";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, id);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                return filas.next();
+            }
+        }
+    }
+
+    /** Elimina al cliente solo si no tiene reservas; si las tiene devuelve false y no borra nada. */
     public boolean eliminarCliente(int id) throws SQLException {
+        if (tieneReservas(id)) {
+            return false;
+        }
+
         String sql = "DELETE FROM cliente WHERE id = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -349,7 +415,7 @@ public class ClienteDAO {
     // ===================== AUXILIARES =====================
 
     private Cliente mapearCliente(ResultSet fila) throws SQLException {
-        return new Cliente(
+        Cliente cliente = new Cliente(
                 fila.getInt("id"),
                 fila.getString("nombre"),
                 fila.getString("documento"),
@@ -358,6 +424,8 @@ public class ClienteDAO {
                 fila.getString("procedencia"),
                 fila.getString("contrasena")
         );
+        cliente.setDebeCambiarContrasena(fila.getBoolean("debe_cambiar_contrasena"));
+        return cliente;
     }
 
     private static String hashear(String contrasena) {

@@ -59,7 +59,13 @@ public class Main {
         System.out.println("Ingrese su contraseña:");
         String contrasena = sc.nextLine();
 
-        Administrador admin = administradorDAO.iniciarSesion(correo, contrasena);
+        Administrador admin;
+        try {
+            admin = administradorDAO.iniciarSesion(correo, contrasena);
+        } catch (AdministradorDAO.CuentaBloqueadaException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
 
         if (admin != null) {
             administradorActual = admin;

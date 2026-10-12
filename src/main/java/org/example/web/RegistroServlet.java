@@ -88,38 +88,7 @@ public class RegistroServlet extends HttpServlet {
     }
 
     private Map<String, String> validar(Map<String, String> v, String contrasena, String confirmacion) {
-        Map<String, String> errores = new HashMap<>();
-
-        String nombre = v.get("nombre");
-        if (nombre.isEmpty()) {
-            errores.put("nombre", "Ingresá tu nombre y apellido.");
-        } else if (nombre.length() > 100) {
-            errores.put("nombre", "El nombre puede tener hasta 100 caracteres.");
-        }
-
-        String documento = v.get("documento");
-        if (documento.isEmpty()) {
-            errores.put("documento", "Ingresá tu documento.");
-        } else if (documento.length() > 20 || !documento.matches("[0-9A-Za-z.\\-]+")) {
-            errores.put("documento", "Usá solo números, letras, puntos o guiones (máximo 20).");
-        }
-
-        String telefono = v.get("telefono");
-        if (!telefono.isEmpty() && (telefono.length() > 30 || !telefono.matches("[0-9+()\\s\\-]+"))) {
-            errores.put("telefono", "Ingresá un teléfono válido, por ejemplo 099 123 456.");
-        }
-
-        String email = v.get("email");
-        if (email.isEmpty()) {
-            errores.put("email", "Ingresá tu correo electrónico.");
-        } else if (email.length() > 100 || !email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-            errores.put("email", "El correo no tiene un formato válido.");
-        }
-
-        String procedencia = v.get("procedencia");
-        if (!procedencia.isEmpty() && !LoginServlet.PROCEDENCIAS.contains(procedencia)) {
-            errores.put("procedencia", "Elegí una opción de la lista.");
-        }
+        Map<String, String> errores = ValidacionCliente.validarDatos(v, clienteDAO);
 
         if (contrasena == null || contrasena.length() < MIN_CONTRASENA) {
             errores.put("contrasena", "La contraseña debe tener al menos " + MIN_CONTRASENA + " caracteres.");

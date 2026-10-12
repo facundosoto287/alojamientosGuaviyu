@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
     static final String DESTINO_POR_DEFECTO = "/inicio";
 
     /** Opciones del desplegable "Procedencia" (la columna es VARCHAR, así que se pueden cambiar libremente). */
-    static final List<String> PROCEDENCIAS = List.of(
+    public static final List<String> PROCEDENCIAS = List.of(
             "Artigas", "Canelones", "Cerro Largo", "Colonia", "Durazno", "Flores", "Florida",
             "Lavalleja", "Maldonado", "Montevideo", "Paysandú", "Río Negro", "Rivera", "Rocha",
             "Salto", "San José", "Soriano", "Tacuarembó", "Treinta y Tres",

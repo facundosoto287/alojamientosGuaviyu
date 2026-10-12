@@ -1,0 +1,7 @@
+        </div>
+    </main>
+</div>
+
+<script src="${ctx}/js/admin.js"></script>
+</body>
+</html>
