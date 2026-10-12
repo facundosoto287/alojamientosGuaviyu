@@ -75,291 +75,135 @@ visor.addEventListener("click", (evento) => {
 
 });
 
-/* ==================================================
-   CALENDARIO DE DISPONIBILIDAD
-   ================================================== */
+const fechasOcupadas = new Set();
 
-const diasCalendario = document.getElementById("diasCalendario");
-const tituloCalendario = document.getElementById("tituloCalendario");
+document
+    .querySelectorAll(".reserva-confirmada")
+    .forEach(reserva => {
 
-const mesAnterior = document.getElementById("mesAnterior");
-const mesSiguiente = document.getElementById("mesSiguiente");
+        const ingreso = new Date(reserva.dataset.ingreso + "T00:00:00");
+
+        const salida = new Date(reserva.dataset.salida + "T00:00:00");
+
+        const fechaActual = new Date(ingreso);
+
+        while (fechaActual < salida) {
+            fechasOcupadas.add(convertirFecha(fechaActual));
+
+            fechaActual.setDate(fechaActual.getDate() + 1);
+        }
+    });
+
+/*CALENDARIO DE RESERVA CON LIBRERIA FLATPICKR*/
+
+const inputFechaIngreso = document.getElementById("fechaIngreso");
+const inputFechaSalida = document.getElementById("fechaSalida");
+const mensajeReserva = document.getElementById("mensajeReserva");
 
 
 /* Leer las reservas confirmadas enviadas desde el servlet */
-const elementosReservas =
-    document.querySelectorAll(".reserva-confirmada");
-
-
 const reservasConfirmadas = [];
 
-elementosReservas.forEach(elemento => {
+document
+    .querySelectorAll(".reserva-confirmada")
+    .forEach(reserva => {
 
-    reservasConfirmadas.push({
+        const ingreso = reserva.dataset.ingreso;
+        const salida = reserva.dataset.salida;
 
-        ingreso: elemento.dataset.ingreso,
-        salida: elemento.dataset.salida
+        /*La salida queda disponible Ejemplo:ingreso: 10 salida: 13 Se bloquean 10, 11 y 12.*/
+        const ultimoDiaOcupado = new Date(salida + "T00:00:00");
 
+        ultimoDiaOcupado.setDate(ultimoDiaOcupado.getDate() - 1);
+
+        reservasConfirmadas.push({
+            from: ingreso,
+            to: convertirFecha(ultimoDiaOcupado)
+        });
     });
 
-});
 
+/* Crear calendario */
+const calendarioReserva = flatpickr("#calendarioReserva", {
 
-/* Comenzamos mostrando el mes actual */
-const hoy = new Date();
+    locale: "es",
 
-let anioActual = hoy.getFullYear();
-let mesActual = hoy.getMonth();
+    mode: "range",
 
+    dateFormat: "Y-m-d",
 
-const nombresMeses = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre"
-];
+    minDate: "today",
 
+    inline: true,
 
-/* Comprueba si una fecha está ocupada */
-function fechaOcupada(fecha) {
+    disableMobile: true,
 
-    for (const reserva of reservasConfirmadas) {
+    disable: reservasConfirmadas,
 
-        const ingreso =
-            new Date(reserva.ingreso + "T00:00:00");
+    onDayCreate: function (dObj, dStr, fp, dayElem) {
 
-        const salida =
-            new Date(reserva.salida + "T00:00:00");
+        const fecha = convertirFecha(dayElem.dateObj);
 
-
-        /*
-         * La fecha de ingreso está ocupada.
-         * La fecha de salida queda disponible porque
-         * el huésped abandona el alojamiento ese día.
-         */
-        if (fecha >= ingreso && fecha < salida) {
-            return true;
+        if (fechasOcupadas.has(fecha)) {
+            dayElem.classList.add("fecha-ocupada");
         }
-    }
+    },
 
-    return false;
-}
+    onChange: function (fechasSeleccionadas) {
 
-let fechaInicioSeleccionada = null;
-let fechaFinSeleccionada = null;
+        if (fechasSeleccionadas.length === 1) { /* Primer click = ingreso */
 
-function mismaFecha(fecha1, fecha2) {
+            inputFechaIngreso.value = convertirFecha(fechasSeleccionadas[0]);
 
-    return fecha1.getFullYear() === fecha2.getFullYear()
-        && fecha1.getMonth() === fecha2.getMonth()
-        && fecha1.getDate() === fecha2.getDate();
-}
+            inputFechaSalida.value = "";
 
-function fechaDentroDelRango(fecha) {
-
-    if (fechaInicioSeleccionada === null) {
-        return false;
-    }
-
-    if (fechaFinSeleccionada === null) {
-        return mismaFecha(fecha, fechaInicioSeleccionada);
-    }
-
-    return fecha >= fechaInicioSeleccionada
-        && fecha <= fechaFinSeleccionada;
-}
-
-function rangoTieneOcupados(inicio, fin) {
-
-    const fecha = new Date(inicio);
-
-    while (fecha <= fin) {
-
-        if (fechaOcupada(fecha)) {
-            return true;
+            mensajeReserva.hidden = true;
         }
 
-        fecha.setDate(fecha.getDate() + 1);
-    }
+        if (fechasSeleccionadas.length === 2) { /* Segundo click = salida */
 
-    return false;
-}
+            const ingreso = fechasSeleccionadas[0];
+            const salida = fechasSeleccionadas[1];
 
-/* Dibuja el mes */
-function mostrarCalendario() {
+            const fechaMinimaSalida = new Date(ingreso);
 
-    diasCalendario.innerHTML = "";
+            fechaMinimaSalida.setDate(fechaMinimaSalida.getDate() + 1);
 
-    tituloCalendario.textContent =
-        nombresMeses[mesActual] + " " + anioActual;
+            if (salida < fechaMinimaSalida) {
 
+                mensajeReserva.textContent = "La estadía debe ser de al menos una noche";
 
-    const primerDia =
-        new Date(anioActual, mesActual, 1);
+                mensajeReserva.hidden = false;
 
+                calendarioReserva.clear();
 
-    const ultimoDia =
-        new Date(anioActual, mesActual + 1, 0);
+                inputFechaIngreso.value = "";
+                inputFechaSalida.value = "";
 
-
-    /*
-     * JavaScript:
-     * domingo = 0
-     * lunes = 1
-     *
-     * Nuestro calendario comienza en lunes.
-     */
-    let espaciosIniciales = primerDia.getDay() - 1;
-
-    if (espaciosIniciales < 0) {
-        espaciosIniciales = 6;
-    }
-
-
-    /* Espacios antes del día 1 */
-    for (let i = 0; i < espaciosIniciales; i++) {
-
-        const espacio = document.createElement("span");
-
-        diasCalendario.appendChild(espacio);
-    }
-
-
-    /* Crear los días */
-    for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
-
-        const boton = document.createElement("button");
-
-        boton.type = "button";
-        boton.textContent = dia;
-
-
-        const fecha = new Date(anioActual, mesActual, dia);
-
-        const hoySinHora = new Date();
-        hoySinHora.setHours(0, 0, 0, 0);
-
-        fecha.setHours(0, 0, 0, 0);
-
-
-        if (fecha < hoySinHora) {
-
-            boton.classList.add("fecha-pasada");
-            boton.disabled = true;
-            boton.title = "No se pueden seleccionar fechas anteriores a hoy";
-
-        } else if (fechaOcupada(fecha)) {
-
-            boton.classList.add("ocupado");
-            boton.disabled = true;
-            boton.title = "Alojamiento ocupado";
-
-        } else {
-
-            if (fechaDentroDelRango(fecha)) {
-                boton.classList.add("seleccionado");
-            }
-
-            boton.addEventListener("click", () => {
-                seleccionarFecha(fecha);
-            });
-
-        }
-        diasCalendario.appendChild(boton);
-    }
-}
-
-function seleccionarFecha(fecha) {                  /*Primer clic:seleccionamos fecha de ingreso*/
-    if (fechaInicioSeleccionada === null || fechaFinSeleccionada !== null) {
-        fechaInicioSeleccionada = fecha;
-        fechaFinSeleccionada = null;
-
-    } else {                                /*Segundo clic:debe ser posterior al check-in*/
-        if (fecha <= fechaInicioSeleccionada) {
-
-            fechaInicioSeleccionada = fecha;
-            fechaFinSeleccionada = null;
-
-        } else {             /* Verifica que entre las dos fechas no exista una reserva confirmada*/
-            if (rangoTieneOcupados(fechaInicioSeleccionada,fecha)) {
-                alert("El rango seleccionado contiene fechas ocupadas.");
                 return;
             }
-            fechaFinSeleccionada = fecha;
+
+            mensajeReserva.hidden = true;
+
+            inputFechaIngreso.value = convertirFecha(ingreso);
+
+            inputFechaSalida.value = convertirFecha(salida);
         }
     }
-    actualizarInputs();
-    mostrarCalendario();
-}
+});
 
-function actualizarInputs() {
-
-    const inputIngreso =
-        document.getElementById("fechaIngreso");
-
-    const inputSalida =
-        document.getElementById("fechaSalida");
-
-    if (fechaInicioSeleccionada !== null) {
-        inputIngreso.value =convertirFechaInput(fechaInicioSeleccionada);
-    } else {
-        inputIngreso.value = "";
-    }
-    if (fechaFinSeleccionada !== null) {
-        inputSalida.value = convertirFechaInput(fechaFinSeleccionada);
-    } else {
-        inputSalida.value = "";
-    }
-}
-
-function convertirFechaInput(fecha) {
+/* Convertir Date a YYYY-MM-DD */
+function convertirFecha(fecha) {
 
     const anio = fecha.getFullYear();
 
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const mes = String(
+        fecha.getMonth() + 1
+    ).padStart(2, "0");
 
-    const dia = String(fecha.getDate()).padStart(2, "0");
+    const dia = String(
+        fecha.getDate()
+    ).padStart(2, "0");
 
     return `${anio}-${mes}-${dia}`;
 }
-
-/* Mes anterior */
-mesAnterior.addEventListener("click", () => {
-
-    mesActual--;
-
-    if (mesActual < 0) {
-
-        mesActual = 11;
-        anioActual--;
-    }
-
-    mostrarCalendario();
-});
-
-
-/* Mes siguiente */
-mesSiguiente.addEventListener("click", () => {
-
-    mesActual++;
-
-    if (mesActual > 11) {
-
-        mesActual = 0;
-        anioActual++;
-    }
-
-    mostrarCalendario();
-});
-
-
-/* Mostrar calendario al cargar la pantalla */
-mostrarCalendario();

@@ -112,3 +112,136 @@
     color: #0d6efd;
     text-decoration: underline;
 }
+
+/*MENÚ HAMBURGUESA*/
+
+.menu-hamburguesa {
+    display: none;
+}
+
+.menu-responsive {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+
+/*RESPONSIVE*/
+
+@media (max-width: 700px) {
+
+    .header-container {
+        position: relative;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        width: 100%;
+
+        padding: 12px 18px;
+    }
+
+    /* Mostrar hamburguesa */
+    .menu-hamburguesa {
+        display: block;
+        flex-shrink: 0;
+    }
+
+    /* Menú cerrado */
+    .menu-responsive {
+        position: absolute;
+
+        top: 100%;
+        left: 0;
+
+        width: 100%;
+
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 0;
+
+        padding: 12px 18px;
+
+        background: #0b3d91;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.20);
+
+        box-shadow: 0 8px 18px rgba(0, 45, 90, 0.18);
+
+        z-index: 1000;
+    }
+
+    /* Menú abierto */
+    .menu-responsive.activo {
+        display: flex;
+    }
+
+    /* Navegación */
+    .main-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        width: 100%;
+
+        gap: 0;
+    }
+
+    .main-nav a {
+        width: 100%;
+
+        padding: 12px 5px;
+
+        color: white;
+
+        font-size: 16px;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .main-nav a:last-child {
+        border-bottom: none;
+    }
+
+    /* Usuario */
+    .header-user {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        width: 100%;
+
+        padding-top: 10px;
+
+        gap: 8px;
+    }
+
+    .header-user a,
+    .header-saludo,
+    .link-button {
+        color: white;
+    }
+
+    /* Hover */
+    .main-nav a:hover,
+    .header-user a:hover,
+    .link-button:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Animación de la hamburguesa */
+    .menu-hamburguesa.activo span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu-hamburguesa.activo span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-hamburguesa.activo span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+}

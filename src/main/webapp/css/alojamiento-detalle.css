@@ -906,6 +906,174 @@ body {
     text-decoration: underline;
 }
 
+/* =========================================
+   CALENDARIO FLATPICKR - ESTILO DEL PROYECTO
+   ========================================= */
+
+.calendario-reserva {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.calendario-reserva .flatpickr-calendar {
+    width: 100% !important;
+    max-width: 100%;
+    border: 1px solid #d9e4ef;
+    border-radius: 12px;
+    box-shadow: none;
+    background: #ffffff;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+
+/* Parte superior: mes y año */
+.calendario-reserva .flatpickr-months {
+    padding: 10px 8px 4px;
+}
+
+.calendario-reserva .flatpickr-current-month {
+    font-size: 17px;
+    font-weight: 700;
+    color: #123b73;
+}
+
+.calendario-reserva .flatpickr-current-month input.cur-year {
+    font-weight: 700;
+    color: #123b73;
+}
+
+
+/* Flechas */
+.calendario-reserva .flatpickr-prev-month,
+.calendario-reserva .flatpickr-next-month {
+    top: 8px;
+    padding: 9px 12px;
+}
+
+.calendario-reserva .flatpickr-prev-month svg,
+.calendario-reserva .flatpickr-next-month svg {
+    fill: #0d6efd;
+}
+
+
+/* Días de la semana */
+.calendario-reserva .flatpickr-weekdays {
+    margin-top: 5px;
+}
+
+.calendario-reserva span.flatpickr-weekday {
+    color: #59718d;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* Contenedor de días */
+.calendario-reserva .flatpickr-days {
+    width: 100% !important;
+}
+
+.calendario-reserva .dayContainer {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    padding: 5px 8px 10px;
+}
+
+
+/* Día normal */
+.calendario-reserva .flatpickr-day {
+    width: 14.2857%;
+    max-width: none;
+    height: 38px;
+    line-height: 38px;
+
+    border-radius: 8px;
+
+    color: #27415c;
+    font-size: 14px;
+
+    border: 1px solid transparent;
+}
+
+
+/* Día disponible */
+.calendario-reserva .flatpickr-day:not(.flatpickr-disabled):not(.selected):not(.startRange):not(.endRange):not(.inRange) {
+    background: white;
+}
+
+
+/* Hover */
+.calendario-reserva .flatpickr-day:hover {
+    background: #edf5ff;
+    border-color: #c9ddf8;
+}
+
+
+/* Seleccionados */
+.calendario-reserva .flatpickr-day.selected,
+.calendario-reserva .flatpickr-day.startRange,
+.calendario-reserva .flatpickr-day.endRange {
+    background: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+}
+
+
+/* Días entre ingreso y salida */
+.calendario-reserva .flatpickr-day.inRange {
+    background: #dcebff !important;
+    border-color: #dcebff !important;
+    color: #0b3d91 !important;
+    box-shadow:
+            -5px 0 0 #dcebff,
+            5px 0 0 #dcebff;
+}
+
+
+/* Fecha de hoy */
+.calendario-reserva .flatpickr-day.today {
+    border-color: #0d6efd;
+    font-weight: 700;
+}
+
+
+/* Fechas no disponibles */
+.calendario-reserva .flatpickr-day.flatpickr-disabled {
+    background: #f2f4f7;
+    color: #b5bdc7;
+    cursor: not-allowed;
+}
+
+/* Ocultar el input que usa Flatpickr internamente */
+.calendario-reserva .calendario-reserva-input {
+    display: none !important;
+}
+
+.calendario-reserva .flatpickr-day.fecha-ocupada {
+    background: #ef4444 !important;
+    border-color: #dc2626 !important;
+    color: white !important;
+    opacity: 1 !important;
+    font-weight: 700;
+    cursor: not-allowed;
+}
+
+.mensaje-reserva {
+    margin-top: 12px;
+    padding: 10px 12px;
+
+    border: 1px solid #f3b5b5;
+    border-radius: 8px;
+
+    background: #fff1f1;
+    color: #a83232;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}
+
 /*RESPONSIVE*/
 
 @media (max-width: 1050px) {
