@@ -11,23 +11,23 @@
 </div>
 
 <div class="tarjetas-resumen">
-    <a class="resumen" href="${base}/reservas?estado=PENDIENTE">
-        <span class="resumen-numero resaltado">${totalPendientes}</span>
+    <a class="resumen resumen-pendientes" href="${base}/reservas?estado=PENDIENTE">
+        <span class="resumen-numero">${totalPendientes}</span>
         <span>Solicitudes pendientes</span>
     </a>
-    <a class="resumen" href="${base}/reservas?estado=CONFIRMADA">
+    <a class="resumen resumen-confirmadas" href="${base}/reservas?estado=CONFIRMADA">
         <span class="resumen-numero">${totalConfirmadas}</span>
         <span>Reservas confirmadas</span>
     </a>
-    <a class="resumen" href="${base}/alojamientos">
+    <a class="resumen resumen-alojamientos" href="${base}/alojamientos">
         <span class="resumen-numero">${totalAlojamientos}</span>
         <span>Alojamientos</span>
     </a>
-    <a class="resumen" href="${base}/servicios">
+    <a class="resumen resumen-servicios" href="${base}/servicios">
         <span class="resumen-numero">${totalServicios}</span>
         <span>Servicios</span>
     </a>
-    <a class="resumen" href="${base}/clientes">
+    <a class="resumen resumen-clientes" href="${base}/clientes">
         <span class="resumen-numero">${totalClientes}</span>
         <span>Clientes</span>
     </a>

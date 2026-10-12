@@ -44,3 +44,64 @@ Documento de trabajo. Compara los casos de uso del administrador con lo programa
 La contraseña por defecto es `alojamientosguaviyu`, igual para todos, según lo definido.
 
 Riesgo: cualquiera que conozca el correo de un cliente y la contraseña por defecto (que queda escrita en el repositorio) puede entrar a su cuenta hasta que la cambie. Mitigación recomendada: una columna `debe_cambiar_contrasena` (no es una tabla nueva) en `cliente`, que se marca al crear la cuenta desde el panel y fuerza a cambiar la contraseña en el primer ingreso. Requiere una pantalla de "cambiar contraseña" para el cliente, que hoy no existe.
+
+## 4. Propuesta: fotos de los alojamientos (pendiente de decidir, sin programar)
+
+### 4.1 Situación actual
+- Ninguno de los 29 casos de uso del administrador cubre las fotos, así que se agregan los casos 30 a 32.
+- El sitio público tiene las fotos escritas a mano en las JSP (`grandiosa1.jpg`, `grandiosa3.jpg`, etc. en `inicio.jsp` y `alojamiento-detalle.jsp`): todos los alojamientos muestran las mismas.
+- `inicio.jsp` pide `img/alojamiento-default.jpg`, pero ese archivo no existe en `webapp/img`.
+
+### 4.2 Casos de uso nuevos
+
+**30. Agregar fotos a un alojamiento**
+- Actor: administrador.
+- Descripción: permite subir una o varias fotos al crear un alojamiento y también agregar fotos a uno que ya existe, para que los clientes las vean en el sitio.
+- Precondición: el administrador está autenticado; para agregar a uno existente, el alojamiento existe.
+- Flujo principal: el administrador abre el formulario de alojamiento (nuevo o edición), elige uno o más archivos y guarda. El sistema valida cada archivo (tipo real de imagen, tamaño máximo y cantidad máxima de fotos por alojamiento), los guarda con un nombre generado y los asocia al alojamiento.
+- Flujos alternativos: si un archivo no es válido se informa cuál y los demás se guardan igual; si se supera el máximo de fotos se rechaza el excedente.
+- Postcondición: las fotos quedan asociadas al alojamiento y se muestran en el sitio; la primera es la portada.
+
+**31. Eliminar foto de un alojamiento**
+- Actor: administrador. Precondición: autenticado y la foto existe.
+- Flujo principal: el administrador abre el alojamiento, elige una foto, confirma. El sistema quita la referencia y borra el archivo.
+- Postcondición: la foto deja de mostrarse en el sitio.
+
+**32. Elegir la foto de portada**
+- Actor: administrador. Precondición: el alojamiento tiene al menos dos fotos.
+- Flujo principal: el administrador marca una foto como portada. El sistema la pasa al primer lugar.
+- Postcondición: la portada se usa en el listado de inicio; el resto, en la galería del detalle.
+
+**Efecto en el sitio público** (los clientes ven fotos, sin caso de uso nuevo): `inicio.jsp` muestra la portada y `alojamiento-detalle.jsp` la galería; si un alojamiento no tiene fotos se usa una imagen por defecto.
+
+### 4.3 Dónde guardar las fotos (a decidir)
+
+| Opción | Cómo | A favor | En contra |
+|---|---|---|---|
+| **A. Columna con nombres + archivos en una carpeta** | Columna `imagenes` (TEXT) con los nombres separados por `\|`; los archivos van a una carpeta fuera de la aplicación, configurable por variable de entorno. | Una sola columna, sin tablas nuevas; la base queda liviana; es la forma habitual cuando el sitio corre en un servidor. | Los archivos viven en el disco de quien ejecuta la aplicación: con la base remota compartida, una foto subida desde una PC no se ve en la de otro compañero hasta que se publique. No hay clave foránea. |
+| **B. Tabla `alojamiento_imagen` con las fotos dentro de la base** | Una fila por foto, con el contenido en MEDIUMBLOB y el orden. | Las fotos viajan con la base, se ven iguales para todo el equipo; integridad referencial; portada y orden son una columna. | Es una tabla nueva; la base engorda; hay que servir las fotos desde un servlet que lea la base. |
+| **C. Una sola columna MEDIUMBLOB** | Solo una foto por alojamiento. | La más simple. | No permite varias fotos. |
+
+**Recomendación:** A, porque pediste una sola columna y no más tablas, y es lo correcto cuando se publique. Para que el equipo no vea imágenes rotas mientras tanto, la aplicación mostraría la imagen por defecto si el archivo no está en esa PC. Si preferís que el equipo comparta las fotos ya mismo, la B es la que lo resuelve.
+
+### 4.4 Cambios previstos si se elige A
+- Base de datos: `ALTER TABLE alojamiento ADD COLUMN imagenes TEXT NULL;`
+- Variable de entorno nueva `ALOJAMIENTOS_IMG_DIR` (carpeta de fotos), junto a `ALOJAMIENTOS_DB_PASSWORD`.
+- `Alojamiento` / `AlojamientoDAO`: campo `imagenes` y métodos para agregar, quitar y reordenar nombres; al eliminar un alojamiento se borran sus archivos.
+- Panel: selector de archivos en "Agregar" y "Editar" alojamiento, miniaturas con botón eliminar y "usar de portada".
+- Un servlet público que entrega las fotos (`/imagenes/{nombre}`) con el tipo correcto y caché.
+- `inicio.jsp` y `alojamiento-detalle.jsp`: leer las fotos del alojamiento en lugar de las escritas a mano; agregar `alojamiento-default.jpg`.
+- Alojamientos existentes: quedan sin fotos (imagen por defecto) hasta que se les suban.
+
+### 4.5 Reglas de seguridad para las fotos
+- Aceptar solo JPG, PNG y WebP, comprobando el contenido real del archivo (no solo la extensión); rechazar SVG.
+- Tamaño máximo por foto (propuesta: 5 MB) y máximo por alojamiento (propuesta: 8 fotos).
+- Nombres generados por el sistema (UUID): nunca se usa el nombre que manda el usuario, para evitar rutas maliciosas y choques.
+- La carpeta de fotos queda fuera de la aplicación, para que no se pierda al volver a desplegar ni se pueda ejecutar nada subido.
+- La subida va protegida por el mismo token anti-CSRF del panel.
+- Las carpetas de fotos no se suben a Git (`.gitignore`).
+
+### 4.6 Preguntas abiertas
+1. ¿Opción A, B o C?
+2. ¿Máximo de fotos por alojamiento y tamaño máximo? (propuesta: 8 y 5 MB)
+3. ¿Hace falta el caso 32 (portada), o alcanza con que la primera subida sea la portada?
