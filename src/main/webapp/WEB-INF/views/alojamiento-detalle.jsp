@@ -12,6 +12,8 @@
 
     <title>${alojamiento.nombre} | Alojamientos Guaviyú</title>
 
+    <!-- Libreria -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -358,43 +360,16 @@
 
 
                 <!-- Calendario -->
-                <div class="calendario">
+                <div class="calendario-reserva">
+                    <input type="text"
+                           id="calendarioReserva"
+                           class="calendario-reserva-input"
+                           aria-label="Seleccionar fechas de reserva">
+                </div>
 
-                    <div class="calendario-cabecera">
-
-                        <button type="button"
-                                class="calendario-flecha"
-                                id="mesAnterior">
-                            ‹
-                        </button>
-
-                        <strong id="tituloCalendario"></strong>
-
-                        <button type="button"
-                                class="calendario-flecha"
-                                id="mesSiguiente">
-                            ›
-                        </button>
-
-                    </div>
-
-
-                    <div class="calendario-dias-nombre">
-                        <span>Lu</span>
-                        <span>Ma</span>
-                        <span>Mi</span>
-                        <span>Ju</span>
-                        <span>Vi</span>
-                        <span>Sá</span>
-                        <span>Do</span>
-                    </div>
-
-
-                    <!-- JavaScript coloca los días acá -->
-                    <div class="calendario-dias"
-                         id="diasCalendario">
-                    </div>
-
+                <div id="mensajeReserva"
+                     class="mensaje-reserva"
+                     hidden>
                 </div>
 
                 <!-- Fechas ocupadas enviadas desde Java -->
@@ -447,9 +422,11 @@
                             Fecha de ingreso
                         </label>
 
-                        <input type="date"
+                        <input type="text"
                                id="fechaIngreso"
-                               name="fechaIngreso">
+                               name="fechaIngreso"
+                               placeholder="Seleccioná una fecha"
+                               readonly>
 
                     </div>
 
@@ -460,9 +437,11 @@
                             Fecha de salida
                         </label>
 
-                        <input type="date"
+                        <input type="text"
                                id="fechaSalida"
-                               name="fechaSalida">
+                               name="fechaSalida"
+                               placeholder="Seleccioná una fecha"
+                               readonly>
 
                     </div>
 
@@ -528,6 +507,8 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script src="${pageContext.request.contextPath}/js/alojamiento-detalle.js"></script>
 <%@ include file="components/footer.jsp" %>
 </body>
