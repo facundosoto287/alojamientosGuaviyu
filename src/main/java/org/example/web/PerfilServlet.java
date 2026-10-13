@@ -30,79 +30,45 @@ public class PerfilServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        /*
-         * Si no hay sesión o no hay cliente logueado,
-         * lo mandamos al login.
-         */
-        if (session == null ||
-                session.getAttribute("clienteSesion") == null) {
-
-            response.sendRedirect(
-                    request.getContextPath() + "/login"
-            );
-
+        /*Si no hay sesión o no hay cliente logueado,lo mandamos al login*/
+        if (session == null || session.getAttribute("clienteSesion") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
+        request.setAttribute(
+                "procedencias",
+                LoginServlet.PROCEDENCIAS
+        );
 
-        Cliente clienteSesion =
-                (Cliente) session.getAttribute("clienteSesion");
-
+        Cliente clienteSesion = (Cliente) session.getAttribute("clienteSesion");
 
         try {
-
-            /*
-             * Buscamos los datos actualizados del cliente
-             * directamente desde la base de datos.
-             */
-            Cliente cliente =
-                    clienteDAO.buscarPorId(
-                            clienteSesion.getId()
-                    );
-
+            /*Buscamos los datos actualizados del clientedirectamente desde la base de datos*/
+            Cliente cliente = clienteDAO.buscarPorId(clienteSesion.getId());
 
             if (cliente == null) {
 
                 session.invalidate();
 
-                response.sendRedirect(
-                        request.getContextPath() + "/login"
-                );
+                response.sendRedirect(request.getContextPath() + "/login");
 
                 return;
             }
 
-
-            /*
-             * Traemos las reseñas de ese cliente.
-             */
-            List<Resena> resenas =
-                    resenaDAO.listarPorCliente(
-                            cliente.getId()
-                    );
+            /*Traemos las reseñas de ese cliente*/
+            List<Resena> resenas = resenaDAO.listarPorCliente(cliente.getId());
 
 
-            /*
-             * Enviamos los datos al JSP.
-             */
-            request.setAttribute(
-                    "cliente",
-                    cliente
-            );
+            /*Enviamos los datos al JSP*/
+            request.setAttribute("cliente", cliente);
 
-            request.setAttribute(
-                    "resenas",
-                    resenas
-            );
+            request.setAttribute("resenas", resenas);
 
 
-            /*
-             * Mostramos la pantalla de perfil.
-             */
+            /*Mostramos la pantalla de perfil*/
             request
-                    .getRequestDispatcher(
-                            "/WEB-INF/views/perfil.jsp"
-                    )
+                    .getRequestDispatcher("/WEB-INF/views/perfil.jsp")
                     .forward(
                             request,
                             response
@@ -111,10 +77,7 @@ public class PerfilServlet extends HttpServlet {
 
         } catch (SQLException e) {
 
-            throw new ServletException(
-                    "Error al cargar el perfil.",
-                    e
-            );
+            throw new ServletException("Error al cargar el perfil.", e);
         }
     }
 }

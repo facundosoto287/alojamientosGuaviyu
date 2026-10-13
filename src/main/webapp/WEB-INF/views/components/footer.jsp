@@ -34,7 +34,7 @@
             <h4>Navegación</h4>
 
             <a href="${pageContext.request.contextPath}/inicio">Inicio</a>
-            <a href="${pageContext.request.contextPath}/alojamientos">Alojamientos</a>
+            <a href="${pageContext.request.contextPath}/mi-perfil">Mi perfil</a>
             <a href="#">Mapa</a>
             <a href="${pageContext.request.contextPath}/sobre-nosotros">Sobre nosotros</a>
         </div>
@@ -63,23 +63,9 @@
             </div>
         </div>
 
-        <!-- Redes -->
+        <!-- Contacto -->
         <div class="footer-columna">
-            <h4>Redes</h4>
-
-            <a href="https://www.instagram.com/alojamientosguaviyu/"
-               class="footer-item footer-red"
-               target="_blank"
-               rel="noopener">
-
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="5"/>
-                    <circle cx="12" cy="12" r="4"/>
-                    <circle cx="17.5" cy="6.5" r="1"/>
-                </svg>
-
-                <span>Instagram</span>
-            </a>
+            <h4>Contacto</h4>
 
             <a href="#"
                class="footer-item footer-red"
@@ -87,12 +73,42 @@
                rel="noopener">
 
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5z"/>
-                    <path d="M9 8.5c.5 2.7 2.3 4.5 5 5"/>
+                    <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <circle cx="17.5" cy="6.5" r="1"></circle>
+                </svg>
+
+                <span>Instagram</span>
+            </a>
+
+
+            <a href="#"
+               class="footer-item footer-red"
+               target="_blank"
+               rel="noopener">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M8.5 8.5c.5 3.3 2.7 5.5 6 6"></path>
+                    <path d="M8.7 8.4l1.4 2-1 1"></path>
+                    <path d="M14.2 12.8l1.9.9-.8 1.4"></path>
                 </svg>
 
                 <span>WhatsApp</span>
             </a>
+
+
+            <a href="mailto:contacto@alojamientosguaviyu.com"
+               class="footer-item footer-red">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                    <path d="M3 7l9 6 9-6"></path>
+                </svg>
+
+                <span>contacto@alojamientosguaviyu.com</span>
+            </a>
+
         </div>
 
     </div>

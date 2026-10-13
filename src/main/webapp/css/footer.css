@@ -133,6 +133,87 @@
     font-size: 12px;
 }
 
+.footer-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 12px;
+
+    color: #e1edf7;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.footer-item svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.footer-red {
+    text-decoration: none;
+}
+
+.footer-red:hover {
+    color: white;
+}
+
+.footer-contacto a:hover {
+    text-decoration: underline;
+}
+
+.footer-item,
+.footer-contacto {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 12px;
+
+    color: #e1edf7;
+    font-size: 14px;
+}
+
+.footer-item,
+.footer-contacto a,
+.footer-red {
+    font-size: 14px;
+    font-weight: 400;
+    color: #e1edf7;
+    text-decoration: none;
+}
+
+.footer-item svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.footer-redes a,
+.footer-contacto a {
+    font-size: 14px;
+    font-weight: 400;
+    color: white;
+    text-decoration: none;
+}
+
 
 /*RESPONSIVE*/
 

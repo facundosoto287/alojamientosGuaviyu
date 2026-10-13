@@ -74,15 +74,29 @@
                 </a>
 
 
-                <a href="${ctx}/mis-reservas">
+                <c:choose>
 
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="3" y="5" width="18" height="16" rx="2"/>
-                        <path d="M8 3v4M16 3v4M3 10h18"/>
-                    </svg>
+                    <c:when test="${not empty sessionScope.clienteSesion}">
+                        <a href="${ctx}/perfil">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="16" rx="2"/>
+                                <path d="M8 3v4M16 3v4M3 10h18"/>
+                            </svg>
+                            <span>Mi perfil</span>
+                        </a>
+                    </c:when>
 
-                    <span>Mis reservas</span>
-                </a>
+                    <c:otherwise>
+                        <a href="${ctx}/login">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="16" rx="2"/>
+                                <path d="M8 3v4M16 3v4M3 10h18"/>
+                            </svg>
+                            <span>Mi perfil</span>
+                        </a>
+                    </c:otherwise>
+
+                </c:choose>
 
 
                 <a href="${ctx}/sobre-nosotros">
@@ -109,10 +123,6 @@
                             Hola,
                             <c:out value="${sessionScope.clienteSesion.primerNombre}"/>
                         </span>
-
-                        <a href="${ctx}/cambiar-contrasena">
-                            Cambiar contraseña
-                        </a>
 
                         <form action="${ctx}/logout"
                               method="post"

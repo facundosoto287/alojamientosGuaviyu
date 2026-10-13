@@ -41,7 +41,7 @@
 <section class="banner">
     <div class="banner-content">
 
-        <h1>El confort y la tranquilidad en un solo lugar. </h1>
+        <h1>El confort y la tranquilidad en un solo lugar </h1>
 
         <%-- Características destacadas del destino --%>
         <div class="banner-detalles">

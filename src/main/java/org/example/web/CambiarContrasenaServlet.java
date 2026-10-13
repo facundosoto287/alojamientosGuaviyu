@@ -61,7 +61,14 @@ public class CambiarContrasenaServlet extends HttpServlet {
                 clienteDAO.cambiarContrasena(cliente.getId(), actual, nueva);
 
                 cliente.setDebeCambiarContrasena(false);
-                response.sendRedirect(request.getContextPath() + LoginServlet.DESTINO_POR_DEFECTO);
+
+                String origen = request.getParameter("origen");
+
+                if ("perfil".equals(origen)) {
+                    response.sendRedirect(request.getContextPath() + "/perfil");
+                } else {
+                    response.sendRedirect(request.getContextPath() + LoginServlet.DESTINO_POR_DEFECTO);
+                }
                 return;
 
             } catch (IllegalArgumentException e) {
