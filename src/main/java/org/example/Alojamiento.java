@@ -10,6 +10,10 @@ public class Alojamiento {
     private String ubicacion;
     private float distanciaApiscina;
 
+    // Coordenadas para el mapa (null si todavía no se cargaron)
+    private Double latitud;
+    private Double longitud;
+
     public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, String ubicacion, float distanciaApiscina) {
         this.id = id;
         this.nombre = nombre;
@@ -74,6 +78,27 @@ public class Alojamiento {
 
     public void setDistanciaApiscina(float distanciaApiscina) {
         this.distanciaApiscina = distanciaApiscina;
+    }
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    // true si el alojamiento tiene ubicación cargada para mostrarse en el mapa
+    public boolean tieneCoordenadas() {
+        return latitud != null && longitud != null;
     }
 
     @Override

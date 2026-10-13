@@ -16,10 +16,12 @@
     <title>Sobre nosotros | Alojamientos Guaviyú</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <!-- Caveat para el sello; Poppins y Nunito Sans son las del header y el footer (igual que en el inicio) -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${ctx}/css/header.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
-    <link rel="stylesheet" href="${ctx}/css/sobreNosotros.css">
+    <link rel="stylesheet" href="${ctx}/css/footer.css">
+    <!-- ?v=2 obliga al navegador a bajar el CSS nuevo (subilo cuando lo cambies) -->
+    <link rel="stylesheet" href="${ctx}/css/sobreNosotros.css?v=4">
 </head>
 <body>
 <%@ include file="components/header.jsp" %>
@@ -28,8 +30,6 @@
     <section class="portada">
         <div class="contenedor portada__interno">
             <h1>Nuestra historia<br>también es tu destino</h1>
-            <p>Familia, hospitalidad y un profundo amor por Guaviyú.
-               Más de 20 años compartiendo las termas y su entorno con viajeros de todo el país.</p>
         </div>
         <span class="sello">Disfrutá<br>Guaviyú
             <svg class="sello__sol" viewBox="0 0 24 24" aria-hidden="true">
@@ -116,6 +116,7 @@
         </div>
     </section>
 </main>
+
 <%@ include file="components/footer.jsp" %>
 </body>
 </html>

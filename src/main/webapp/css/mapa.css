@@ -1,0 +1,245 @@
+/* ===== Mapa - Alojamientos Guaviyú ===== */
+
+:root {
+    --azul-oscuro: #0b2a7a;
+    --azul: #0d6efd;
+    --texto: #3b4252;
+    --texto-suave: #5b6475;
+    --fondo: #f4f7fc;
+    --borde: #e3e9f4;
+    /* Colores de los pins: cambiá estos valores y se actualizan el mapa y la leyenda */
+    --casa: #1d4ed8;     /* azul (el del logo): nuestros alojamientos */
+    --termas: #ffffff;   /* celeste agua: termas y naturaleza */
+    --comida: #f59e0b;   /* amarillo atardecer: dónde comer */
+    --compras: #db2777;  /* rosa: compras */
+    --sombra: 0 6px 20px rgba(15, 40, 100, 0.08);
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+}
+
+.mapa-pagina {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+}
+
+/* ===== Título ===== */
+.etiqueta {
+    color: var(--azul);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.mapa-intro h1 {
+    color: var(--azul-oscuro);
+    font-size: clamp(28px, 3.2vw, 40px);
+    font-weight: 800;
+    margin: 4px 0 6px;
+}
+
+.mapa-intro p {
+    color: var(--texto-suave);
+    margin: 0 0 20px;
+}
+
+/* ===== Caja del mapa ===== */
+.mapa-caja {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--borde);
+    box-shadow: var(--sombra);
+}
+
+#mapa {
+    height: 72vh;
+    min-height: 440px;
+    width: 100%;
+    background: #dfe6ee;
+}
+
+/* Botón "Ver todo" (arriba a la derecha) */
+.btn-centrar {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1000;
+    background: #ffffff;
+    color: var(--azul-oscuro);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+}
+.btn-centrar:hover { color: var(--azul); }
+
+/* ===== Marcadores (gota con un emoji adentro) ===== */
+.pin {
+    width: 100%;
+    height: 100%;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 3px solid #ffffff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .45);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform .15s;
+}
+.pin:hover { transform: rotate(-45deg) scale(1.12); }
+.pin span {
+    transform: rotate(45deg);
+    font-size: 17px;
+    line-height: 1;
+}
+.pin--casa    { background: var(--casa); }
+.pin--casa span { font-size: 21px; }
+
+/* Pin de los alojamientos con el logo adentro */
+.pin--logo {
+    border-width: 2px;
+    background: var(--casa);
+    padding: 2px;
+}
+/* Leaflet trae una regla (.leaflet-container .leaflet-marker-pane img { width: auto })
+   que deja las imágenes de los pines en su tamaño real. Con esta, más específica,
+   el logo queda del tamaño del pin. */
+.leaflet-container .leaflet-marker-pane .pin--logo img,
+.pin--logo img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #ffffff;
+    transform: rotate(45deg); /* compensa el giro de la gota para que el logo quede derecho */
+}
+.pin--logo span { display: none; }                 /* la casita solo aparece si el logo no carga */
+.pin--logo.sin-logo img { display: none; }
+.pin--logo.sin-logo span { display: block; }
+.pin--termas  { background: var(--termas); }
+.pin--comida  { background: var(--comida); }
+.pin--compras { background: var(--compras); }
+
+/* Nombre fijo arriba de cada casita */
+.leaflet-tooltip.etiqueta-casa {
+    background: var(--casa);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 7px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+.leaflet-tooltip.etiqueta-casa::before { border-top-color: #ffffff; }
+
+/* ===== Cartel (popup) ===== */
+.leaflet-popup-content-wrapper { border-radius: 12px; }
+.leaflet-popup-content { margin: 14px 16px; }
+
+.cartel h3 {
+    color: var(--azul-oscuro);
+    font-size: 17px;
+    margin: 0 0 4px;
+}
+.cartel p { margin: 4px 0; }
+.cartel__tipo {
+    display: inline-block;
+    background: #e4ecfb;
+    color: var(--casa);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+}
+.cartel__sub  { color: var(--texto-suave); font-size: 13px; }
+.cartel__desc { color: var(--texto-suave); font-size: 13px; }
+.cartel__datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 8px 0 0;
+}
+.cartel__boton {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    background: var(--azul);
+    color: #ffffff !important;
+    border-radius: 8px;
+    padding: 8px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.cartel__boton:hover { background: #0b5ed7; }
+
+/* ===== Leyenda con filtros ===== */
+.leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin: 16px 0 0;
+    padding: 14px 18px;
+    background: #ffffff;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+}
+.leyenda legend {
+    color: var(--azul-oscuro);
+    font-weight: 700;
+    padding: 0 6px;
+}
+.leyenda label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--texto);
+}
+.leyenda input { width: 17px; height: 17px; accent-color: var(--azul); }
+
+.icono-mini {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 1px var(--borde);
+}
+.icono-mini--casa    { background: var(--casa); overflow: hidden; }
+.icono-mini--casa img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #ffffff; }
+.icono-mini--termas  { background: var(--termas); }
+.icono-mini--comida  { background: var(--comida); }
+.icono-mini--compras { background: var(--compras); }
+
+/* Aviso de alojamientos que todavía no tienen coordenadas */
+.sin-ubicacion {
+    margin: 10px 0 0;
+    color: var(--texto-suave);
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .mapa-pagina { padding: 20px 16px 32px; }
+    #mapa { height: 62vh; min-height: 380px; }
+    .btn-centrar { padding: 10px 12px; }
+}

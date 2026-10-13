@@ -24,15 +24,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap"
           rel="stylesheet">
 
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/footer.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/inicio.css">
+      <link rel="stylesheet"
+            href="${pageContext.request.contextPath}/css/inicio.css?v=2">
 </head>
 
 <body>
@@ -41,11 +41,7 @@
 <section class="banner">
     <div class="banner-content">
 
-        <h1>Tu descanso te espera en Guaviyú</h1>
-
-        <p>
-            Aquí vas a encontrar el alojamiento ideal para disfrutar de las Termas de Guaviyú
-        </p>
+        <h1>El confort y la tranquilidad en un solo lugar. </h1>
 
         <%-- Características destacadas del destino --%>
         <div class="banner-detalles">
@@ -82,7 +78,7 @@
                     <path d="M16 14c2.8 0 5 1.6 5 4"/>
                 </svg>
 
-                <span>Alojamientos para familias, parejas y grupos</span>
+                <span>Alojamientos para familias y parejas </span>
             </div>
 
         </div>

@@ -14,8 +14,8 @@ public class AlojamientoDAO {
     public boolean agregarAlojamiento(Alojamiento alojamiento) {
 
         String sql = """
-                INSERT INTO alojamiento (nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina)
-                VALUES (?, ?, ?, ?, ?, ?)""";
+                INSERT INTO alojamiento (nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -26,6 +26,7 @@ public class AlojamientoDAO {
             sentencia.setDouble(4, alojamiento.getPrecio());
             sentencia.setString(5, alojamiento.getUbicacion());
             sentencia.setFloat(6, alojamiento.getDistanciaApiscina());
+            guardarCoordenadas(sentencia, 7, alojamiento);
 
             return sentencia.executeUpdate() > 0;
 
@@ -37,14 +38,16 @@ public class AlojamientoDAO {
 
     public List<Alojamiento> listarAlojamientos() {
         List<Alojamiento> alojamientos = new ArrayList<>();
-        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina FROM alojamiento";
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud FROM alojamiento";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql);
              ResultSet resultado = sentencia.executeQuery()) {
 
             while (resultado.next()) {
-                alojamientos.add(mapearAlojamiento(resultado));
+                Alojamiento alojamiento = mapearAlojamiento(resultado);
+                leerCoordenadas(resultado, alojamiento);
+                alojamientos.add(alojamiento);
             }
 
         } catch (SQLException e) {
@@ -58,7 +61,8 @@ public class AlojamientoDAO {
 
         String sql = """
                 UPDATE alojamiento
-                SET nombre = ?, descripcion = ?, capacidad = ?, precio = ?, ubicacion = ?, distanciaApiscina = ?
+                SET nombre = ?, descripcion = ?, capacidad = ?, precio = ?, ubicacion = ?, distanciaApiscina = ?,
+                    latitud = ?, longitud = ?
                 WHERE id = ?""";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -70,7 +74,8 @@ public class AlojamientoDAO {
             sentencia.setDouble(4, alojamiento.getPrecio());
             sentencia.setString(5, alojamiento.getUbicacion());
             sentencia.setFloat(6, alojamiento.getDistanciaApiscina());
-            sentencia.setInt(7, alojamiento.getId());
+            guardarCoordenadas(sentencia, 7, alojamiento);
+            sentencia.setInt(9, alojamiento.getId());
 
             return sentencia.executeUpdate() > 0;
 
@@ -132,6 +137,69 @@ public class AlojamientoDAO {
     }
 
 
+    // ---- Coordenadas para el mapa ----
+
+    // Pide la ubicación en el mapa. Se pega tal cual la copia Google Maps: "-31.83812, -57.89034".
+    // Si se deja vacío, el alojamiento se guarda sin ubicación y no aparece en el mapa.
+    private void pedirCoordenadas(Scanner sc, Alojamiento alojamiento) {
+        while (true) {
+            System.out.println("Ingrese las coordenadas del mapa (ej: -31.83812, -57.89034), o Enter para dejarlas vacías:");
+            System.out.println("  Tip: en Google Maps, clic derecho sobre el lugar y clic en los números para copiarlos.");
+            String linea = sc.nextLine().trim();
+
+            if (linea.isEmpty()) {
+                alojamiento.setLatitud(null);
+                alojamiento.setLongitud(null);
+                return;
+            }
+
+            String[] partes = linea.split(",");
+            if (partes.length == 2) {
+                try {
+                    double latitud = Double.parseDouble(partes[0].trim());
+                    double longitud = Double.parseDouble(partes[1].trim());
+
+                    // Uruguay está entre las latitudes -35 y -30 y las longitudes -59 y -53
+                    if (latitud >= -35 && latitud <= -30 && longitud >= -59 && longitud <= -53) {
+                        alojamiento.setLatitud(latitud);
+                        alojamiento.setLongitud(longitud);
+                        return;
+                    }
+                    System.out.println("Esas coordenadas no son de Uruguay. Revise que no estén al revés.");
+                    continue;
+                } catch (NumberFormatException e) {
+                    // cae al mensaje de abajo
+                }
+            }
+            System.out.println("Formato inválido. Escriba dos números separados por coma, con punto decimal.");
+        }
+    }
+
+    // Guarda latitud y longitud en las posiciones indicada y siguiente (NULL si no hay)
+    private void guardarCoordenadas(PreparedStatement sentencia, int posicion, Alojamiento alojamiento)
+            throws SQLException {
+        if (alojamiento.tieneCoordenadas()) {
+            sentencia.setDouble(posicion, alojamiento.getLatitud());
+            sentencia.setDouble(posicion + 1, alojamiento.getLongitud());
+        } else {
+            sentencia.setNull(posicion, java.sql.Types.DOUBLE);
+            sentencia.setNull(posicion + 1, java.sql.Types.DOUBLE);
+        }
+    }
+
+    // Lee latitud y longitud del resultado (quedan en null si en la base están vacías)
+    private void leerCoordenadas(ResultSet resultado, Alojamiento alojamiento) throws SQLException {
+        double latitud = resultado.getDouble("latitud");
+        boolean latitudVacia = resultado.wasNull();
+        double longitud = resultado.getDouble("longitud");
+        boolean longitudVacia = resultado.wasNull();
+
+        if (!latitudVacia && !longitudVacia) {
+            alojamiento.setLatitud(latitud);
+            alojamiento.setLongitud(longitud);
+        }
+    }
+
     private Alojamiento mapearAlojamiento(ResultSet resultado) throws SQLException {
         return new Alojamiento(
                 resultado.getInt("id"),
@@ -168,7 +236,9 @@ public class AlojamientoDAO {
         float distanciaApiscina = sc.nextFloat();
         sc.nextLine();
 
-        return new Alojamiento(0, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        Alojamiento alojamiento = new Alojamiento(0, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        pedirCoordenadas(sc, alojamiento);
+        return alojamiento;
     }
 
     // Pide los datos para MODIFICAR un alojamiento existente (incluye id)
@@ -197,7 +267,9 @@ public class AlojamientoDAO {
         float distanciaApiscina = sc.nextFloat();
         sc.nextLine();
 
-        return new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        Alojamiento alojamiento = new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        pedirCoordenadas(sc, alojamiento);
+        return alojamiento;
     }
 
     public int obtenerCapacidad(int alojamientoId) throws SQLException {
@@ -225,7 +297,7 @@ public class AlojamientoDAO {
             """;
 
         try (Connection conexion = ConexionBD.obtenerConexion();
-            PreparedStatement sentencia = conexion.prepareStatement(sql)){
+             PreparedStatement sentencia = conexion.prepareStatement(sql)){
 
             sentencia.setInt(1, idAlojamiento);
             sentencia.setInt(2, idServicio);
@@ -277,15 +349,15 @@ public class AlojamientoDAO {
             """;
 
         try (Connection conexion = ConexionBD.obtenerConexion();
-            PreparedStatement sentencia = conexion.prepareStatement(sql)){
+             PreparedStatement sentencia = conexion.prepareStatement(sql)){
 
             sentencia.setInt(1, idAlojamiento);
             try (ResultSet resultado = sentencia.executeQuery()) {
 
                 while (resultado.next()){
                     Servicio servicio = new Servicio(
-                    resultado.getInt("id"),
-                    resultado.getString("nombre")
+                            resultado.getInt("id"),
+                            resultado.getString("nombre")
                     );
                     servicios.add(servicio); //hacer un print del resultado para ver que trae
                 }
@@ -438,16 +510,20 @@ public class AlojamientoDAO {
     }
 
     public Alojamiento buscarPorIdALO(int id) throws SQLException {
-        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina " +
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud " +
                 "FROM alojamiento WHERE id = ?";
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
             sentencia.setInt(1, id);
             try (ResultSet resultado = sentencia.executeQuery()) {
-                return resultado.next() ? mapearAlojamiento(resultado) : null;
+                if (!resultado.next()) {
+                    return null;
+                }
+                Alojamiento alojamiento = mapearAlojamiento(resultado);
+                leerCoordenadas(resultado, alojamiento); // para el mapa de la página de detalle
+                return alojamiento;
             }
         }
     }
 
 }
-

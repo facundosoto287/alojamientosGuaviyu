@@ -12,8 +12,9 @@
 
     <title>${alojamiento.nombre} | Alojamientos Guaviyú</title>
 
-    <!-- Libreria -->
+    <!-- Librerias -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,56 +61,76 @@
 
             <section class="galeria-principal">
 
-                <!-- Foto principal -->
-                <div class="imagen-grande">
-                    <img src="${pageContext.request.contextPath}/img/grandiosa1.jpg"
-                         alt="Imagen principal de ${alojamiento.nombre}"
-                         class="foto-galeria" data-indice="0">
-                </div>
+                <c:choose>
 
+                    <%-- Solo "La Grandiosa" (id 5) tiene fotos propias: se muestra su galería --%>
+                    <c:when test="${alojamiento.id == 5}">
 
-                <!-- Fotos secundarias -->
-                <div class="imagenes-secundarias">
-
-                    <div class="miniatura">
-                        <img src="${pageContext.request.contextPath}/img/grandiosa3.jpg"
-                             alt="Imagen de ${alojamiento.nombre}"
-                             class="foto-galeria" data-indice="1">
-                    </div>
-
-                    <div class="miniatura">
-                        <img src="${pageContext.request.contextPath}/img/grandiosa4.jpg"
-                             alt="Imagen de ${alojamiento.nombre}"
-                             class="foto-galeria" data-indice="2">
-                    </div>
-
-                    <div class="miniatura">
-                        <img src="${pageContext.request.contextPath}/img/grandiosa5.jpg"
-                             alt="Imagen de ${alojamiento.nombre}"
-                             class="foto-galeria" data-indice="3">
-                    </div>
-
-                    <div class="miniatura">
-                        <img src="${pageContext.request.contextPath}/img/grandiosa4.jpg"
-                             alt="Imagen de ${alojamiento.nombre}"
-                             class="foto-galeria" data-indice="4">
-                    </div>
-
-
-                    <!-- Quinta miniatura.
-                         Si existen más imágenes, mostramos cuántas quedan -->
-                    <div class="miniatura miniatura-mas">
-
-                        <img src="${pageContext.request.contextPath}/img/grandiosa5.jpg"
-                             alt="Más imágenes de ${alojamiento.nombre}">
-
-                        <div class="miniatura-overlay">
-                            +6
+                        <!-- Foto principal -->
+                        <div class="imagen-grande">
+                            <img src="${pageContext.request.contextPath}/img/grandiosa1.jpg"
+                                 alt="Imagen principal de ${alojamiento.nombre}"
+                                 class="foto-galeria" data-indice="0">
                         </div>
 
-                    </div>
 
-                </div>
+                        <!-- Fotos secundarias -->
+                        <div class="imagenes-secundarias">
+
+                            <div class="miniatura">
+                                <img src="${pageContext.request.contextPath}/img/grandiosa3.jpg"
+                                     alt="Imagen de ${alojamiento.nombre}"
+                                     class="foto-galeria" data-indice="1">
+                            </div>
+
+                            <div class="miniatura">
+                                <img src="${pageContext.request.contextPath}/img/grandiosa4.jpg"
+                                     alt="Imagen de ${alojamiento.nombre}"
+                                     class="foto-galeria" data-indice="2">
+                            </div>
+
+                            <div class="miniatura">
+                                <img src="${pageContext.request.contextPath}/img/grandiosa5.jpg"
+                                     alt="Imagen de ${alojamiento.nombre}"
+                                     class="foto-galeria" data-indice="3">
+                            </div>
+
+                            <div class="miniatura">
+                                <img src="${pageContext.request.contextPath}/img/grandiosa4.jpg"
+                                     alt="Imagen de ${alojamiento.nombre}"
+                                     class="foto-galeria" data-indice="4">
+                            </div>
+
+
+                            <!-- Quinta miniatura.
+                                 Si existen más imágenes, mostramos cuántas quedan -->
+                            <div class="miniatura miniatura-mas">
+
+                                <img src="${pageContext.request.contextPath}/img/grandiosa5.jpg"
+                                     alt="Más imágenes de ${alojamiento.nombre}">
+
+                                <div class="miniatura-overlay">
+                                    +6
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </c:when>
+
+                    <%-- Los demás alojamientos todavía no tienen fotos: imagen por defecto (la misma que en el inicio) --%>
+                    <c:otherwise>
+
+                        <div class="imagen-grande">
+                            <img src="${pageContext.request.contextPath}/img/alojamiento-default.jpg"
+                                 alt="Imagen de ${alojamiento.nombre}"
+                                 class="foto-galeria" data-indice="0">
+                        </div>
+
+                    </c:otherwise>
+
+                </c:choose>
 
             </section>
 
@@ -310,22 +331,45 @@
                     </div>
 
 
-                    <!-- Más adelante acá ponemos Leaflet -->
-                    <div class="mapa-placeholder">
+                    <c:choose>
 
-                        <svg viewBox="0 0 24 24"
-                             aria-hidden="true">
-                            <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/>
-                            <circle cx="12" cy="10" r="2"/>
-                        </svg>
+                        <%-- El alojamiento tiene coordenadas: se muestra el mapa --%>
+                        <c:when test="${not empty alojamiento.latitud and not empty alojamiento.longitud}">
+                            <div class="mapa-alojamiento-caja">
+                                <div id="mapaAlojamiento"
+                                     class="mapa-alojamiento"
+                                     data-lat="${alojamiento.latitud}"
+                                     data-lng="${alojamiento.longitud}"
+                                     aria-label="Mapa con la ubicación de ${alojamiento.nombre}">
+                                </div>
 
-                        <strong>Ubicación del alojamiento</strong>
+                                <a href="${pageContext.request.contextPath}/mapa?alojamiento=${alojamiento.id}"
+                                   class="mapa-alojamiento-enlace">
+                                    Ver en el mapa completo
+                                </a>
+                            </div>
+                        </c:when>
 
-                        <span>
-                            Acá vamos a colocar el mapa interactivo
-                        </span>
+                        <%-- Todavía no se cargaron las coordenadas --%>
+                        <c:otherwise>
+                            <div class="mapa-placeholder">
 
-                    </div>
+                                <svg viewBox="0 0 24 24"
+                                     aria-hidden="true">
+                                    <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/>
+                                    <circle cx="12" cy="10" r="2"/>
+                                </svg>
+
+                                <strong>Ubicación del alojamiento</strong>
+
+                                <span>
+                                    Todavía no está cargada la ubicación en el mapa
+                                </span>
+
+                            </div>
+                        </c:otherwise>
+
+                    </c:choose>
 
                 </div>
 
@@ -510,6 +554,41 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script src="${pageContext.request.contextPath}/js/alojamiento-detalle.js"></script>
+
+<!-- Mapa de la ubicación (Leaflet) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function () {
+        const contenedor = document.getElementById("mapaAlojamiento");
+        if (!contenedor) {
+            return; // el alojamiento no tiene coordenadas
+        }
+
+        const posicion = [
+            parseFloat(contenedor.dataset.lat),
+            parseFloat(contenedor.dataset.lng)
+        ];
+
+        // scrollWheelZoom en false: así la ruedita baja la página y no hace zoom sin querer
+        const mapa = L.map(contenedor, { scrollWheelZoom: false })
+            .setView(posicion, 17);
+
+        // Foto satelital, igual que en la página del mapa
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+            maxNativeZoom: 18, maxZoom: 20,
+            attribution: "Imágenes &copy; Esri, Maxar, Earthstar Geographics"
+        }).addTo(mapa);
+
+        const icono = L.divIcon({
+            className: "",
+            html: '<div class="pin-alojamiento"><span>🏠</span></div>',
+            iconSize: [44, 44],
+            iconAnchor: [22, 44]
+        });
+
+        L.marker(posicion, { icon: icono }).addTo(mapa);
+    })();
+</script>
 <%@ include file="components/footer.jsp" %>
 </body>
 </html>
