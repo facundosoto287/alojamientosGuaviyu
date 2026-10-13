@@ -275,48 +275,6 @@
                 </form>
             </section>
 
-
-            <!--RESERVAS-->
-
-            <section class="perfil-tarjeta"
-                     id="reservas">
-
-                <div class="perfil-tarjeta-cabecera">
-
-                    <div>
-
-                        <h2>
-                            Mis reservas
-                        </h2>
-
-                        <p>
-                            Consultá las reservas asociadas a tu cuenta.
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <!--
-                    Más adelante vamos a cargar las reservas reales
-                    desde ReservaDAO.
-                -->
-
-                <div class="perfil-vacio">
-
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
-                        <path d="M8 3v4M16 3v4M3 10h18"></path>
-                    </svg>
-
-                    <p>
-                        Próximamente vas a poder consultar tus reservas desde acá.
-                    </p>
-
-                </div>
-
-            </section>
-
         </section>
 
         <!--RESEÑAS-->
