@@ -9,17 +9,50 @@
     --borde: #e3e9f4;
     /* Colores de los pins: cambiá estos valores y se actualizan el mapa y la leyenda */
     --casa: #1d4ed8;     /* azul (el del logo): nuestros alojamientos */
-    --termas: #ffffff;   /* celeste agua: termas y naturaleza */
+    --piscinas: #ffffff;   /* blanco: piscinas termales */
+    --piscinas-borde: #06b6d4; /* borde celeste para que el pin blanco se vea sobre el mapa */
+    --naturaleza: #dcfce7;  /* verde clarito: naturaleza (camping, sendero) */
+    --naturaleza-borde: #16a34a; /* borde verde */
     --comida: #f59e0b;   /* amarillo atardecer: dónde comer */
     --compras: #db2777;  /* rosa: compras */
     --sombra: 0 6px 20px rgba(15, 40, 100, 0.08);
 }
 
+/* Igual que en inicio.css: sin esta regla el footer calcula distinto los anchos
+   (el padding se suma al ancho) y se ve diferente */
+* {
+    box-sizing: border-box;
+}
+
+/* El body queda IGUAL que en inicio.css, así el header y el footer se ven idénticos */
 body {
     margin: 0;
-    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
-    color: var(--texto);
+    font-family: Poppins, "Segoe UI", sans-serif;
+}
+
+/* ===== Letras: las mismas que el footer =====
+   Textos: Nunito Sans (como .site-footer)
+   Títulos: Poppins 700 (como .footer-columna h4 y .footer-nombre strong) */
+main {
     background: var(--fondo);
+    color: var(--texto);
+}
+
+/* Todo el contenido del mapa en Nunito Sans: textos, botones, casillas,
+   carteles y etiquetas de Leaflet (que trae su propia letra) */
+main,
+main *,
+.leaflet-container,
+.leaflet-container * {
+    font-family: "Nunito Sans", sans-serif;
+}
+
+/* Los títulos en Poppins, igual que los títulos del footer */
+main h1,
+main legend,
+.leaflet-container .cartel h3 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
 }
 
 .mapa-pagina {
@@ -28,19 +61,19 @@ body {
     padding: 32px 24px 48px;
 }
 
-/* ===== Título ===== */
-.etiqueta {
-    color: var(--azul);
+/* ===== Título (mismo estilo que "Conocé nuestros alojamientos" del inicio) ===== */
+main .etiqueta {
+    color: #0d6efd;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
 }
 
 .mapa-intro h1 {
-    color: var(--azul-oscuro);
-    font-size: clamp(28px, 3.2vw, 40px);
-    font-weight: 800;
+    color: #0b3d91;          /* mismo azul que los títulos del inicio */
+    font-size: clamp(28px, 3vw, 34px);
+    font-weight: 700;
     margin: 4px 0 6px;
 }
 
@@ -128,7 +161,8 @@ body {
 .pin--logo span { display: none; }                 /* la casita solo aparece si el logo no carga */
 .pin--logo.sin-logo img { display: none; }
 .pin--logo.sin-logo span { display: block; }
-.pin--termas  { background: var(--termas); }
+.pin--piscinas   { background: var(--piscinas); border-color: var(--piscinas-borde); }
+.pin--naturaleza { background: var(--naturaleza); border-color: var(--naturaleza-borde); }
 .pin--comida  { background: var(--comida); }
 .pin--compras { background: var(--compras); }
 
@@ -227,7 +261,8 @@ body {
 }
 .icono-mini--casa    { background: var(--casa); overflow: hidden; }
 .icono-mini--casa img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #ffffff; }
-.icono-mini--termas  { background: var(--termas); }
+.icono-mini--piscinas   { background: var(--piscinas); box-shadow: 0 0 0 2px var(--piscinas-borde); }
+.icono-mini--naturaleza { background: var(--naturaleza); box-shadow: 0 0 0 2px var(--naturaleza-borde); }
 .icono-mini--comida  { background: var(--comida); }
 .icono-mini--compras { background: var(--compras); }
 
