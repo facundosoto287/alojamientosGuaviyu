@@ -28,3 +28,24 @@ if (botonMenu && menuNavegacion) {
 
         });
 }
+
+const headerUsuarioBoton = document.getElementById("headerUsuarioBoton");
+
+const headerUsuarioDropdown = document.querySelector(".header-usuario-dropdown");
+
+
+if (headerUsuarioBoton && headerUsuarioDropdown) {
+
+    headerUsuarioBoton.addEventListener("click", (event) => {
+
+        if (window.innerWidth <= 700) {
+            return;
+        }
+
+        event.stopPropagation();
+
+        headerUsuarioDropdown.classList.toggle("abierto");
+
+    });
+
+}

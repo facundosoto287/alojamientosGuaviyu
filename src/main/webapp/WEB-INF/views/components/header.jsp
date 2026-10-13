@@ -119,35 +119,72 @@
 
                     <c:when test="${not empty sessionScope.clienteSesion}">
 
-                        <span class="header-saludo">
-                            Hola,
-                            <c:out value="${sessionScope.clienteSesion.primerNombre}"/>
-                        </span>
+                        <div class="header-usuario-dropdown">
 
-                        <form action="${ctx}/logout"
-                              method="post"
-                              class="logout-form">
+                            <button type="button"
+                                    class="header-usuario-boton"
+                                    id="headerUsuarioBoton"
+                                    aria-expanded="false">
 
-                            <button type="submit"
-                                    class="link-button">
-                                Cerrar sesión
+                                <span class="header-usuario-nombre">
+                                    Hola,
+                                    <c:out value="${sessionScope.clienteSesion.primerNombre}"/>
+                                </span>
+
+                                <span class="header-usuario-icono">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <circle cx="12" cy="8" r="4"></circle>
+                                        <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path>
+                                    </svg>
+                                </span>
+
+                                <svg class="header-flecha"
+                                     viewBox="0 0 24 24"
+                                     aria-hidden="true">
+                                    <path d="M6 9l6 6 6-6"></path>
+                                </svg>
+
                             </button>
 
-                        </form>
+                            <div class="header-dropdown-menu">
+
+                                <form action="${ctx}/logout"
+                                      method="post"
+                                      class="header-dropdown-logout-form">
+
+                                    <button type="submit"
+                                            class="header-dropdown-item header-dropdown-salir">
+
+                                        Cerrar sesión
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
 
                     </c:when>
 
 
                     <c:otherwise>
 
-                        <a href="${ctx}/login">
+                        <a href="${ctx}/login"
+                           class="header-login-link">
 
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <circle cx="12" cy="8" r="4"/>
-                                <path d="M4 21c1.8-4 5-6 8-6s6.2 2 8 6"/>
-                            </svg>
+                            <span class="header-usuario-icono">
 
-                            <span>Iniciar sesión</span>
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="8" r="4"></circle>
+                                    <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path>
+                                </svg>
+
+                            </span>
+
+                            <span>
+                                Iniciar sesión
+                            </span>
 
                         </a>
 

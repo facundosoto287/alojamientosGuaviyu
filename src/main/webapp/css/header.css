@@ -8,6 +8,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 16px 24px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -72,53 +73,271 @@
     color: #0d6efd;
 }
 
-/* Zona de usuario: "Iniciar sesión" o "Hola, [nombre] · Cerrar sesión" */
+/* ZONA DE USUARIO */
+
 .header-user {
     display: flex;
     align-items: center;
-    gap: .75rem;
+
     color: #084298;
+
     font-size: 16px;
     font-weight: 600;
 }
 
-.header-user a {
+.header-user > a {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
     text-decoration: none;
+
     color: #084298;
 }
 
-.header-user a:hover {
+.header-user > a:hover {
     color: #0d6efd;
 }
 
-.header-saludo {
+
+/*USUARIO LOGUEADO - DROPDOWN*/
+
+.header-usuario-dropdown {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+}
+
+.header-usuario-boton {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 5px 7px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: #084298;
+
+    font-family: inherit;
+    font-size: 15px;
     font-weight: 700;
-    color: #4f6fae;
-}
 
-.logout-form {
-    margin: 0;
-}
-
-.link-button {
-    background: none;
-    border: 0;
-    padding: 0;
-    font: inherit;
-    color: inherit;
     cursor: pointer;
 }
 
-.link-button:hover {
+.header-usuario-boton:hover {
+    background: #f3f6fb;
+}
+
+
+/* Icono redondo */
+
+.header-usuario-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #e7f0ff;
+}
+
+.header-usuario-icono svg {
+    width: 17px;
+    height: 17px;
+
+    fill: none;
+
+    stroke: #0b4fc4;
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.header-login-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 5px 7px;
+
+    color: #084298;
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    border-radius: 10px;
+}
+
+.header-login-link:hover {
+    background: #f3f6fb;
     color: #0d6efd;
-    text-decoration: underline;
+}
+
+
+/* Nombre */
+
+.header-usuario-nombre {
+    white-space: nowrap;
+}
+
+
+/* Flecha */
+
+.header-flecha {
+    width: 15px;
+    height: 15px;
+
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    transition: transform .2s ease;
+}
+
+.header-usuario-dropdown.abierto .header-flecha {
+    transform: rotate(180deg);
+}
+
+
+/*MENU DESPLEGABLE*/
+
+.header-dropdown-menu {
+    position: absolute;
+
+    top: calc(100% + 10px);
+    right: 0;
+
+    width: 210px;
+
+    padding: 8px;
+
+    background: white;
+
+    border: 1px solid #dce4ef;
+    border-radius: 12px;
+
+    box-shadow:
+            0 12px 30px rgba(11, 42, 102, .14);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(-6px);
+
+    pointer-events: none;
+
+    transition:
+            opacity .18s ease,
+            visibility .18s ease,
+            transform .18s ease;
+
+    z-index: 5000;
+}
+
+.header-usuario-dropdown.abierto .header-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+
+    pointer-events: auto;
+}
+
+
+/* Items */
+
+.header-dropdown-item {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #163b70;
+
+    text-decoration: none;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.header-dropdown-item:hover {
+    background: #f2f6fc;
+}
+
+.header-dropdown-item svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+
+/* Separador */
+
+.header-dropdown-separador {
+    height: 1px;
+
+    margin: 6px 4px;
+
+    background: #e4e9f0;
+}
+
+
+/* Logout */
+
+.header-dropdown-logout-form {
+    margin: 0;
+    width: 100%;
+}
+
+.header-dropdown-salir {
+    color: #d62f2f;
+}
+
+.header-dropdown-salir:hover {
+    background: #fff0f0;
 }
 
 /*MENÚ HAMBURGUESA*/
-
-/* ========================================
-   MENÚ HAMBURGUESA
-   ======================================== */
 
 .menu-hamburguesa {
     display: none;
@@ -170,9 +389,21 @@
 
 
 /* Íconos ocultos en PC */
-.main-nav a svg,
-.header-user a svg {
+.main-nav a svg {
     display: none;
+}
+
+.header-dropdown-logout-form {
+    margin: 0;
+}
+
+.header-dropdown-logout-form button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
 }
 
 /*RESPONSIVE*/
@@ -193,6 +424,43 @@
         box-sizing: border-box;
     }
 
+    /* Header mobile: logo izquierda, texto centrado, hamburguesa derecha */
+
+    .brand {
+        position: static;
+        padding: 0;
+    }
+
+    .logo-header-img {
+        width: 70px;
+        height: 70px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .brand-texto {
+        position: absolute;
+
+        left: 50%;
+        top: 50%;
+
+        transform: translate(-50%, -50%);
+
+        width: max-content;
+
+        align-items: center;
+        text-align: center;
+
+        z-index: 1;
+    }
+
+    .brand-texto span:first-child {
+        font-size: 14px;
+    }
+
+    .brand-texto span:last-child {
+        font-size: 30px;
+    }
 
     /* Hamburguesa */
     .menu-hamburguesa {
@@ -357,7 +625,7 @@
 
     /* Íconos celestes */
     .main-nav a svg,
-    .header-user a svg {
+    .header-user > a svg {
         display: block;
 
         width: 21px;
@@ -445,4 +713,126 @@
 
         cursor: pointer;
     }
+}
+
+@media (max-width: 700px) {
+
+/*USUARIO EN MENU MOBILE*/
+
+.header-usuario-dropdown {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+
+/* El botón deja de parecer un dropdown */
+
+.header-usuario-boton {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding: 14px 4px;
+
+    background: transparent;
+
+    color: white;
+
+    border-radius: 0;
+
+    cursor: default;
+}
+
+
+/* Hola, nombre */
+
+.header-usuario-nombre {
+    color: #63c7f5;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/* Ocultamos icono y flecha en mobile */
+
+.header-usuario-icono,
+.header-flecha {
+    display: none;
+}
+
+
+/* En mobile el menú de usuario SIEMPRE visible */
+
+.header-dropdown-menu {
+    position: static;
+
+    display: block !important;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    background: transparent;
+
+    border: none;
+    border-radius: 0;
+
+    box-shadow: none;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transform: none !important;
+
+    pointer-events: auto !important;
+}
+
+
+/* No necesitamos separador */
+
+.header-dropdown-separador {
+    display: none;
+}
+
+
+/* Cerrar sesión */
+
+.header-dropdown-logout-form {
+    width: 100%;
+    margin: 0;
+}
+
+.header-dropdown-salir {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    padding: 14px 4px;
+
+    background: transparent;
+
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+
+    color: white;
+
+    text-align: left;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.header-dropdown-salir:hover {
+    background: rgba(255,255,255,.05);
+    color: #63c7f5;
+}
 }
