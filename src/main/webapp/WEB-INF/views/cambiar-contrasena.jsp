@@ -40,6 +40,7 @@
         </c:if>
 
         <form action="${ctx}/cambiar-contrasena" method="post" novalidate>
+        <input type="hidden" name="origen" value="${param.origen}">
 
             <label for="cc-actual">Contraseña actual</label>
             <div class="input-icon">

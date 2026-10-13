@@ -736,5 +736,89 @@ public class ReservaDao {
         }
     }
 
+    //cu para ver mis reservas del cliente
+    public List<Reserva> listarReservasCliente(int idCliente) {
+
+        List<Reserva> reservas = new ArrayList<>();
+
+        String sql = """
+        SELECT
+            r.id,
+            r.fechaIngreso,
+            r.fechaSalida,
+            r.cantidadHuespedes,
+            r.estado,
+            r.fechaSolicitud,
+            r.alojamiento_id,
+
+            a.nombre AS nombreAlojamiento,
+            a.ubicacion AS ubicacionAlojamiento,
+            a.precio AS precioPorNoche,
+
+            DATEDIFF(r.fechaSalida, r.fechaIngreso) AS cantidadNoches,
+            DATEDIFF(r.fechaSalida, r.fechaIngreso) * a.precio AS precioTotal
+
+        FROM reserva r
+
+        JOIN cliente_reserva cr
+            ON r.id = cr.idReserva
+
+        JOIN alojamiento a
+            ON r.alojamiento_id = a.id
+
+        WHERE cr.idCliente = ?
+
+        ORDER BY r.fechaSolicitud DESC
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idCliente);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                while (resultado.next()) {
+
+                    Reserva reserva = new Reserva(
+                            resultado.getInt("id"),
+                            resultado.getDate("fechaIngreso"),
+                            resultado.getDate("fechaSalida"),
+                            resultado.getInt("cantidadHuespedes"),
+                            EstadoReserva.valueOf(resultado.getString("estado")),
+                            resultado.getDate("fechaSolicitud"),
+                            resultado.getInt("alojamiento_id")
+                    );
+
+                    reserva.setNombreAlojamiento(
+                            resultado.getString("nombreAlojamiento")
+                    );
+
+                    reserva.setUbicacionAlojamiento(
+                            resultado.getString("ubicacionAlojamiento")
+                    );
+
+                    reserva.setPrecioPorNoche(
+                            resultado.getDouble("precioPorNoche")
+                    );
+
+                    reserva.setCantidadNoches(
+                            resultado.getInt("cantidadNoches")
+                    );
+
+                    reserva.setPrecioTotal(
+                            resultado.getDouble("precioTotal")
+                    );
+
+                    reservas.add(reserva);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reservas;
+    }
 } //fin dao
 

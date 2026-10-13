@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=4">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
 </head>
 <body>
 <%@ include file="components/header.jsp" %>
@@ -241,5 +242,6 @@
         verTodo();
     }
 </script>
+<%@ include file="components/footer.jsp" %>
 </body>
 </html>
