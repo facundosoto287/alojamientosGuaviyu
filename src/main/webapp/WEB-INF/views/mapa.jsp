@@ -16,7 +16,6 @@
           rel="stylesheet">
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=4">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=8">
 </head>
@@ -41,8 +40,10 @@
         <legend>Mostrar en el mapa</legend>
         <label><input type="checkbox" data-capa="alojamientos" checked>
             <span class="icono-mini icono-mini--casa"><img src="${pageContext.request.contextPath}/img/logoAlojamientosGuaviyu.png" alt=""></span> Nuestros alojamientos</label>
-        <label><input type="checkbox" data-capa="termas" checked>
-            <span class="icono-mini icono-mini--termas">♨️</span> Termas y naturaleza</label>
+        <label><input type="checkbox" data-capa="piscinas" checked>
+            <span class="icono-mini icono-mini--piscinas">♨️</span> Piscinas termales</label>
+        <label><input type="checkbox" data-capa="naturaleza" checked>
+            <span class="icono-mini icono-mini--naturaleza">🌳</span> Naturaleza</label>
         <label><input type="checkbox" data-capa="comida" checked>
             <span class="icono-mini icono-mini--comida">🍴</span> Dónde comer</label>
         <label><input type="checkbox" data-capa="compras" checked>
@@ -107,7 +108,8 @@
             popupAnchor: [0, -38],
             tooltipAnchor: [0, -40]
         }),
-        termas:       crearIcono("♨️", "pin--termas", 34),
+        piscinas:     crearIcono("♨️", "pin--piscinas", 34),
+        naturaleza:   crearIcono("🌳", "pin--naturaleza", 34),
         comida:       crearIcono("🍴", "pin--comida", 34),
         compras:      crearIcono("🛒", "pin--compras", 34)
     };
@@ -115,7 +117,8 @@
     // Un grupo por tipo, para poder mostrarlos u ocultarlos desde la leyenda
     const grupos = {
         alojamientos: L.layerGroup().addTo(mapa),
-        termas: L.layerGroup().addTo(mapa),
+        piscinas: L.layerGroup().addTo(mapa),
+        naturaleza: L.layerGroup().addTo(mapa),
         comida: L.layerGroup().addTo(mapa),
         compras: L.layerGroup().addTo(mapa)
     };
@@ -183,10 +186,10 @@
 
     // ===== 4. Lugares de las termas (para que el turista se ubique) =====
     const lugares = [
-        { tipo: "termas",  nombre: "Piscinas termales",    info: "Piscinas al aire libre del complejo termal", lat: -31.84163, lng: -57.88647 },
-        { tipo: "termas",  nombre: "Piscinas cerradas",    info: "Piscinas termales techadas",                 lat: -31.83906, lng: -57.88844 },
-        { tipo: "termas",  nombre: "Camping",              info: "Zona de camping con parrilleros",            lat: -31.84261, lng: -57.88586 },
-        { tipo: "termas",  nombre: "Sendero Guaviyú",      info: "Sendero junto al arroyo",                    lat: -31.84408, lng: -57.88912 },
+        { tipo: "piscinas",   nombre: "Piscinas termales", info: "Piscinas al aire libre del complejo termal", lat: -31.84163, lng: -57.88647 },
+        { tipo: "piscinas",   nombre: "Piscinas cerradas", info: "Piscinas termales techadas",                 lat: -31.83906, lng: -57.88844 },
+        { tipo: "naturaleza", nombre: "Camping",           info: "Zona de camping con parrilleros",            lat: -31.84261, lng: -57.88586 },
+        { tipo: "naturaleza", nombre: "Sendero Guaviyú",   info: "Sendero junto al arroyo",                    lat: -31.84408, lng: -57.88912 },
         { tipo: "comida",  nombre: "Parador UTU",          info: "Restaurante dentro del predio termal",       lat: -31.84142, lng: -57.88769 },
         { tipo: "comida",  nombre: "Parrilla Mi Familia",  info: "Restaurante y parrilla",                     lat: -31.84193, lng: -57.88628 },
         { tipo: "comida",  nombre: "Dalian Coffee & Market", info: "Cafetería, mercado y restaurante",         lat: -31.83612, lng: -57.89069 },
