@@ -422,10 +422,11 @@
                     <c:forEach var="reserva"
                                items="${reservasConfirmadas}">
 
-                        <span class="reserva-confirmada"
-                              data-ingreso="${reserva.fechaIngreso}"
-                              data-salida="${reserva.fechaSalida}">
-                        </span>
+                        <div class="reserva-confirmada"
+                             data-ingreso="${reserva.fechaIngreso}"
+                             data-salida="${reserva.fechaSalida}"
+                             data-medio-dia="${reserva.medioDiaExtra}">
+                        </div>
 
                     </c:forEach>
 
@@ -455,7 +456,13 @@
 
 
             <!-- Formulario visual -->
-            <div class="reserva-formulario">
+            <form class="reserva-formulario"
+                  action="${ctx}/solicitar-reserva"
+                  method="get">
+
+                <input type="hidden"
+                       name="alojamientoId"
+                       value="${alojamiento.id}">
 
 
                 <div class="reserva-fechas">
@@ -470,7 +477,8 @@
                                id="fechaIngreso"
                                name="fechaIngreso"
                                placeholder="Seleccioná una fecha"
-                               readonly>
+                               readonly
+                               required>
 
                     </div>
 
@@ -485,7 +493,8 @@
                                id="fechaSalida"
                                name="fechaSalida"
                                placeholder="Seleccioná una fecha"
-                               readonly>
+                               readonly
+                               required>
 
                     </div>
 
@@ -503,20 +512,19 @@
                            name="cantidadHuespedes"
                            min="1"
                            max="${alojamiento.capacidad}"
-                           value="1">
+                           value="1"
+                           required>
 
                 </div>
 
 
-                <!-- Por ahora no envía nada -->
-                <button type="button"
-                        class="boton-solicitar">
+                <button type="submit" class="boton-solicitar">
 
                     Solicitar reserva
 
                 </button>
 
-            </div>
+            </form>
 
         </aside>
 

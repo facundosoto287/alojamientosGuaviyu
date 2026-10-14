@@ -582,13 +582,19 @@ public class ReservaDao {
         List<Reserva> reservas = new ArrayList<>();
 
         String sql = """
-            SELECT id, fechaIngreso, fechaSalida, cantidadHuespedes,
-                   estado, fechaSolicitud, alojamiento_id
-            FROM reserva
-            WHERE alojamiento_id = ?
-            AND estado = 'CONFIRMADA'
-            ORDER BY fechaIngreso
-            """;
+        SELECT id,
+               fechaIngreso,
+               fechaSalida,
+               cantidadHuespedes,
+               estado,
+               fechaSolicitud,
+               alojamiento_id,
+               medioDiaExtra
+        FROM reserva
+        WHERE alojamiento_id = ?
+        AND estado IN ('PENDIENTE', 'CONFIRMADA')
+        ORDER BY fechaIngreso
+        """;
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -608,6 +614,9 @@ public class ReservaDao {
                             resultado.getDate("fechaSolicitud"),
                             resultado.getInt("alojamiento_id")
                     );
+
+                    reserva.setMedioDiaExtra(resultado.getBoolean("medioDiaExtra"));
+
                     reservas.add(reserva);
                 }
             }
@@ -615,6 +624,7 @@ public class ReservaDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return reservas;
     }
 
@@ -651,59 +661,200 @@ public class ReservaDao {
     }
 
     public int crearSolicitudReserva(Reserva reserva, int idCliente) throws SQLException {
-        String sqlConflicto = "SELECT COUNT(*) FROM reserva " +
-                "WHERE alojamiento_id = ? AND estado IN ('PENDIENTE', 'CONFIRMADA') " +
-                "AND fechaIngreso < ? AND fechaSalida > ?";
-        String sqlReserva = "INSERT INTO reserva " +
-                "(fechaIngreso, fechaSalida, cantidadHuespedes, estado, fechaSolicitud, alojamiento_id) " +
-                "VALUES (?, ?, ?, 'PENDIENTE', ?, ?)";
-        String sqlRelacion = "INSERT INTO cliente_reserva (idCliente, idReserva) VALUES (?, ?)";
+
+        /*
+         * Si pidió medio día extra, para comprobar disponibilidad
+         * consideramos que el alojamiento queda ocupado hasta el día siguiente.
+         *
+         * Ejemplo:
+         * salida: 17/12
+         * medio día extra: sí
+         * próximo ingreso permitido: 18/12
+         */
+        Date fechaSalidaParaDisponibilidad =
+                reserva.isMedioDiaExtra()
+                        ? Date.valueOf(
+                        reserva.getFechaSalida()
+                                .toLocalDate()
+                                .plusDays(1)
+                )
+                        : reserva.getFechaSalida();
+
+
+        String sqlConflicto = """
+            SELECT COUNT(*)
+            FROM reserva
+            WHERE alojamiento_id = ?
+              AND estado IN ('PENDIENTE', 'CONFIRMADA')
+              AND fechaIngreso < ?
+              AND (
+                    CASE
+                        WHEN medioDiaExtra = 1
+                        THEN DATE_ADD(fechaSalida, INTERVAL 1 DAY)
+                        ELSE fechaSalida
+                    END
+                  ) > ?
+            """;
+
+
+        String sqlReserva = """
+            INSERT INTO reserva
+            (
+                fechaIngreso,
+                fechaSalida,
+                cantidadHuespedes,
+                estado,
+                fechaSolicitud,
+                alojamiento_id,
+                medioDiaExtra
+            )
+            VALUES (?, ?, ?, 'PENDIENTE', ?, ?, ?)
+            """;
+
+
+        String sqlRelacion =
+                "INSERT INTO cliente_reserva (idCliente, idReserva) VALUES (?, ?)";
+
 
         try (Connection conexion = ConexionBD.obtenerConexion()) {
+
             conexion.setAutoCommit(false);
+
             try {
-                try (PreparedStatement verificar = conexion.prepareStatement(sqlConflicto)) {
-                    verificar.setInt(1, reserva.getAlojamientoId());
-                    verificar.setDate(2, reserva.getFechaSalida());
-                    verificar.setDate(3, reserva.getFechaIngreso());
-                    try (ResultSet filas = verificar.executeQuery()) {
-                        if (filas.next() && filas.getInt(1) > 0) {
+
+                /*
+                 * Comprobar que las fechas estén disponibles.
+                 */
+                try (PreparedStatement verificar =
+                             conexion.prepareStatement(sqlConflicto)) {
+
+                    verificar.setInt(
+                            1,
+                            reserva.getAlojamientoId()
+                    );
+
+                    verificar.setDate(
+                            2,
+                            fechaSalidaParaDisponibilidad
+                    );
+
+                    verificar.setDate(
+                            3,
+                            reserva.getFechaIngreso()
+                    );
+
+
+                    try (ResultSet filas =
+                                 verificar.executeQuery()) {
+
+                        if (
+                                filas.next() &&
+                                        filas.getInt(1) > 0
+                        ) {
+
                             conexion.rollback();
+
                             return -1;
                         }
                     }
                 }
 
+
+                /*
+                 * Crear reserva pendiente.
+                 */
                 int idReserva;
-                try (PreparedStatement insertar = conexion.prepareStatement(
-                        sqlReserva, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                    insertar.setDate(1, reserva.getFechaIngreso());
-                    insertar.setDate(2, reserva.getFechaSalida());
-                    insertar.setInt(3, reserva.getCantidadHuespedes());
-                    insertar.setDate(4, reserva.getFechaSolicitud());
-                    insertar.setInt(5, reserva.getAlojamientoId());
+
+                try (PreparedStatement insertar =
+                             conexion.prepareStatement(
+                                     sqlReserva,
+                                     PreparedStatement.RETURN_GENERATED_KEYS
+                             )) {
+
+                    insertar.setDate(
+                            1,
+                            reserva.getFechaIngreso()
+                    );
+
+                    insertar.setDate(
+                            2,
+                            reserva.getFechaSalida()
+                    );
+
+                    insertar.setInt(
+                            3,
+                            reserva.getCantidadHuespedes()
+                    );
+
+                    insertar.setDate(
+                            4,
+                            reserva.getFechaSolicitud()
+                    );
+
+                    insertar.setInt(
+                            5,
+                            reserva.getAlojamientoId()
+                    );
+
+                    insertar.setBoolean(
+                            6,
+                            reserva.isMedioDiaExtra()
+                    );
+
+
                     if (insertar.executeUpdate() != 1) {
+
                         conexion.rollback();
+
                         return -1;
                     }
-                    try (ResultSet claves = insertar.getGeneratedKeys()) {
+
+
+                    try (ResultSet claves =
+                                 insertar.getGeneratedKeys()) {
+
                         if (!claves.next()) {
+
                             conexion.rollback();
+
                             return -1;
                         }
-                        idReserva = claves.getInt(1);
+
+                        idReserva =
+                                claves.getInt(1);
                     }
                 }
 
-                try (PreparedStatement relacion = conexion.prepareStatement(sqlRelacion)) {
-                    relacion.setInt(1, idCliente);
-                    relacion.setInt(2, idReserva);
+
+                /*
+                 * Relacionar reserva con cliente.
+                 */
+                try (PreparedStatement relacion =
+                             conexion.prepareStatement(sqlRelacion)) {
+
+                    relacion.setInt(
+                            1,
+                            idCliente
+                    );
+
+                    relacion.setInt(
+                            2,
+                            idReserva
+                    );
+
                     relacion.executeUpdate();
                 }
+
+
                 conexion.commit();
+
                 return idReserva;
+
+
             } catch (SQLException e) {
+
                 conexion.rollback();
+
                 throw e;
             }
         }
@@ -750,13 +901,23 @@ public class ReservaDao {
             r.estado,
             r.fechaSolicitud,
             r.alojamiento_id,
+            r.medioDiaExtra,
 
             a.nombre AS nombreAlojamiento,
             a.ubicacion AS ubicacionAlojamiento,
             a.precio AS precioPorNoche,
 
             DATEDIFF(r.fechaSalida, r.fechaIngreso) AS cantidadNoches,
-            DATEDIFF(r.fechaSalida, r.fechaIngreso) * a.precio AS precioTotal
+
+            (
+                DATEDIFF(r.fechaSalida, r.fechaIngreso) * a.precio
+                +
+                CASE
+                    WHEN r.medioDiaExtra = 1
+                    THEN a.precio / 2
+                    ELSE 0
+                END
+            ) AS precioTotal
 
         FROM reserva r
 
@@ -785,31 +946,40 @@ public class ReservaDao {
                             resultado.getDate("fechaIngreso"),
                             resultado.getDate("fechaSalida"),
                             resultado.getInt("cantidadHuespedes"),
-                            EstadoReserva.valueOf(resultado.getString("estado")),
+                            EstadoReserva.valueOf(
+                                    resultado.getString("estado")
+                            ),
                             resultado.getDate("fechaSolicitud"),
                             resultado.getInt("alojamiento_id")
                     );
+
+
+                    reserva.setMedioDiaExtra(
+                            resultado.getBoolean("medioDiaExtra")
+                    );
+
 
                     reserva.setNombreAlojamiento(
                             resultado.getString("nombreAlojamiento")
                     );
 
+
                     reserva.setUbicacionAlojamiento(
                             resultado.getString("ubicacionAlojamiento")
                     );
+
 
                     reserva.setPrecioPorNoche(
                             resultado.getDouble("precioPorNoche")
                     );
 
+
                     reserva.setCantidadNoches(
                             resultado.getInt("cantidadNoches")
                     );
 
-                    reserva.setPrecioTotal(
-                            resultado.getDouble("precioTotal")
-                    );
 
+                    reserva.setPrecioTotal(resultado.getDouble("precioTotal"));
                     reservas.add(reserva);
                 }
             }

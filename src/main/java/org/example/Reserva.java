@@ -16,6 +16,7 @@ public class Reserva {
     private double precioPorNoche;
     private int cantidadNoches;
     private double precioTotal;
+    private boolean medioDiaExtra;
 
     public Reserva(int id, Date fechaIngreso, Date fechaSalida, int cantidadHuespedes,
                    EstadoReserva estado, Date fechaSolicitud, int alojamientoId) {
@@ -129,6 +130,14 @@ public class Reserva {
 
     public void setPrecioTotal(double precioTotal) {
         this.precioTotal = precioTotal;
+    }
+
+    public boolean isMedioDiaExtra() {
+        return medioDiaExtra;
+    }
+
+    public void setMedioDiaExtra(boolean medioDiaExtra) {
+        this.medioDiaExtra = medioDiaExtra;
     }
 }
 

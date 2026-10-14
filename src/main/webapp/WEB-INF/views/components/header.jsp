@@ -74,31 +74,6 @@
                 </a>
 
 
-                <c:choose>
-
-                    <c:when test="${not empty sessionScope.clienteSesion}">
-                        <a href="${ctx}/perfil">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <rect x="3" y="5" width="18" height="16" rx="2"/>
-                                <path d="M8 3v4M16 3v4M3 10h18"/>
-                            </svg>
-                            <span>Mi perfil</span>
-                        </a>
-                    </c:when>
-
-                    <c:otherwise>
-                        <a href="${ctx}/login">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <rect x="3" y="5" width="18" height="16" rx="2"/>
-                                <path d="M8 3v4M16 3v4M3 10h18"/>
-                            </svg>
-                            <span>Mi perfil</span>
-                        </a>
-                    </c:otherwise>
-
-                </c:choose>
-
-
                 <a href="${ctx}/sobre-nosotros">
 
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -146,22 +121,36 @@
 
                             </button>
 
-                            <div class="header-dropdown-menu">
+                             <div class="header-dropdown-menu">
 
-                                <form action="${ctx}/logout"
-                                      method="post"
-                                      class="header-dropdown-logout-form">
+                                 <a href="${ctx}/perfil"
+                                    class="header-dropdown-item">
 
-                                    <button type="submit"
-                                            class="header-dropdown-item header-dropdown-salir">
+                                     <svg viewBox="0 0 24 24" aria-hidden="true">
+                                         <circle cx="12" cy="8" r="4"></circle>
+                                         <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path>
+                                     </svg>
 
-                                        Cerrar sesión
+                                     Mi perfil
 
-                                    </button>
+                                 </a>
 
-                                </form>
+                                 <div class="header-dropdown-separador"></div>
 
-                            </div>
+                                 <form action="${ctx}/logout"
+                                       method="post"
+                                       class="header-dropdown-logout-form">
+
+                                     <button type="submit"
+                                             class="header-dropdown-item header-dropdown-salir">
+
+                                         Cerrar sesión
+
+                                     </button>
+
+                                 </form>
+
+                             </div>
 
                         </div>
 

@@ -13,10 +13,16 @@ const detalleSalida = document.getElementById("detalleSalida");
 const detalleHuespedes = document.getElementById("detalleHuespedes");
 const detalleNoches = document.getElementById("detalleNoches");
 
+const detalleHorarioSalida = document.getElementById("detalleHorarioSalida");
+const detalleMedioDia = document.getElementById("detalleMedioDia");
+
 const detallePrecioNoche = document.getElementById("detallePrecioNoche");
 const detalleCalculoNoches = document.getElementById("detalleCalculoNoches");
 const detalleSubtotal = document.getElementById("detalleSubtotal");
 const detalleTotal = document.getElementById("detalleTotal");
+
+const detalleFilaMedioDia = document.getElementById("detalleFilaMedioDia");
+const detallePrecioMedioDia = document.getElementById("detallePrecioMedioDia");
 
 const detalleEstado = document.getElementById("detalleEstado");
 
@@ -25,7 +31,6 @@ const filtroVacioTitulo = document.getElementById("filtroVacioTitulo");
 
 
 /*FORMATEAR PRECIO*/
-
 function formatearPrecio(valor) {
 
     return Number(valor).toLocaleString("es-UY", {
@@ -36,7 +41,6 @@ function formatearPrecio(valor) {
 
 
 /*FILTROS*/
-
 filtros.forEach(filtro => {
 
     filtro.addEventListener("click", () => {
@@ -49,28 +53,32 @@ filtros.forEach(filtro => {
 
         const estadoSeleccionado = filtro.dataset.filtro;
 
-        let cantidadVisibles = 0;
+        filas.forEach(fila => {
+            fila.classList.remove("seleccionada");
+        });
 
+        detalleVacio.hidden = false;
+        detalleContenido.hidden = true;
+
+        let cantidadVisibles = 0;
 
         filas.forEach(fila => {
 
             const estado = fila.dataset.estado;
 
             if (estadoSeleccionado === "TODAS" || estado === estadoSeleccionado) {
-
-                fila.hidden = false;
+                fila.classList.remove("oculta");
                 cantidadVisibles++;
 
             } else {
-                fila.hidden = true;
+                fila.classList.add("oculta");
             }
 
         });
 
-        /* MENSAJE CUANDO NO HAY RESERVAS */
 
+        /*MENSAJE CUANDO NO HAY RESERVAS*/
         if (filtroVacio) {
-
             if (cantidadVisibles === 0) {
                 filtroVacio.hidden = false;
 
@@ -78,11 +86,9 @@ filtros.forEach(filtro => {
                     filtroVacioTitulo.textContent = "No tenés reservas pendientes";
 
                 } else if (estadoSeleccionado === "CONFIRMADA") {
-
                     filtroVacioTitulo.textContent = "No tenés reservas confirmadas";
 
                 } else if (estadoSeleccionado === "CANCELADA") {
-
                     filtroVacioTitulo.textContent = "No tenés reservas canceladas";
 
                 } else {
@@ -100,7 +106,6 @@ filtros.forEach(filtro => {
 
 
 /*VER DETALLE*/
-
 filas.forEach(fila => {
 
     const boton = fila.querySelector(".btn-ver-detalle");
@@ -108,6 +113,7 @@ filas.forEach(fila => {
     if (!boton) {
         return;
     }
+
 
     boton.addEventListener("click", () => {
 
@@ -129,13 +135,16 @@ filas.forEach(fila => {
 
         const estado = fila.dataset.estadoReserva;
 
-        const noches = fila.dataset.noches;
+        const noches = Number(fila.dataset.noches);
 
-        const precio = fila.dataset.precio;
+        const precio = Number(fila.dataset.precio);
 
-        const total = fila.dataset.total;
+        const total = Number(fila.dataset.total);
 
-        /* DATOS */
+        const medioDiaExtra = fila.dataset.medioDia === "true";
+
+
+        /*DATOS*/
         detalleNombre.textContent = nombre;
 
         detalleUbicacion.textContent = ubicacion;
@@ -148,32 +157,62 @@ filas.forEach(fila => {
 
         detalleNoches.textContent = noches;
 
-        /* PRECIOS */
+
+        /*MEDIO DIA*/
+        if (medioDiaExtra) {
+            detalleHorarioSalida.textContent = "21:00 hs";
+
+            detalleMedioDia.textContent = "Sí";
+
+        } else {
+            detalleHorarioSalida.textContent = "10:00 hs";
+
+            detalleMedioDia.textContent = "No";
+        }
+
+
+        /*PRECIOS*/
+        const subtotalNoches = noches * precio;
+
         detallePrecioNoche.textContent = "$ " + formatearPrecio(precio);
 
-        detalleCalculoNoches.textContent = noches + " noches × $ " + formatearPrecio(precio);
+        detalleCalculoNoches.textContent = noches + (noches === 1 ? " noche" : " noches") + " × $ " + formatearPrecio(precio);
 
-        detalleSubtotal.textContent = "$ " + formatearPrecio(total);
+        detalleSubtotal.textContent = "$ " + formatearPrecio(subtotalNoches);
+
+
+        /*PRECIO MEDIO DIA*/
+        if (medioDiaExtra) {
+            const precioMedioDia = precio / 2;
+
+            detalleFilaMedioDia.hidden = false;
+
+            detallePrecioMedioDia.textContent = "$ " + formatearPrecio(precioMedioDia);
+
+        } else {
+            detalleFilaMedioDia.hidden = true;
+
+            detallePrecioMedioDia.textContent = "";
+        }
 
         detalleTotal.textContent = "$ " + formatearPrecio(total);
 
-        /* ESTADO */
+
+        /*ESTADO*/
+
         detalleEstado.className = "estado";
 
-        if (estado === "PENDIENTE") {
 
+        if (estado === "PENDIENTE") {
             detalleEstado.textContent = "Pendiente";
 
             detalleEstado.classList.add("estado-pendiente");
 
         } else if (estado === "CONFIRMADA") {
-
             detalleEstado.textContent = "Confirmada";
 
             detalleEstado.classList.add("estado-confirmada");
-
         } else {
-
             detalleEstado.textContent = "Cancelada";
 
             detalleEstado.classList.add("estado-cancelada");

@@ -1,0 +1,880 @@
+:root {
+    --azul-900: #0b2a66;
+    --azul-800: #123a7a;
+    --azul-700: #0b47b8;
+    --azul-600: #1157d6;
+    --azul-100: #e8f0fd;
+    --azul-050: #f4f8ff;
+
+    --texto: #1d2a3f;
+    --texto-suave: #667085;
+
+    --linea: #dde3ee;
+    --linea-suave: #edf0f4;
+
+    --pagina: #f4f7fb;
+    --papel: #ffffff;
+
+    --verde-whatsapp: #20a95a;
+}
+
+
+/*GENERAL*/
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    background: var(--pagina);
+    color: var(--texto);
+
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.solicitud-pagina {
+    min-height: 100vh;
+}
+
+
+/*BANNER*/
+
+.solicitud-banner {
+    padding: 3rem 1.25rem 5rem;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    rgba(11, 42, 102, .97),
+                    rgba(17, 87, 214, .86)
+            );
+
+    color: white;
+}
+
+.solicitud-banner-contenido {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.solicitud-etiqueta {
+    margin: 0 0 .5rem;
+
+    color: rgba(255, 255, 255, .82);
+
+    font-size: .8rem;
+    font-weight: 800;
+
+    letter-spacing: .17em;
+    text-transform: uppercase;
+}
+
+.solicitud-banner h1 {
+    margin: 0;
+
+    color: white;
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+}
+
+.solicitud-banner p:last-child {
+    margin: .7rem 0 0;
+
+    color: rgba(255,255,255,.9);
+
+    font-size: 1rem;
+}
+
+
+/*CONTENEDOR*/
+
+.solicitud-contenedor {
+    max-width: 1200px;
+
+    margin: -45px auto 0;
+
+    padding: 0 1.25rem 4rem;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.7fr)
+        minmax(330px, .8fr);
+
+    gap: 1.5rem;
+
+    align-items: start;
+
+    position: relative;
+    z-index: 2;
+}
+
+
+/*TARJETAS*/
+
+.solicitud-formulario {
+    padding: 1.5rem;
+
+    background: var(--papel);
+
+    border: 1px solid var(--linea);
+    border-radius: 18px;
+
+    box-shadow:
+            0 10px 30px rgba(11, 42, 102, .08);
+}
+
+
+.solicitud-resumen {
+    padding: 1.4rem;
+
+    position: sticky;
+    top: 20px;
+
+    background:
+            linear-gradient(
+                    160deg,
+                    #0b2a66,
+                    #124db5
+            );
+
+    border: none;
+    border-radius: 18px;
+
+    color: white;
+
+    box-shadow:
+            0 14px 35px rgba(11, 42, 102, .22);
+}
+
+
+/*CABECERA FORMULARIO*/
+
+.solicitud-cabecera {
+    display: flex;
+    align-items: center;
+
+    gap: 1rem;
+
+    padding-bottom: 1.3rem;
+
+    border-bottom: 1px solid var(--linea);
+}
+
+.solicitud-icono {
+    width: 46px;
+    height: 46px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #e9f1ff,
+                    #f6f9ff
+            );
+}
+
+.solicitud-icono svg {
+    width: 23px;
+    height: 23px;
+
+    fill: none;
+
+    stroke: var(--azul-700);
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.solicitud-cabecera h2 {
+    margin: 0;
+
+    color: var(--azul-900);
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: 1.45rem;
+}
+
+.solicitud-cabecera p {
+    margin: .25rem 0 0;
+
+    color: var(--texto-suave);
+
+    font-size: .9rem;
+}
+
+
+/*SECCIONES*/
+
+.solicitud-seccion {
+    padding: 1.5rem 0;
+
+    border-bottom: 1px solid var(--linea-suave);
+}
+
+.solicitud-seccion:last-child {
+    border-bottom: 0;
+}
+
+.solicitud-seccion-titulo {
+    display: flex;
+    align-items: center;
+
+    gap: .75rem;
+
+    margin-bottom: .35rem;
+}
+
+.solicitud-seccion-icono {
+    width: 34px;
+    height: 34px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 9px;
+
+    background: var(--azul-100);
+}
+
+.solicitud-seccion-icono svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+
+    stroke: var(--azul-700);
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.solicitud-seccion h3 {
+    margin: 0;
+
+    color: var(--azul-900);
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: 1.05rem;
+}
+
+.solicitud-ayuda {
+    margin: .35rem 0 1rem 2.95rem;
+
+    color: var(--texto-suave);
+
+    font-size: .86rem;
+    line-height: 1.4;
+}
+
+
+/*CAMPOS*/
+
+.solicitud-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 1rem;
+}
+
+.solicitud-campo {
+    display: flex;
+    flex-direction: column;
+
+    gap: .4rem;
+}
+
+.solicitud-campo-completo {
+    grid-column: 1 / -1;
+}
+
+.solicitud-campo label {
+    color: #42526b;
+
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.solicitud-campo input,
+.solicitud-campo textarea {
+    width: 100%;
+
+    padding: .82rem .9rem;
+
+    border: 1px solid #d5dce8;
+    border-radius: 9px;
+
+    outline: none;
+
+    background: white;
+
+    color: var(--texto);
+
+    font: inherit;
+
+    transition:
+            border-color .15s ease,
+            box-shadow .15s ease,
+            background .15s ease;
+}
+
+.solicitud-campo input:hover,
+.solicitud-campo textarea:hover {
+    border-color: #c3cedd;
+}
+
+.solicitud-campo input:focus,
+.solicitud-campo textarea:focus {
+    border-color: var(--azul-700);
+
+    box-shadow:
+            0 0 0 3px rgba(11, 71, 184, .08);
+}
+
+.solicitud-campo input[readonly] {
+    background: #f7f9fc;
+
+    color: #56657a;
+
+    cursor: default;
+}
+
+.solicitud-campo textarea {
+    resize: vertical;
+
+    min-height: 100px;
+}
+
+
+/*EDADES*/
+
+.edades-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 1rem;
+}
+
+.edades-grid .solicitud-campo {
+    padding: .9rem;
+
+    border: 1px solid var(--linea-suave);
+    border-radius: 11px;
+
+    background: #fbfcfe;
+}
+
+.edades-grid .solicitud-campo label {
+    color: var(--azul-900);
+}
+
+
+/*RESUMEN*/
+
+.solicitud-resumen h2 {
+    margin: 0 0 1rem;
+
+    color: white;
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: 1.3rem;
+}
+
+.resumen-titulo {
+    display: flex;
+    align-items: center;
+
+    gap: .7rem;
+
+    margin-bottom: 1rem;
+}
+
+.resumen-titulo-icono {
+    width: 36px;
+    height: 36px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 9px;
+
+    background: rgba(255,255,255,.12);
+}
+
+.resumen-titulo-icono svg {
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+
+    stroke: white;
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/*ALOJAMIENTO EN RESUMEN*/
+
+.resumen-alojamiento {
+    display: flex;
+    align-items: center;
+
+    gap: .85rem;
+
+    padding: 1rem;
+
+    margin-bottom: .2rem;
+
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 12px;
+
+    background: rgba(255,255,255,.08);
+}
+
+.resumen-alojamiento-icono {
+    width: 58px;
+    height: 58px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    background: rgba(255,255,255,.12);
+}
+
+.resumen-alojamiento-icono svg {
+    width: 29px;
+    height: 29px;
+
+    fill: none;
+
+    stroke: white;
+    stroke-width: 1.7;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.resumen-alojamiento strong {
+    display: block;
+
+    color: white;
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: .95rem;
+}
+
+.resumen-alojamiento span {
+    display: block;
+
+    margin-top: .2rem;
+
+    color: rgba(255,255,255,.72);
+
+    font-size: .82rem;
+}
+
+
+/*DATOS RESUMEN*/
+
+.resumen-datos {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: .9rem;
+
+    padding: 1.2rem 0;
+
+    border-bottom: 1px solid rgba(255,255,255,.16);
+}
+
+.resumen-datos > div {
+    padding: .7rem;
+
+    border-radius: 9px;
+
+    background: rgba(255,255,255,.08);
+}
+
+.resumen-datos span {
+    display: block;
+
+    margin-bottom: .2rem;
+
+    color: rgba(255,255,255,.66);
+
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.resumen-datos strong {
+    display: block;
+
+    color: white;
+
+    font-size: .88rem;
+}
+
+.resumen-horario {
+    display: block;
+
+    margin-top: .3rem;
+
+    color: rgba(255,255,255,.68);
+
+    font-size: .72rem;
+    font-weight: 600;
+}
+
+
+/*PRECIOS*/
+
+.resumen-precios {
+    padding: 1.2rem 0;
+}
+
+.resumen-precio,
+.resumen-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 1rem;
+}
+
+.resumen-precio {
+    margin-bottom: .7rem;
+
+    color: rgba(255,255,255,.78);
+
+    font-size: .88rem;
+}
+
+.resumen-precio strong {
+    color: white;
+}
+
+.resumen-total {
+    margin-top: 1rem;
+
+    padding: 1rem;
+
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 11px;
+
+    background: rgba(255,255,255,.12);
+
+    color: white;
+
+    font-weight: 800;
+}
+
+.resumen-total strong {
+    color: white;
+
+    font-size: 1.3rem;
+}
+
+
+/*AVISO*/
+
+.resumen-aviso {
+    margin: 0 0 1rem;
+
+    padding: .9rem 1rem;
+
+    border: 1px solid #f3cf6b;
+    border-radius: 10px;
+
+    background: #fff4cc;
+
+    color: #7a5a00;
+
+    font-size: .8rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.resumen-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+}
+
+.resumen-aviso-icono {
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #e8ad16;
+    color: white;
+
+    font-size: .8rem;
+    font-weight: 900;
+}
+
+
+/*WHATSAPP*/
+
+.boton-whatsapp {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: .6rem;
+
+    padding: .9rem 1rem;
+
+    border: none;
+    border-radius: 10px;
+
+    background: var(--verde-whatsapp);
+
+    color: white;
+
+    font: inherit;
+    font-size: .95rem;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+            0 6px 16px rgba(32, 169, 90, .18);
+
+    transition:
+            transform .15s ease,
+            filter .15s ease,
+            box-shadow .15s ease;
+}
+
+.boton-whatsapp:hover {
+    filter: brightness(.96);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+            0 8px 20px rgba(32, 169, 90, .24);
+}
+
+.boton-whatsapp:active {
+    transform: translateY(0);
+}
+
+.boton-whatsapp svg {
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.medio-dia-opcion {
+    margin-top: .4rem;
+    padding: 1rem;
+
+    border: 1px solid #dce8fb;
+    border-radius: 11px;
+
+    background: #f5f9ff;
+}
+
+.medio-dia-check {
+    display: flex;
+    align-items: center;
+
+    gap: .7rem;
+
+    color: var(--azul-900);
+
+    font-size: .92rem;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.medio-dia-check input {
+    width: 18px;
+    height: 18px;
+
+    margin: 0;
+
+    accent-color: var(--azul-700);
+
+    cursor: pointer;
+}
+
+.medio-dia-ayuda {
+    margin: .55rem 0 0 1.6rem;
+
+    color: var(--texto-suave);
+
+    font-size: .8rem;
+    line-height: 1.45;
+}
+
+#filaMedioDia[hidden] {
+    display: none !important;
+}
+
+
+/*RESPONSIVE*/
+
+@media (max-width: 900px) {
+
+    .solicitud-contenedor {
+        grid-template-columns: 1fr;
+    }
+
+    .solicitud-resumen {
+        position: static;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .solicitud-banner {
+        padding: 2.2rem 1rem 4rem;
+    }
+
+    .solicitud-banner h1 {
+        font-size: 2rem;
+    }
+
+    .solicitud-contenedor {
+        margin-top: -30px;
+
+        padding: 0 1rem 2.5rem;
+    }
+
+    .solicitud-formulario,
+    .solicitud-resumen {
+        padding: 1rem;
+    }
+
+    .solicitud-cabecera {
+        align-items: flex-start;
+
+        gap: .8rem;
+    }
+
+    .solicitud-icono {
+        width: 40px;
+        height: 40px;
+    }
+
+    .solicitud-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .edades-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .solicitud-campo-completo {
+        grid-column: auto;
+    }
+
+    .resumen-datos {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+@media (max-width: 520px) {
+
+    .solicitud-banner {
+        padding: 1.8rem 1rem 3.5rem;
+    }
+
+    .solicitud-banner p:last-child {
+        font-size: .92rem;
+    }
+
+    .solicitud-cabecera h2 {
+        font-size: 1.25rem;
+    }
+
+    .solicitud-seccion {
+        padding: 1.25rem 0;
+    }
+
+    .solicitud-seccion-titulo {
+        gap: .6rem;
+    }
+
+    .solicitud-seccion-icono {
+        width: 31px;
+        height: 31px;
+    }
+
+    .solicitud-seccion-icono svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .solicitud-ayuda {
+        margin-left: 0;
+    }
+
+    .edades-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen-datos {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen-total {
+        padding: .9rem;
+    }
+
+    .boton-whatsapp {
+        font-size: .9rem;
+    }
+}
