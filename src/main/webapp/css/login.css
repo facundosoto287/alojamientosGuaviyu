@@ -186,6 +186,22 @@ label {
     color: #111a2c;
 }
 
+.alerta-info {
+    margin: 14px 0;
+
+    padding: 12px 14px;
+
+    border: 1px solid #b9d3ff;
+    border-radius: 10px;
+
+    background: #eef5ff;
+
+    color: #084298;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
 .lead { margin: 0; font-size: 1.2rem; color: #22314a; }
 
 .perks {

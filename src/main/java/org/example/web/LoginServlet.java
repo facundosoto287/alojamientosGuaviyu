@@ -45,6 +45,11 @@ public class LoginServlet extends HttpServlet {
         }
 
         mostrarFormulario(request, response, "login");
+
+        if ("reserva".equals(request.getParameter("motivo"))) {
+
+            request.setAttribute("loginInfo", "Debés iniciar sesión para solicitar una reserva.");
+        }
     }
 
     @Override

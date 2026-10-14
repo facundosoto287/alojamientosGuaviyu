@@ -85,9 +85,15 @@ document
 
         const salida = new Date(reserva.dataset.salida + "T00:00:00");
 
+        const medioDiaExtra = reserva.dataset.medioDia === "true";
+
         const fechaActual = new Date(ingreso);
 
-        while (fechaActual < salida) {
+
+        /*Sin medio dia: la fecha de salida queda libre. Con medio día:la fecha de salida también queda ocupada*/
+
+        while (medioDiaExtra ? fechaActual <= salida : fechaActual < salida) {
+
             fechasOcupadas.add(convertirFecha(fechaActual));
 
             fechaActual.setDate(fechaActual.getDate() + 1);
@@ -109,15 +115,25 @@ document
     .forEach(reserva => {
 
         const ingreso = reserva.dataset.ingreso;
+
         const salida = reserva.dataset.salida;
 
-        /*La salida queda disponible Ejemplo:ingreso: 10 salida: 13 Se bloquean 10, 11 y 12.*/
+        const medioDiaExtra = reserva.dataset.medioDia === "true";
+
+
         const ultimoDiaOcupado = new Date(salida + "T00:00:00");
 
-        ultimoDiaOcupado.setDate(ultimoDiaOcupado.getDate() - 1);
+
+        /*Si NO tiene medio día: salida 22 → ocupamos hasta el 21. Si tiene medio día:salida 22 → ocupamos también el 22.*/
+        if (!medioDiaExtra) {
+            ultimoDiaOcupado.setDate(ultimoDiaOcupado.getDate() - 1);
+        }
+
 
         reservasConfirmadas.push({
+
             from: ingreso,
+
             to: convertirFecha(ultimoDiaOcupado)
         });
     });

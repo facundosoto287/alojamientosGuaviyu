@@ -34,7 +34,6 @@
             <h4>Navegación</h4>
 
             <a href="${pageContext.request.contextPath}/inicio">Inicio</a>
-            <a href="${pageContext.request.contextPath}/mi-perfil">Mi perfil</a>
             <a href="#">Mapa</a>
             <a href="${pageContext.request.contextPath}/sobre-nosotros">Sobre nosotros</a>
         </div>

@@ -58,6 +58,12 @@
                     <p class="alerta" role="alert"><c:out value="${loginError}"/></p>
                 </c:if>
 
+                <c:if test="${not empty loginInfo}">
+                    <p class="alerta-info">
+                        <c:out value="${loginInfo}"/>
+                    </p>
+                </c:if>
+
                 <form action="${ctx}/login" method="post" novalidate>
                     <input type="hidden" name="destino" value="${fn:escapeXml(destino)}">
 

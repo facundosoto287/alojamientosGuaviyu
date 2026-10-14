@@ -293,6 +293,7 @@
 
 .header-dropdown-item:hover {
     background: #f2f6fc;
+    border-radius: 8px;
 }
 
 .header-dropdown-item svg {
@@ -783,6 +784,8 @@
     border: none;
     border-radius: 0;
 
+    overflow: hidden;
+
     box-shadow: none;
 
     opacity: 1 !important;
@@ -835,4 +838,68 @@
     background: rgba(255,255,255,.05);
     color: #63c7f5;
 }
+
+    /* Mi perfil dentro del menú mobile */
+
+    .header-dropdown-menu .header-dropdown-item {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+
+        gap: 14px;
+
+        padding: 15px 4px;
+
+        margin: 0;
+
+        background: transparent;
+
+        border: none;
+        border-radius: 0;
+
+        color: white;
+
+        font-size: 17px;
+        font-weight: 600;
+
+        text-decoration: none;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .header-dropdown-menu .header-dropdown-item:hover {
+        background: transparent;
+        color: #63c7f5;
+    }
+
+    .header-dropdown-menu .header-dropdown-item svg {
+        width: 21px;
+        height: 21px;
+
+        display: block;
+
+        fill: none;
+
+        stroke: #63c7f5;
+        stroke-width: 2;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
+
+        flex-shrink: 0;
+    }
+
+
+    /* Cerrar sesión */
+
+    .header-dropdown-menu .header-dropdown-salir {
+        color: white;
+
+        border-bottom: none;
+    }
+
+    .header-dropdown-menu .header-dropdown-salir:hover {
+        color: #63c7f5;
+    }
 }

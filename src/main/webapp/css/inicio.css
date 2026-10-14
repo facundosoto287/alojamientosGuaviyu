@@ -542,9 +542,9 @@ body {
     .banner-detalles {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
 
-        width: fit-content;
+        width: 100%;
 
         margin: 28px auto 0;
 
@@ -552,17 +552,25 @@ body {
     }
 
     .banner-detalle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
         width: 100%;
+
+        gap: 10px;
 
         font-size: 13px;
 
         white-space: normal;
-        text-align: left;
+        text-align: center;
     }
 
     .banner-detalle svg {
         width: 38px;
         height: 38px;
+
+        flex-shrink: 0;
     }
 
 
