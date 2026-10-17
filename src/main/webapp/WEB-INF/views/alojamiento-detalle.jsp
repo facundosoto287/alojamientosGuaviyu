@@ -493,36 +493,40 @@
 
                 <div class="reserva-fechas">
 
-                    <div class="reserva-campo">
+                   <div class="reserva-campo">
 
-                        <label for="fechaIngreso">
-                            Fecha de ingreso
-                        </label>
+                       <label for="fechaIngresoVisible">
+                           Fecha de ingreso
+                       </label>
 
-                        <input type="text"
-                               id="fechaIngreso"
-                               name="fechaIngreso"
-                               placeholder="Seleccioná una fecha"
-                               readonly
-                               required>
+                       <input type="text"
+                              id="fechaIngresoVisible"
+                              placeholder="Seleccioná una fecha"
+                              readonly>
 
-                    </div>
+                       <input type="hidden"
+                              id="fechaIngreso"
+                              name="fechaIngreso">
+
+                   </div>
 
 
-                    <div class="reserva-campo">
+                   <div class="reserva-campo">
 
-                        <label for="fechaSalida">
-                            Fecha de salida
-                        </label>
+                       <label for="fechaSalidaVisible">
+                           Fecha de salida
+                       </label>
 
-                        <input type="text"
-                               id="fechaSalida"
-                               name="fechaSalida"
-                               placeholder="Seleccioná una fecha"
-                               readonly
-                               required>
+                       <input type="text"
+                              id="fechaSalidaVisible"
+                              placeholder="Seleccioná una fecha"
+                              readonly>
 
-                    </div>
+                       <input type="hidden"
+                              id="fechaSalida"
+                              name="fechaSalida">
+
+                   </div>
 
                 </div>
 
@@ -622,6 +626,21 @@
 
         L.marker(posicion, { icon: icono }).addTo(mapa);
     })();
+
+    const formularioReserva = document.querySelector(".reserva-formulario");
+
+    formularioReserva.addEventListener("submit", (evento) => {
+
+        if (!inputFechaIngreso.value || !inputFechaSalida.value) {
+
+            evento.preventDefault();
+            mensajeReserva.textContent = "Debes seleccionar una fecha en el calendario";
+            mensajeReserva.hidden = false;
+
+            return;
+        }
+    });
+
 </script>
 <%@ include file="components/footer.jsp" %>
 </body>

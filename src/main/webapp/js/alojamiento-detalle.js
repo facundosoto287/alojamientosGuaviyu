@@ -104,6 +104,8 @@ document
 
 const inputFechaIngreso = document.getElementById("fechaIngreso");
 const inputFechaSalida = document.getElementById("fechaSalida");
+const inputFechaIngresoVisible = document.getElementById("fechaIngresoVisible");
+const inputFechaSalidaVisible = document.getElementById("fechaSalidaVisible");
 const mensajeReserva = document.getElementById("mensajeReserva");
 
 
@@ -167,16 +169,19 @@ const calendarioReserva = flatpickr("#calendarioReserva", {
 
     onChange: function (fechasSeleccionadas) {
 
-        if (fechasSeleccionadas.length === 1) { /* Primer click = ingreso */
+        if (fechasSeleccionadas.length === 1) {
 
             inputFechaIngreso.value = convertirFecha(fechasSeleccionadas[0]);
 
+            inputFechaIngresoVisible.value = formatearFechaVisible(fechasSeleccionadas[0]);
+
             inputFechaSalida.value = "";
+            inputFechaSalidaVisible.value = "";
 
             mensajeReserva.hidden = true;
         }
 
-        if (fechasSeleccionadas.length === 2) { /* Segundo click = salida */
+        if (fechasSeleccionadas.length === 2) {
 
             const ingreso = fechasSeleccionadas[0];
             const salida = fechasSeleccionadas[1];
@@ -186,7 +191,6 @@ const calendarioReserva = flatpickr("#calendarioReserva", {
             fechaMinimaSalida.setDate(fechaMinimaSalida.getDate() + 1);
 
             if (salida < fechaMinimaSalida) {
-
                 mensajeReserva.textContent = "La estadía debe ser de al menos una noche";
 
                 mensajeReserva.hidden = false;
@@ -196,14 +200,16 @@ const calendarioReserva = flatpickr("#calendarioReserva", {
                 inputFechaIngreso.value = "";
                 inputFechaSalida.value = "";
 
+                inputFechaIngresoVisible.value = "";
+                inputFechaSalidaVisible.value = "";
+
                 return;
             }
-
             mensajeReserva.hidden = true;
-
             inputFechaIngreso.value = convertirFecha(ingreso);
-
             inputFechaSalida.value = convertirFecha(salida);
+            inputFechaIngresoVisible.value = formatearFechaVisible(ingreso);
+            inputFechaSalidaVisible.value = formatearFechaVisible(salida);
         }
     }
 });
@@ -222,4 +228,37 @@ function convertirFecha(fecha) {
     ).padStart(2, "0");
 
     return `${anio}-${mes}-${dia}`;
+}
+
+const botonSolicitar = document.querySelector(".boton-solicitar");
+
+botonSolicitar.addEventListener("click", () => {
+
+    if (!inputFechaIngreso.value || !inputFechaSalida.value) {
+
+        mensajeReserva.textContent =
+            "Debes seleccionar una fecha en el calendario.";
+
+        mensajeReserva.hidden = false;
+
+        return;
+    }
+
+    const cantidadHuespedes = document.getElementById("cantidadHuespedes").value;
+
+    const alojamientoId = document.getElementById("alojamientoId").value;
+
+    window.location.href =
+        `${contextPath}/solicitar-reserva` +
+        `?alojamientoId=${alojamientoId}` +
+        `&fechaIngreso=${inputFechaIngreso.value}` +
+        `&fechaSalida=${inputFechaSalida.value}` +
+        `&cantidadHuespedes=${cantidadHuespedes}`;
+});
+
+function formatearFechaVisible(fecha) {
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
 }

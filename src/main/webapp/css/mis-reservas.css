@@ -152,15 +152,33 @@ body {
 
 /*PANELES*/
 
-.reservas-panel,
-.detalle-reserva {
-    background: var(--papel);
+.reservas-panel {
+    padding: 1.4rem;
+
+    background: white;
 
     border: 1px solid var(--linea);
     border-radius: 18px;
 
-    box-shadow:
-            0 10px 30px rgba(11, 42, 102, .08);
+    color: var(--texto);
+
+    box-shadow: 0 10px 30px rgba(11, 42, 102, .08);
+}
+
+
+.detalle-reserva {
+    min-width: 0;
+
+    padding: 1.4rem;
+
+    background: linear-gradient(160deg, #0b2a66, #124db5);
+
+    border: none;
+    border-radius: 18px;
+
+    color: white;
+
+    box-shadow: 0 14px 35px rgba(11, 42, 102, .22);
 }
 
 .reservas-panel {
@@ -878,6 +896,35 @@ body {
 
 .reserva-celda-titulo {
     display: none;
+}
+
+.detalle-reserva h2,
+.detalle-reserva h3,
+.detalle-reserva h4,
+.detalle-reserva strong {
+    color: white;
+}
+
+.detalle-reserva span,
+.detalle-reserva p,
+.detalle-reserva .detalle-ubicacion,
+.detalle-reserva .detalle-grid span {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.detalle-reserva .estado.estado-pendiente {
+    background: var(--amarillo-fondo);
+    color: var(--amarillo);
+}
+
+.detalle-reserva .estado.estado-confirmada {
+    background: var(--verde-fondo);
+    color: var(--verde);
+}
+
+.detalle-reserva .estado.estado-cancelada {
+    background: var(--rojo-fondo);
+    color: var(--rojo);
 }
 
 /*RESPONSIVE TABLA*/
