@@ -33,9 +33,40 @@
         <div class="footer-columna">
             <h4>Navegación</h4>
 
-            <a href="${pageContext.request.contextPath}/inicio">Inicio</a>
-            <a href="#">Mapa</a>
-            <a href="${pageContext.request.contextPath}/sobre-nosotros">Sobre nosotros</a>
+            <a href="${pageContext.request.contextPath}/inicio"
+               class="footer-item footer-red">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 11l9-8 9 8"/>
+                    <path d="M5 10v10h14V10"/>
+                    <path d="M9 20v-6h6v6"/>
+                </svg>
+
+                <span>Inicio</span>
+            </a>
+
+            <a href="#"
+               class="footer-item footer-red">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/>
+                    <path d="M9 3v15"/>
+                    <path d="M15 6v15"/>
+                </svg>
+
+                <span>Mapa</span>
+            </a>
+
+            <a href="${pageContext.request.contextPath}/sobre-nosotros"
+               class="footer-item footer-red">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 21c1.5-4 4-6 8-6s6.5 2 8 6"/>
+                </svg>
+
+                <span>Sobre nosotros</span>
+            </a>
         </div>
 
         <!-- Ubicación -->
@@ -96,8 +127,32 @@
                 <span>WhatsApp</span>
             </a>
 
+            <a href="https://www.facebook.com/alojamientos.guaviyu/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="footer-item footer-red">
 
-            <a href="mailto:contacto@alojamientosguaviyu.com"
+                    <svg class="icono-red-social" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.5 1.6-1.5H16.8V5a22 22 0 0 0-2.4-.1c-2.4 0-4.1 1.5-4.1 4.2V11H7.5v3h2.8v8h3.2z"/>
+                    </svg>
+
+                    <span>Facebook</span>
+            </a>
+
+
+            <a href="https://www.tiktok.com/@alojamientosguaviyu"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="footer-item footer-red">
+
+                    <svg class="icono-red-social" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M15.7 3c.4 2.1 1.7 3.4 3.8 3.8v3.1c-1.4 0-2.7-.4-3.8-1.1v6.1a5.9 5.9 0 1 1-5.1-5.8v3.2a2.8 2.8 0 1 0 2 2.6V3h3.1z"/>
+                    </svg>
+
+                    <span>TikTok</span>
+            </a>
+
+            <a href="mailto:deprattialejandra@gmail.com"
                class="footer-item footer-red">
 
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -105,10 +160,11 @@
                     <path d="M3 7l9 6 9-6"></path>
                 </svg>
 
-                <span>contacto@alojamientosguaviyu.com</span>
+                <span>deprattialejandra@gmail.com</span>
             </a>
 
         </div>
+
 
     </div>
 

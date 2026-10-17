@@ -58,7 +58,8 @@
                                         data-f-capacidad="${a.capacidad}"
                                         data-f-precio="${a.precio}"
                                         data-f-ubicacion="<c:out value='${a.ubicacion}'/>"
-                                        data-f-distanciaApiscina="${a.distanciaApiscina}">Editar</button>
+                                        data-f-distanciaApiscina="${a.distanciaApiscina}"
+                                        data-f-permiteMascotas="${a.permiteMascotas}">Editar</button>
                                 <form action="${base}/alojamientos" method="post"
                                       data-confirmar="¿Eliminar el alojamiento &quot;<c:out value='${a.nombre}'/>&quot;? Esta acción no se puede deshacer.">
                                     <input type="hidden" name="_csrf" value="${csrf}">
@@ -95,6 +96,10 @@
                 <input type="text" name="ubicacion" maxlength="150" required></label>
             <label class="campo">Distancia a la piscina (m)
                 <input type="number" name="distanciaApiscina" min="0" step="any" value="0"></label>
+            <label class="campo">
+                <input type="checkbox" name="permiteMascotas">
+                Permite mascotas
+            </label>
         </div>
         <div class="modal-pie">
             <button type="button" class="btn btn-secundario" data-modal-cerrar>Cancelar</button>
@@ -123,6 +128,10 @@
                 <input type="text" name="ubicacion" maxlength="150" required></label>
             <label class="campo">Distancia a la piscina (m)
                 <input type="number" name="distanciaApiscina" min="0" step="any"></label>
+            <label class="campo">
+                <input type="checkbox" name="permiteMascotas">
+                Permite mascotas
+            </label>
         </div>
         <div class="modal-pie">
             <button type="button" class="btn btn-secundario" data-modal-cerrar>Cancelar</button>

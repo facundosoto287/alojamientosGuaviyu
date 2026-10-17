@@ -62,6 +62,38 @@ body {
     margin: 0 auto;
 }
 
+.volver-perfil-contenedor {
+    background: white;
+    padding: 1.5rem 0 1rem;
+    margin-top: 1rem;
+}
+
+.volver-perfil-inner {
+    width: min(1100px, calc(100% - 3rem));
+    margin: 0 auto;
+}
+
+.boton-volver {
+    display: inline-flex;
+    align-items: center;
+
+    color: #0f4fbf;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: 0.2s ease;
+}
+
+.boton-volver:hover {
+    color: #0b3f98;
+    transform: translateX(-3px);
+}
+
+.boton-volver:visited {
+    color: #0f4fbf;
+}
+
 .reservas-etiqueta {
     margin: 0 0 .5rem;
 

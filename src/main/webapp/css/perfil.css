@@ -51,6 +51,7 @@
     font-size: clamp(2rem, 4vw, 3rem);
 }
 
+
 .perfil-encabezado p:last-child {
     margin: .7rem 0 0;
     color: rgba(255,255,255,.88);

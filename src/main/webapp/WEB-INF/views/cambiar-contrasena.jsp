@@ -25,7 +25,17 @@
 <%@ include file="components/header.jsp" %>
 
 <main class="cambio-wrap">
+
+<div class="volver-perfil-contenedor">
+            <div class="volver-perfil-inner">
+                <a class="boton-volver"
+                   href="${ctx}/perfil">
+                    ← Volver a mi perfil
+                </a>
+            </div>
+        </div>
     <section class="auth-card cambio-card">
+
         <h1>Cambiar contraseña</h1>
         <p class="muted">Elegí una contraseña nueva para tu cuenta.</p>
 

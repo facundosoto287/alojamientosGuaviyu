@@ -1,7 +1,52 @@
 .site-header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    z-index: 5000;
+
     font-family: Poppins, "Segoe UI", sans-serif;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+
+    background: transparent;
+    border-bottom: 1px solid transparent;
+
+    transition:
+            background-color 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
+}
+
+.site-header.header-scroll {
+    background: #ffffff;
+    border-bottom-color: #e5e7eb;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* HEADER TRANSPARENTE */
+.site-header:not(.header-scroll) .brand-texto,
+.site-header:not(.header-scroll) .main-nav a,
+.site-header:not(.header-scroll) .header-user,
+.site-header:not(.header-scroll) .header-user > a,
+.site-header:not(.header-scroll) .header-login-link,
+.site-header:not(.header-scroll) .header-usuario-boton {
+    color: #ffffff;
+}
+
+.site-header:not(.header-scroll) .header-usuario-icono {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.site-header:not(.header-scroll) .header-usuario-icono svg {
+    stroke: #ffffff;
+}
+
+.site-header:not(.header-scroll) .menu-hamburguesa span {
+    background: #ffffff;
+}
+
+body.pagina-con-header-fijo {
+    padding-top: 103px;
 }
 
 .header-container {
@@ -901,5 +946,11 @@
 
     .header-dropdown-menu .header-dropdown-salir:hover {
         color: #63c7f5;
+    }
+}
+
+@media (max-width: 700px) {
+    body.pagina-con-header-fijo {
+        padding-top: 95px;
     }
 }

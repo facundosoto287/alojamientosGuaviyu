@@ -20,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import org.example.Reserva;
 import org.example.ReservaDao;
 import org.example.EstadoReserva;
+import java.time.format.DateTimeFormatter;
 
 import java.sql.Date;
 
@@ -192,7 +193,6 @@ public class SolicitarReservaServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-
         /*COMPROBAR SESION*/
 
         HttpSession session = request.getSession(false);
@@ -243,6 +243,12 @@ public class SolicitarReservaServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/alojamiento-detalle?id=" + alojamientoId);
                 return;
             }
+
+            DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            String ingresoFormateado = fechaIngreso.format(formatoFecha);
+
+            String salidaFormateada = fechaSalida.format(formatoFecha);
 
 
             Alojamiento alojamiento = alojamientoDAO.buscarPorIdALO(alojamientoId);
@@ -358,10 +364,9 @@ public class SolicitarReservaServlet extends HttpServlet {
             mensaje.append("Alojamiento: ").append(alojamiento.getNombre()).append("\n");
 
 
-            mensaje.append("Ingreso: ").append(fechaIngreso).append(" - 12:00 hs\n");
+            mensaje.append("Ingreso: ").append(ingresoFormateado).append(" - 12:00 pm\n");
 
-
-            mensaje.append("Salida: ").append(fechaSalida).append(medioDiaExtra ? " - hasta las 21:00 hs\n" : " - 10:00 hs\n");
+            mensaje.append("Salida: ").append(salidaFormateada).append(medioDiaExtra ? " - hasta las 21:00 pm\n" : " - 10:00 am\n");
 
 
             mensaje.append("Huéspedes: ").append(cantidadHuespedes).append("\n");
@@ -389,10 +394,16 @@ public class SolicitarReservaServlet extends HttpServlet {
             mensaje.append("\nCliente: ").append(cliente.getNombre());
 
 
+            mensaje.append("\nCédula: ").append(cliente.getDocumento());
+
+
             mensaje.append("\nTeléfono: ").append(cliente.getTelefono());
 
 
             mensaje.append("\nCorreo: ").append(cliente.getEmail());
+
+
+            mensaje.append("\nProcedencia: ").append(cliente.getProcedencia());
 
 
             /*Observaciones*/

@@ -286,6 +286,32 @@
 
                        </c:forEach>
 
+                       <!-- MASCOTAS -->
+
+                       <div class="servicio-detalle-item">
+
+                           <svg viewBox="0 0 24 24" aria-hidden="true">
+                               <circle cx="8" cy="7" r="2"/>
+                               <circle cx="16" cy="7" r="2"/>
+                               <circle cx="5" cy="12" r="2"/>
+                               <circle cx="19" cy="12" r="2"/>
+                               <path d="M8 18c1-4 7-4 8 0"/>
+                           </svg>
+
+                           <span>
+                               <c:choose>
+                                   <c:when test="${alojamiento.permiteMascotas}">
+                                       Mascotas permitidas
+                                   </c:when>
+
+                                   <c:otherwise>
+                                       No se permiten mascotas
+                                   </c:otherwise>
+                               </c:choose>
+                           </span>
+
+                       </div>
+
                    </div>
 
                    </section>
