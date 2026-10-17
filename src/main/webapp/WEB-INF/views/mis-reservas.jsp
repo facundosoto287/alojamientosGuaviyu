@@ -7,6 +7,7 @@
 --%>
 <%@ page pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
@@ -337,7 +338,7 @@
 
 
                                 <strong>
-                                    <c:out value="${reserva.fechaIngreso}"/>
+                                    <fmt:formatDate value="${reserva.fechaIngreso}" pattern="dd/MM/yyyy"/>
                                 </strong>
 
                             </div>
@@ -354,7 +355,7 @@
 
 
                                 <strong>
-                                    <c:out value="${reserva.fechaSalida}"/>
+                                    <fmt:formatDate value="${reserva.fechaSalida}" pattern="dd/MM/yyyy"/>
                                 </strong>
 
                             </div>
@@ -418,8 +419,6 @@
 
 
                                 </c:choose>
-
-
                             </div>
 
 
@@ -446,14 +445,11 @@
 
 
                     </c:forEach>
-
-
                 </div>
 
 
 
                 <!--SIN RESULTADOS DEL FILTRO-->
-
                 <div id="filtroVacio"
                      class="reservas-vacio"
                      hidden>
@@ -495,7 +491,6 @@
 
 
         <!--DETALLE-->
-
         <aside class="detalle-reserva"
                id="detalleReserva">
 

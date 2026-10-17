@@ -149,9 +149,8 @@ filas.forEach(fila => {
 
         detalleUbicacion.textContent = ubicacion;
 
-        detalleIngreso.textContent = ingreso;
-
-        detalleSalida.textContent = salida;
+        detalleIngreso.textContent = formatearFecha(ingreso);
+        detalleSalida.textContent = formatearFecha(salida);
 
         detalleHuespedes.textContent = huespedes + " huéspedes";
 
@@ -161,12 +160,10 @@ filas.forEach(fila => {
         /*MEDIO DIA*/
         if (medioDiaExtra) {
             detalleHorarioSalida.textContent = "21:00 hs";
-
             detalleMedioDia.textContent = "Sí";
 
         } else {
             detalleHorarioSalida.textContent = "10:00 hs";
-
             detalleMedioDia.textContent = "No";
         }
 
@@ -219,6 +216,26 @@ filas.forEach(fila => {
         }
         detalleVacio.hidden = true;
         detalleContenido.hidden = false;
+        if (window.innerWidth <= 1050) {
+
+            document
+                .getElementById("detalleReserva")
+                .scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+        }
     });
 
 });
+
+function formatearFecha(fecha) {
+
+    if (!fecha) {
+        return "-";
+    }
+
+    const partes = fecha.split("-");
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
