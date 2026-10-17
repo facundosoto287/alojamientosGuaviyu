@@ -13,7 +13,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 40px 20px;
+    padding: 50px 40px 20px;
 
     /* Capa azul encima de la foto: cuanto más bajo el último número, más clarita se ve la imagen */
     background-image: linear-gradient(rgba(0, 35, 80, 0.28), rgba(0, 35, 80, 0.28)), url("../img/banner-guaviyu1.jpg");
@@ -21,6 +21,19 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+.site-header:not(.header-scroll) .brand-texto,
+.site-header:not(.header-scroll) .main-nav a,
+.site-header:not(.header-scroll) .header-user,
+.site-header:not(.header-scroll) .header-login-link,
+.site-header:not(.header-scroll) .header-usuario-boton {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+}
+
+.site-header:not(.header-scroll) .header-usuario-icono svg,
+.site-header:not(.header-scroll) .main-nav svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 /* Sombras un poco más fuertes para que el texto se lea bien sobre la foto más clara */
@@ -515,7 +528,7 @@ body {
     .banner {
         min-height: 500px;
 
-        padding: 45px 18px 120px;
+        padding: 130px 18px 120px;
 
         background-position: center;
     }

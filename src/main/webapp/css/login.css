@@ -142,6 +142,23 @@ label {
     font-size: .92rem;
 }
 
+.volver-perfil-contenedor {
+    width: min(575px, calc(100% - 2rem));
+    margin: 0 auto 0.8rem;
+}
+
+.boton-volver {
+    color: #0f4fbf;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.boton-volver:hover {
+    color: #0b3f98;
+    text-decoration: underline;
+}
+
 .muted { color: var(--texto-suave); }
 
 /* ===================== LOGIN ===================== */

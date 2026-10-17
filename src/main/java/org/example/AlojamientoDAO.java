@@ -14,8 +14,8 @@ public class AlojamientoDAO {
     public boolean agregarAlojamiento(Alojamiento alojamiento) {
 
         String sql = """
-                INSERT INTO alojamiento (nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO alojamiento (nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -27,6 +27,7 @@ public class AlojamientoDAO {
             sentencia.setString(5, alojamiento.getUbicacion());
             sentencia.setFloat(6, alojamiento.getDistanciaApiscina());
             guardarCoordenadas(sentencia, 7, alojamiento);
+            sentencia.setBoolean(9, alojamiento.getPermiteMascotas());
 
             return sentencia.executeUpdate() > 0;
 
@@ -38,7 +39,7 @@ public class AlojamientoDAO {
 
     public List<Alojamiento> listarAlojamientos() {
         List<Alojamiento> alojamientos = new ArrayList<>();
-        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud FROM alojamiento";
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas FROM alojamiento";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql);
@@ -62,7 +63,7 @@ public class AlojamientoDAO {
         String sql = """
                 UPDATE alojamiento
                 SET nombre = ?, descripcion = ?, capacidad = ?, precio = ?, ubicacion = ?, distanciaApiscina = ?,
-                    latitud = ?, longitud = ?
+                    latitud = ?, longitud = ?, permiteMascotas = ?
                 WHERE id = ?""";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -75,7 +76,8 @@ public class AlojamientoDAO {
             sentencia.setString(5, alojamiento.getUbicacion());
             sentencia.setFloat(6, alojamiento.getDistanciaApiscina());
             guardarCoordenadas(sentencia, 7, alojamiento);
-            sentencia.setInt(9, alojamiento.getId());
+            sentencia.setBoolean(9, alojamiento.getPermiteMascotas());
+            sentencia.setInt(10, alojamiento.getId());
 
             return sentencia.executeUpdate() > 0;
 
@@ -201,7 +203,7 @@ public class AlojamientoDAO {
     }
 
     private Alojamiento mapearAlojamiento(ResultSet resultado) throws SQLException {
-        return new Alojamiento(
+        Alojamiento alojamiento = new Alojamiento(
                 resultado.getInt("id"),
                 resultado.getString("nombre"),
                 resultado.getString("descripcion"),
@@ -210,6 +212,8 @@ public class AlojamientoDAO {
                 resultado.getString("ubicacion"),
                 resultado.getFloat("distanciaApiscina")
         );
+        alojamiento.setPermiteMascotas(resultado.getBoolean("permiteMascotas"));
+        return alojamiento;
     }
 
     // ---- Métodos que agrupan la lectura de datos por consola ----
@@ -370,7 +374,8 @@ public class AlojamientoDAO {
 
     public List<Alojamiento> buscarPorNombre(String nombre) throws SQLException {
         List<Alojamiento> alojamientos = new ArrayList<>();
-        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina FROM alojamiento WHERE nombre LIKE ? ORDER BY nombre";
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, permiteMascotas " +
+                "FROM alojamiento WHERE nombre LIKE ? ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -388,6 +393,7 @@ public class AlojamientoDAO {
                             filas.getString("ubicacion"),
                             filas.getFloat("distanciaApiscina")
                     );
+                    alojamiento.setPermiteMascotas(filas.getBoolean("permiteMascotas"));
                     alojamientos.add(alojamiento);
                 }
             }
@@ -405,11 +411,11 @@ public class AlojamientoDAO {
                 .collect(Collectors.joining(","));// unir varios elementos de una lista en un solo string
 
         String sql = """
-            SELECT a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.ubicacion, a.distanciaApiscina
+            SELECT a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.ubicacion, a.distanciaApiscina, a.permiteMascotas
             FROM alojamiento a
             JOIN alojamiento_servicio als ON a.id = als.alojamiento_id
             WHERE als.servicio_id IN (%s)
-            GROUP BY a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.ubicacion, a.distanciaApiscina
+            GROUP BY a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.ubicacion, a.distanciaApiscina, a.permiteMascotas
             HAVING COUNT(DISTINCT als.servicio_id) = ?
             """.formatted(placeholders);
 
@@ -434,6 +440,7 @@ public class AlojamientoDAO {
                             resultado.getString("ubicacion"),
                             resultado.getFloat("distanciaApiscina")
                     );
+                    a.setPermiteMascotas(resultado.getBoolean("permiteMascotas"));
                     alojamientos.add(a);
                 }
             }
@@ -454,7 +461,11 @@ public class AlojamientoDAO {
         List<Alojamiento> alojamientos = new ArrayList<>();
 
         String sql = """
-            SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina
+            SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, permiteMascotas
+            FROM alojamiento
+            WHERE capacidad >= ?
+            AND precio BETWEEN ? AND ?
+            ORDER BY precio
             FROM alojamiento
             WHERE capacidad >= ?
             AND precio BETWEEN ? AND ?
@@ -481,6 +492,7 @@ public class AlojamientoDAO {
                             resultado.getString("ubicacion"),
                             resultado.getFloat("distanciaApiscina")
                     );
+                    alojamiento.setPermiteMascotas(resultado.getBoolean("permiteMascotas"));
                     alojamientos.add(alojamiento);
                 }
             }
@@ -510,7 +522,7 @@ public class AlojamientoDAO {
     }
 
     public Alojamiento buscarPorIdALO(int id) throws SQLException {
-        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud " +
+        String sql = "SELECT id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas " +
                 "FROM alojamiento WHERE id = ?";
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {

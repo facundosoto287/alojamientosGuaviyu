@@ -60,6 +60,15 @@
 
     <!--BANNER-->
 
+    <div class="volver-perfil-contenedor">
+        <div class="volver-perfil-inner">
+            <a class="boton-volver"
+               href="${ctx}/perfil">
+                ← Volver a mi perfil
+            </a>
+        </div>
+    </div>
+
     <section class="reservas-banner">
 
         <div class="reservas-banner-contenido">

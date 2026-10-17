@@ -9,6 +9,7 @@ public class Alojamiento {
     private double precio;
     private String ubicacion;
     private float distanciaApiscina;
+    private boolean permiteMascotas;
 
     // Coordenadas para el mapa (null si todavía no se cargaron)
     private Double latitud;
@@ -95,6 +96,10 @@ public class Alojamiento {
     public void setLongitud(Double longitud) {
         this.longitud = longitud;
     }
+
+    public boolean getPermiteMascotas() {return permiteMascotas;}
+
+    public void setPermiteMascotas(boolean permiteMascotas) {this.permiteMascotas = permiteMascotas;}
 
     // true si el alojamiento tiene ubicación cargada para mostrarse en el mapa
     public boolean tieneCoordenadas() {

@@ -49,3 +49,30 @@ if (headerUsuarioBoton && headerUsuarioDropdown) {
     });
 
 }
+
+function actualizarHeader() {
+    const header = document.querySelector(".site-header");
+    const bannerInicio = document.querySelector(".banner");
+
+    if (!header) {
+        return;
+    }
+
+    if (!bannerInicio) {
+        header.classList.add("header-scroll");
+        document.body.classList.add("pagina-con-header-fijo");
+        return;
+    }
+
+    document.body.classList.remove("pagina-con-header-fijo");
+
+    if (window.scrollY > 50) {
+        header.classList.add("header-scroll");
+    } else {
+        header.classList.remove("header-scroll");
+    }
+}
+
+window.addEventListener("scroll", actualizarHeader);
+
+actualizarHeader();

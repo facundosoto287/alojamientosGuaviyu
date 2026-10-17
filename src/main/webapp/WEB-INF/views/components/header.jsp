@@ -55,8 +55,9 @@
                 <a href="${ctx}/inicio">
 
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M3 10.5 12 3l9 7.5"/>
-                        <path d="M5 9.5V21h14V9.5"/>
+                        <path d="M3 11l9-8 9 8"/>
+                        <path d="M5 10v10h14V10"/>
+                        <path d="M9 20v-6h6v6"/>
                     </svg>
 
                     <span>Inicio</span>
@@ -66,8 +67,9 @@
                 <a href="${ctx}/mapa">
 
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 21s6-5.7 6-11a6 6 0 1 0-12 0c0 5.3 6 11 6 11z"/>
-                        <circle cx="12" cy="10" r="2.5"/>
+                        <path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/>
+                        <path d="M9 3v15"/>
+                        <path d="M15 6v15"/>
                     </svg>
 
                     <span>Mapa</span>
@@ -77,9 +79,8 @@
                 <a href="${ctx}/sobre-nosotros">
 
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9"/>
-                        <path d="M12 10v6"/>
-                        <circle cx="12" cy="7" r="1"/>
+                         <circle cx="12" cy="8" r="4"/>
+                         <path d="M4 21c1.5-4 4-6 8-6s6.5 2 8 6"/>
                     </svg>
 
                     <span>Sobre nosotros</span>

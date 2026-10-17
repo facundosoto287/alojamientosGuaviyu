@@ -77,6 +77,7 @@ public class AdminAlojamientosServlet extends AdminServlet {
         Integer capacidad = entero(request, "capacidad");
         Double precio = decimal(texto(request, "precio"));
         Double distancia = texto(request, "distanciaApiscina").isEmpty() ? Double.valueOf(0) : decimal(texto(request, "distanciaApiscina"));
+        boolean permiteMascotas = request.getParameter("permiteMascotas") != null;
 
         String error = null;
         if (nombre.isEmpty() || nombre.length() > 100) {
@@ -100,6 +101,7 @@ public class AdminAlojamientosServlet extends AdminServlet {
 
         Alojamiento alojamiento = new Alojamiento(editando ? id : 0, nombre, descripcion, capacidad, precio,
                 ubicacion, distancia.floatValue());
+        alojamiento.setPermiteMascotas(permiteMascotas);
 
         boolean exito = editando
                 ? alojamientoDAO.modificarAlojamiento(alojamiento)
