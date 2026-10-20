@@ -14,6 +14,9 @@ public class Resena {
     /* Este campo viene del JOIN con alojamiento */
     private String nombreAlojamiento;
 
+    /* Este campo viene del JOIN con cliente (quién escribió la reseña) */
+    private String nombreCliente;
+
 
     public Resena() {
     }
@@ -88,6 +91,11 @@ public class Resena {
         this.fecha = fecha;
     }
 
+    /* La fecha lista para mostrar en la página: 12/10/2026 */
+    public String getFechaFormateada() {
+        return fecha == null ? "" : fecha.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
 
     public String getNombreAlojamiento() {
         return nombreAlojamiento;
@@ -95,5 +103,14 @@ public class Resena {
 
     public void setNombreAlojamiento(String nombreAlojamiento) {
         this.nombreAlojamiento = nombreAlojamiento;
+    }
+
+
+    public String getNombreCliente() {
+        return nombreCliente;
+    }
+
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
     }
 }

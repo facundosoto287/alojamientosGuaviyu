@@ -17,6 +17,11 @@ import java.util.List;
 import org.example.Reserva;
 import org.example.ReservaDao;
 
+import jakarta.servlet.http.HttpSession;
+import org.example.Cliente;
+import org.example.Resena;
+import org.example.ResenaDAO;
+
 
 @WebServlet("/alojamiento-detalle")
 public class AlojamientoDetalleServlet extends HttpServlet {
@@ -24,6 +29,8 @@ public class AlojamientoDetalleServlet extends HttpServlet {
     private final AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
 
     private final ReservaDao reservaDao = new ReservaDao();
+
+    private final ResenaDAO resenaDAO = new ResenaDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -55,6 +62,28 @@ public class AlojamientoDetalleServlet extends HttpServlet {
             // Buscar los servicios asociados a ese alojamiento
             List<Servicio> servicios =
                     alojamientoDAO.verServiciosDeUnAlojamiento(id);
+
+            // ===== Reseñas =====
+            List<Resena> resenas = resenaDAO.listarPorAlojamiento(id);
+            request.setAttribute("resenas", resenas);
+            request.setAttribute("promedioResenas", resenaDAO.promedioPorAlojamiento(id));
+
+            // ¿Quién está mirando la página? Eso decide qué ve en la parte de reseñas
+            HttpSession session = request.getSession(false);
+            Cliente cliente = (session == null) ? null
+                    : (Cliente) session.getAttribute(LoginServlet.CLIENTE_SESION);
+
+            boolean puedeResenar = false;
+            boolean tieneEstadia = false;
+
+            if (cliente != null) {
+                puedeResenar = resenaDAO.puedeResenar(cliente.getId(), id);
+                tieneEstadia = puedeResenar || resenaDAO.tieneEstadiaTerminada(cliente.getId(), id);
+            }
+
+            request.setAttribute("logueado", cliente != null);
+            request.setAttribute("puedeResenar", puedeResenar);
+            request.setAttribute("tieneEstadia", tieneEstadia);
 
             // Enviar los datos al JSP
             request.setAttribute("alojamiento", alojamiento);

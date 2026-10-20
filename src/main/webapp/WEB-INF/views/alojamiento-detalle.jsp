@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -398,6 +399,171 @@
                     </c:choose>
 
                 </div>
+
+            </section>
+
+
+            <!-- ===== RESEÑAS ===== -->
+            <section class="resenas-seccion" id="resenas">
+
+                <h2>Reseñas</h2>
+
+
+                <!-- Resumen: promedio + estrellas + cantidad -->
+                <c:if test="${not empty resenas}">
+
+                    <div class="resenas-resumen">
+
+                        <strong>
+                            <fmt:formatNumber value="${promedioResenas}"
+                                              minFractionDigits="1"
+                                              maxFractionDigits="1"/>
+                        </strong>
+
+                        <div class="estrellas">
+                            <c:forEach begin="1" end="5" var="i">
+                                <span class="${i <= promedioResenas + 0.5 ? 'activa' : ''}">★</span>
+                            </c:forEach>
+                        </div>
+
+                        <span>
+                            ${fn:length(resenas)} ${fn:length(resenas) == 1 ? 'reseña' : 'reseñas'}
+                        </span>
+
+                    </div>
+
+                </c:if>
+
+
+                <!-- Mensaje después de enviar el formulario -->
+                <c:choose>
+
+                    <c:when test="${param.resena == 'ok'}">
+                        <div class="resena-aviso ok">
+                            ¡Gracias! Tu reseña se publicó.
+                        </div>
+                    </c:when>
+
+                    <c:when test="${param.resena == 'repetida'}">
+                        <div class="resena-aviso error">
+                            Ya dejaste tu reseña de tu última estadía. Vas a poder opinar de nuevo cuando vuelvas.
+                        </div>
+                    </c:when>
+
+                    <c:when test="${param.resena == 'sin-estadia'}">
+                        <div class="resena-aviso error">
+                            Solo pueden opinar quienes ya se hospedaron en este alojamiento.
+                        </div>
+                    </c:when>
+
+                    <c:when test="${param.resena == 'datos'}">
+                        <div class="resena-aviso error">
+                            Elegí de 1 a 5 estrellas (y un comentario de hasta 500 caracteres).
+                        </div>
+                    </c:when>
+
+                </c:choose>
+
+
+                <!-- Qué ve cada persona -->
+                <c:choose>
+
+                    <%-- No inició sesión --%>
+                    <c:when test="${not logueado}">
+                        <div class="resena-aviso">
+                            <a href="${pageContext.request.contextPath}/login?destino=/alojamiento-detalle?id=${alojamiento.id}">Iniciá sesión</a>
+                            para dejar tu reseña si ya te hospedaste en este alojamiento.
+                        </div>
+                    </c:when>
+
+                    <%-- Tiene una estadía terminada que todavía no reseñó: formulario --%>
+                    <c:when test="${puedeResenar}">
+
+                        <form class="resena-formulario"
+                              method="post"
+                              action="${pageContext.request.contextPath}/resena">
+
+                            <input type="hidden" name="alojamientoId" value="${alojamiento.id}">
+
+                            <h3>Contanos cómo fue tu estadía</h3>
+
+                            <!-- Van de 5 a 1 a propósito: el CSS las da vuelta -->
+                            <div class="elegir-estrellas">
+                                <c:forEach begin="1" end="5" var="i">
+                                    <c:set var="valor" value="${6 - i}"/>
+                                    <input type="radio"
+                                           id="estrella${valor}"
+                                           name="puntuacion"
+                                           value="${valor}"
+                                           required>
+                                    <label for="estrella${valor}" title="${valor} estrellas">★</label>
+                                </c:forEach>
+                            </div>
+
+                            <textarea name="comentario"
+                                      maxlength="500"
+                                      placeholder="¿Qué te gustó? ¿Qué mejorarías? (opcional)"></textarea>
+
+                            <button type="submit" class="boton-solicitar boton-resena">
+                                Publicar reseña
+                            </button>
+
+                        </form>
+
+                    </c:when>
+
+                    <%-- Ya opinó sobre su última estadía --%>
+                    <c:when test="${tieneEstadia}">
+                        <div class="resena-aviso">
+                            Ya dejaste tu reseña de tu última estadía. ¡Gracias! Cuando vuelvas, vas a poder opinar de nuevo.
+                        </div>
+                    </c:when>
+
+                    <%-- Inició sesión pero nunca terminó una estadía acá --%>
+                    <c:otherwise>
+                        <div class="resena-aviso">
+                            Vas a poder dejar una reseña cuando termine tu estadía en este alojamiento.
+                        </div>
+                    </c:otherwise>
+
+                </c:choose>
+
+
+                <!-- Lista de reseñas -->
+                <c:choose>
+
+                    <c:when test="${empty resenas}">
+                        <p class="resenas-vacio">
+                            Este alojamiento todavía no tiene reseñas.
+                        </p>
+                    </c:when>
+
+                    <c:otherwise>
+                        <c:forEach var="resena" items="${resenas}">
+
+                            <article class="resena-item">
+
+                                <div class="resena-item-cabecera">
+                                    <strong><c:out value="${resena.nombreCliente}"/></strong>
+                                    <span><c:out value="${resena.fechaFormateada}"/></span>
+                                </div>
+
+                                <div class="estrellas">
+                                    <c:forEach begin="1" end="5" var="i">
+                                        <span class="${i <= resena.puntuacion ? 'activa' : ''}">★</span>
+                                    </c:forEach>
+                                </div>
+
+                                <c:if test="${not empty resena.comentario}">
+                                    <p><c:out value="${resena.comentario}"/></p>
+                                </c:if>
+
+                            </article>
+
+                        </c:forEach>
+                    </c:otherwise>
+
+                </c:choose>
 
             </section>
 

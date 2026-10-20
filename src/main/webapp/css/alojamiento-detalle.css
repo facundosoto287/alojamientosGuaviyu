@@ -1220,3 +1220,167 @@ body {
     }
 
 }
+
+/*RESEÑAS (comentarios y puntuación de quienes se hospedaron)*/
+.resenas-seccion {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #dce5ee;
+}
+
+.resenas-seccion h2 {
+    margin: 0 0 14px;
+    color: #0b3d91;
+    font-size: 25px;
+}
+
+/* Resumen: 4,5 ★★★★★ (12 reseñas) */
+.resenas-resumen {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    font-family: "Nunito Sans", sans-serif;
+    color: #62758a;
+}
+
+.resenas-resumen strong {
+    color: #123b73;
+    font-family: "Poppins", sans-serif;
+    font-size: 34px;
+}
+
+/* Estrellas para mostrar (no se pueden tocar) */
+.estrellas span {
+    color: #d5dde6;
+    font-size: 18px;
+}
+
+.estrellas span.activa {
+    color: #f5b301;
+}
+
+/* Avisos (no inició sesión, no se hospedó, ya reseñó...) */
+.resena-aviso {
+    margin-bottom: 22px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background-color: #edf5ff;
+    color: #123b73;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+}
+
+.resena-aviso a {
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+.resena-aviso.ok {
+    background-color: #e8f7ee;
+    color: #1e6b3a;
+}
+
+.resena-aviso.error {
+    background-color: #fff1f1;
+    color: #a83232;
+}
+
+/* Formulario */
+.resena-formulario {
+    margin-bottom: 28px;
+    padding: 20px;
+    border: 1px solid #dce6f0;
+    border-radius: 14px;
+    background-color: white;
+}
+
+.resena-formulario h3 {
+    margin: 0 0 10px;
+    color: #123b73;
+    font-size: 16px;
+}
+
+.resena-formulario textarea {
+    width: 100%;
+    min-height: 90px;
+    margin: 12px 0;
+    padding: 10px;
+    border: 1px solid #d9e2eb;
+    border-radius: 8px;
+    font-family: "Nunito Sans", sans-serif;
+    resize: vertical;
+}
+
+/* Estrellas para elegir: se escriben de 5 a 1 y se dan vuelta con row-reverse,
+   así al pasar el mouse por una se pintan esa y todas las anteriores */
+.elegir-estrellas {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 4px;
+}
+
+.elegir-estrellas input {
+    display: none;
+}
+
+.elegir-estrellas label {
+    color: #d5dde6;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.elegir-estrellas input:checked ~ label,
+.elegir-estrellas label:hover,
+.elegir-estrellas label:hover ~ label {
+    color: #f5b301;
+}
+
+/* Lista de reseñas */
+.resena-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.resena-item-cabecera {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.resena-item-cabecera strong {
+    color: #123b73;
+}
+
+.resena-item-cabecera span,
+.resena-item p {
+    color: #62758a;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+}
+
+.resena-item p {
+    margin: 6px 0 0;
+    line-height: 1.6;
+}
+
+/* Botón "Publicar reseña": mismo estilo que "Solicitar reserva", pero del ancho del texto */
+.boton-resena {
+    width: auto;
+    padding: 0 24px;
+}
+
+/* Cuando todavía no hay reseñas */
+.resenas-vacio {
+    margin: 0;
+    color: #62758a;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+}
+
+@media (max-width: 500px) {
+    .boton-resena {
+        width: 100%;
+    }
+}
