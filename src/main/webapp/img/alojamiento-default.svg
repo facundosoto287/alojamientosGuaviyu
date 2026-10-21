@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="Alojamiento sin foto">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cfe0fb"/>
+      <stop offset="1" stop-color="#f4f7fb"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#cielo)"/>
+  <circle cx="470" cy="95" r="34" fill="#f5a524" opacity=".85"/>
+  <path d="M0 330 Q150 290 300 325 T600 315 V400 H0 Z" fill="#b9cdee"/>
+  <g fill="none" stroke="#0b47b8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".75">
+    <path d="M205 235 L300 150 L395 235"/>
+    <path d="M225 220 V300 H375 V220"/>
+    <path d="M280 300 V255 H320 V300"/>
+  </g>
+  <text x="300" y="360" text-anchor="middle" font-family="Poppins, Segoe UI, sans-serif" font-size="22" font-weight="600" fill="#5b6880">Foto próximamente</text>
+</svg>
