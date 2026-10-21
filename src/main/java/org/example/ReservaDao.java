@@ -329,6 +329,111 @@ public class ReservaDao {
     }
 
     /**
+     * Edita una reserva PENDIENTE o CONFIRMADA desde el panel: cliente, alojamiento, fechas, huéspedes
+     * y medio día extra. El estado no cambia (para eso están confirmar y cancelar).
+     * Todo ocurre en una transacción, con las mismas validaciones que crearReservaAdmin:
+     * capacidad del alojamiento, que el cliente exista y que las fechas no se superpongan
+     * con otra reserva (sin contar la misma reserva que se está editando).
+     * Lanza IllegalArgumentException con un mensaje para mostrar si los datos no son válidos.
+     */
+    public void editarReservaAdmin(int idReserva, int idCliente, int alojamientoId, Date ingreso, Date salida,
+                                   int huespedes, boolean medioDiaExtra) throws SQLException {
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            conexion.setAutoCommit(false);
+            try {
+                try (PreparedStatement leer = conexion.prepareStatement(
+                        "SELECT estado FROM reserva WHERE id = ? FOR UPDATE")) {
+                    leer.setInt(1, idReserva);
+                    try (ResultSet fila = leer.executeQuery()) {
+                        if (!fila.next()) {
+                            throw new IllegalArgumentException("La reserva #" + idReserva + " no existe.");
+                        }
+                        if ("CANCELADA".equals(fila.getString(1))) {
+                            throw new IllegalArgumentException("La reserva #" + idReserva + " está cancelada y no se puede editar.");
+                        }
+                    }
+                }
+
+                int capacidad;
+                try (PreparedStatement bloquear = conexion.prepareStatement(
+                        "SELECT capacidad FROM alojamiento WHERE id = ? FOR UPDATE")) {
+                    bloquear.setInt(1, alojamientoId);
+                    try (ResultSet fila = bloquear.executeQuery()) {
+                        if (!fila.next()) {
+                            throw new IllegalArgumentException("El alojamiento seleccionado no existe.");
+                        }
+                        capacidad = fila.getInt(1);
+                    }
+                }
+                if (huespedes > capacidad) {
+                    throw new IllegalArgumentException("El alojamiento admite hasta " + capacidad + " huéspedes.");
+                }
+
+                try (PreparedStatement existeCliente = conexion.prepareStatement("SELECT 1 FROM cliente WHERE id = ?")) {
+                    existeCliente.setInt(1, idCliente);
+                    try (ResultSet fila = existeCliente.executeQuery()) {
+                        if (!fila.next()) {
+                            throw new IllegalArgumentException("El cliente seleccionado no existe.");
+                        }
+                    }
+                }
+
+                // Con medio día extra, el día de salida también queda ocupado (misma regla que al solicitar)
+                Date finOcupacion = medioDiaExtra ? Date.valueOf(salida.toLocalDate().plusDays(1)) : salida;
+                try (PreparedStatement conflicto = conexion.prepareStatement("""
+                        SELECT id, estado FROM reserva
+                        WHERE alojamiento_id = ? AND id <> ? AND estado IN ('PENDIENTE', 'CONFIRMADA')
+                          AND fechaIngreso < ?
+                          AND (CASE WHEN medioDiaExtra = 1 THEN DATE_ADD(fechaSalida, INTERVAL 1 DAY)
+                                    ELSE fechaSalida END) > ?
+                        LIMIT 1""")) {
+                    conflicto.setInt(1, alojamientoId);
+                    conflicto.setInt(2, idReserva);
+                    conflicto.setDate(3, finOcupacion);
+                    conflicto.setDate(4, ingreso);
+                    try (ResultSet fila = conflicto.executeQuery()) {
+                        if (fila.next()) {
+                            throw new IllegalArgumentException("Las fechas se superponen con la reserva #" + fila.getInt(1)
+                                    + ("PENDIENTE".equals(fila.getString(2)) ? " (pendiente)." : " (confirmada)."));
+                        }
+                    }
+                }
+
+                try (PreparedStatement actualizar = conexion.prepareStatement("""
+                        UPDATE reserva
+                        SET fechaIngreso = ?, fechaSalida = ?, cantidadHuespedes = ?, alojamiento_id = ?, medioDiaExtra = ?
+                        WHERE id = ?""")) {
+                    actualizar.setDate(1, ingreso);
+                    actualizar.setDate(2, salida);
+                    actualizar.setInt(3, huespedes);
+                    actualizar.setInt(4, alojamientoId);
+                    actualizar.setBoolean(5, medioDiaExtra);
+                    actualizar.setInt(6, idReserva);
+                    actualizar.executeUpdate();
+                }
+
+                // Cliente de la reserva: se reemplaza el vínculo (también sirve para reservas viejas sin cliente)
+                try (PreparedStatement borrar = conexion.prepareStatement(
+                        "DELETE FROM cliente_reserva WHERE idReserva = ?")) {
+                    borrar.setInt(1, idReserva);
+                    borrar.executeUpdate();
+                }
+                try (PreparedStatement relacion = conexion.prepareStatement(
+                        "INSERT INTO cliente_reserva (idCliente, idReserva) VALUES (?, ?)")) {
+                    relacion.setInt(1, idCliente);
+                    relacion.setInt(2, idReserva);
+                    relacion.executeUpdate();
+                }
+
+                conexion.commit();
+            } catch (SQLException | RuntimeException e) {
+                conexion.rollback();
+                throw e;
+            }
+        }
+    }
+
+    /**
      * Lista reservas con el nombre del alojamiento y los datos del cliente. Todos los filtros son opcionales:
      * estado (null = todos), alojamiento (null = todos), cliente (null = todos) y texto
      * (parte del nombre o del documento del cliente).
@@ -336,7 +441,8 @@ public class ReservaDao {
     public List<ReservaDetalle> listarDetalle(EstadoReserva estado, Integer alojamientoId, Integer clienteId, String textoCliente) {
         StringBuilder sql = new StringBuilder("""
                 SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado, r.fechaSolicitud,
-                       r.alojamiento_id, a.nombre AS alojamiento, c.id AS cliente_id, c.nombre AS cliente, c.documento
+                       r.alojamiento_id, r.medioDiaExtra,
+                       a.nombre AS alojamiento, c.id AS cliente_id, c.nombre AS cliente, c.documento
                 FROM reserva r
                 LEFT JOIN alojamiento a ON a.id = r.alojamiento_id
                 LEFT JOIN cliente_reserva cr ON cr.idReserva = r.id
@@ -377,8 +483,10 @@ public class ReservaDao {
                 while (fila.next()) {
                     int idCliente = fila.getInt("cliente_id");
                     boolean sinCliente = fila.wasNull();
+                    Reserva reserva = mapearReserva(fila);
+                    reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
                     lista.add(new ReservaDetalle(
-                            mapearReserva(fila),
+                            reserva,
                             fila.getString("alojamiento"),
                             sinCliente ? null : idCliente,
                             fila.getString("cliente"),
@@ -1006,7 +1114,8 @@ public class ReservaDao {
                 SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado,
                        r.fechaSolicitud, r.alojamiento_id, r.medioDiaExtra,
                        a.nombre AS alojamiento,
-                       c.id AS cliente_id, c.nombre AS cliente, c.documento, c.telefono
+                       a.precio AS precioNoche,
+                       c.id AS cliente_id, c.nombre AS cliente, c.documento, c.telefono, c.procedencia
                 FROM reserva r
                 LEFT JOIN alojamiento a ON a.id = r.alojamiento_id
                 LEFT JOIN cliente_reserva cr ON cr.idReserva = r.id
@@ -1041,7 +1150,9 @@ public class ReservaDao {
                             sinCliente ? null : idCliente,
                             fila.getString("cliente"),
                             fila.getString("documento"),
-                            fila.getString("telefono")));
+                            fila.getString("telefono"),
+                            fila.getString("procedencia"),
+                            fila.getDouble("precioNoche")));
                 }
             }
         }

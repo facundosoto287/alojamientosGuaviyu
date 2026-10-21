@@ -57,7 +57,7 @@
 
 /* La grilla */
 .planilla-caja { overflow: auto; max-height: 72vh; border: 1px solid var(--linea); border-radius: 14px; background: #fff; }
-.planilla { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1400px; table-layout: fixed; }
+.planilla { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1650px; table-layout: fixed; }
 .planilla th, .planilla td { border-right: 1px solid #e3e8f0; border-bottom: 1px solid #e3e8f0; padding: 0; vertical-align: top; }
 
 /* Encabezado fijo con el nombre de cada casa */
@@ -104,15 +104,16 @@
     position: absolute; top: 4px; left: 4px;
     width: calc(100% - 8px); height: calc(100% - 8px);      /* ocupa todas las noches de la reserva */
     display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch;
-    border: 0; border-radius: 9px; padding: .45rem .55rem;
+    border: 0; border-radius: 9px; padding: .4rem .45rem;
     text-align: left; font: 400 .85rem/1.25 var(--fuente-texto); overflow: hidden; cursor: pointer;
 }
 .reserva-bloque:focus-visible { outline: 3px solid var(--naranja); outline-offset: 1px; }
-.reserva-bloque strong {
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    padding-right: 1rem; font: 700 .88rem var(--fuente-texto);
-}
-.reserva-bloque .info { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .76rem; }
+.reserva-bloque strong { display: block; padding-right: 1.1rem; font: 700 .86rem/1.2 var(--fuente-texto); }
+.reserva-bloque .info { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .72rem; line-height: 1.3; }
+.reserva-bloque .info.precio { font-weight: 800; }
+.reserva-bloque > * { flex-shrink: 0; }   /* los renglones no se aprietan: si no entran, se ven al pasar el mouse */
+/* En reservas cortas no entra todo: al pasar el mouse o con el teclado, el cartel se agranda y muestra todos los datos */
+.reserva-bloque:hover, .reserva-bloque:focus-visible { height: auto; min-height: calc(100% - 8px); z-index: 6; overflow: visible; }
 .reserva-bloque .bloque-estado { position: absolute; top: .3rem; right: .4rem; font-weight: 800; font-size: .85rem; }
 .reserva-bloque.confirmada { background: var(--azul-700); color: #fff; box-shadow: 0 3px 8px rgba(11, 71, 184, .25); }
 .reserva-bloque.confirmada:hover { background: var(--azul-600); }
@@ -387,6 +388,9 @@
                                                 data-estado="${r.estado}"
                                                 data-casa="<c:out value='${celda.casa.nombre}'/>"
                                                 data-casa-id="${celda.casa.id}"
+                                                data-cliente-id="${r.clienteId}"
+                                                data-ingreso-iso="${r.ingreso}"
+                                                data-salida-iso="${r.salida}"
                                                 data-cliente="<c:out value='${r.nombreMostrar}'/>"
                                                 data-documento="<c:out value='${r.clienteDocumento}'/>"
                                                 data-telefono="<c:out value='${r.clienteTelefono}'/>"
@@ -396,12 +400,14 @@
                                                 data-medio-dia="${r.medioDiaExtra}"
                                                 data-noches="${r.noches}"
                                                 data-huespedes="${r.cantidadHuespedes}"
+                                                data-precio="${r.cuenta} = ${r.precioTexto}"
+                                                data-procedencia="<c:out value='${r.clienteProcedencia}'/>"
                                                 data-superpuesta="${celda.superpuesta}">
                                             <span class="bloque-estado" aria-hidden="true">${r.confirmada ? '✓' : '⏳'}${celda.superpuesta ? ' ⚠' : ''}</span>
                                             <strong><c:out value="${r.nombreMostrar}"/></strong>
-                                            <span class="info">${r.cantidadHuespedes} pers.</span>
-                                            <span class="info">Sale ${r.salidaCorta}${r.medioDiaExtra ? ' +½ día' : ''}</span>
-                                            <c:if test="${not r.confirmada}"><span class="info"><b>Por confirmar</b></span></c:if>
+                                            <span class="info">Tel. <c:out value="${empty r.clienteTelefono ? '—' : r.clienteTelefono}"/></span>
+                                            <span class="info precio" title="${r.nochesTexto} × precio por noche">${r.cuenta}</span>
+                                            <span class="info">${r.cantidadHuespedes} ${r.cantidadHuespedes == 1 ? 'persona' : 'personas'}</span>
                                         </button>
                                     </td>
                                 </c:otherwise>
@@ -436,6 +442,8 @@
             <dt>Huéspedes</dt><dd id="dr-huespedes"></dd>
             <dt>Teléfono</dt><dd id="dr-telefono"></dd>
             <dt>Cédula</dt><dd id="dr-documento"></dd>
+            <dt>Procedencia</dt><dd id="dr-procedencia"></dd>
+            <dt>Precio</dt><dd id="dr-precio"></dd>
         </dl>
 
         <div class="detalle-botones">
@@ -448,6 +456,8 @@
                 <input type="hidden" name="volver" value="/disponibilidad?mes=${mesValor}">
                 <button type="submit" class="btn btn-primario">✓ Confirmar reserva</button>
             </form>
+
+            <button type="button" id="dr-editar" class="btn btn-secundario">✏ Editar reserva</button>
 
             <a id="dr-ver" class="btn btn-secundario" href="#">Ver en Reservas</a>
 
@@ -540,6 +550,54 @@
 </dialog>
 
 
+<%-- ============ Editar reserva (el estado no cambia: para eso están Confirmar y Cancelar) ============ --%>
+<dialog id="m-editar" class="modal">
+    <form action="${base}/reservas" method="post" class="modal-form">
+        <h2>Editar reserva</h2>
+        <p class="muted">Cambiá el cliente, el alojamiento, las fechas o los huéspedes. Se controla que las fechas no choquen con otra reserva.</p>
+        <input type="hidden" name="_csrf" value="${csrf}">
+        <input type="hidden" name="accion" value="editar">
+        <input type="hidden" name="id" value="">
+        <input type="hidden" name="volver" value="/disponibilidad?mes=${mesValor}">
+
+        <div class="campos">
+            <label class="campo ancho">Cliente
+                <select name="clienteId" required>
+                    <option value="">Elegí un cliente…</option>
+                    <c:forEach var="cli" items="${clientes}">
+                        <option value="${cli.id}"><c:out value="${cli.nombre}"/> — <c:out value="${cli.documento}"/></option>
+                    </c:forEach>
+                </select>
+            </label>
+            <label class="campo ancho">Alojamiento
+                <select name="alojamientoId" required>
+                    <option value="">Elegí un alojamiento…</option>
+                    <c:forEach var="a" items="${alojamientos}">
+                        <option value="${a.id}"><c:out value="${a.nombre}"/> (hasta ${a.capacidad} pers.)</option>
+                    </c:forEach>
+                </select>
+            </label>
+            <label class="campo">Ingreso
+                <input type="date" name="fechaIngreso" required></label>
+            <label class="campo">Salida
+                <input type="date" name="fechaSalida" required></label>
+            <label class="campo">Huéspedes
+                <input type="number" name="huespedes" min="1" max="100" required></label>
+            <label class="campo">Medio día extra
+                <select name="medioDiaExtra">
+                    <option value="0">No</option>
+                    <option value="1">Sí (el día de salida queda ocupado)</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="modal-pie">
+            <button type="button" class="btn btn-secundario" data-modal-cerrar>Cancelar</button>
+            <button type="submit" class="btn btn-primario">Guardar cambios</button>
+        </div>
+    </form>
+</dialog>
+
 <%-- ============ Nueva reserva (el mismo formulario de la sección Reservas) ============ --%>
 <dialog id="m-crear" class="modal">
     <form action="${base}/reservas" method="post" class="modal-form">
@@ -553,12 +611,35 @@
             <label class="campo ancho">Cliente
                 <select name="clienteId" required>
                     <option value="">Elegí un cliente…</option>
+                    <option value="nuevo">+ Agregar cliente nuevo…</option>
                     <c:forEach var="cli" items="${clientes}">
                         <option value="${cli.id}"><c:out value="${cli.nombre}"/> — <c:out value="${cli.documento}"/></option>
                     </c:forEach>
                 </select>
-                <small>¿No está? Registralo primero en <a href="${base}/clientes">Clientes</a>.</small>
+                <button type="button" class="btn btn-editar boton-cliente-nuevo" data-elegir-cliente-nuevo>+ Agregar cliente nuevo</button>
             </label>
+            <%-- Datos del cliente nuevo: aparecen al elegir "+ Agregar cliente nuevo…" --%>
+            <fieldset class="campo cliente-nuevo" data-cliente-nuevo hidden>
+                <legend>Cliente nuevo</legend>
+                <div class="campos">
+                    <label class="campo ancho">Nombre completo
+                        <input type="text" name="nuevoNombre" maxlength="100" data-requerido></label>
+                    <label class="campo">Documento (cédula)
+                        <input type="text" name="nuevoDocumento" maxlength="20" placeholder="1.234.567-2" data-requerido></label>
+                    <label class="campo">Teléfono (celular)
+                        <input type="tel" name="nuevoTelefono" maxlength="30" placeholder="099 123 456"></label>
+                    <label class="campo">Correo electrónico
+                        <input type="email" name="nuevoEmail" maxlength="100" data-requerido></label>
+                    <label class="campo">Procedencia
+                        <select name="nuevoProcedencia">
+                            <option value="">Sin especificar</option>
+                            <c:forEach var="p" items="${procedencias}">
+                                <option value="<c:out value='${p}'/>"><c:out value="${p}"/></option>
+                            </c:forEach>
+                        </select></label>
+                </div>
+                <small>Se registra junto con la reserva, con la contraseña por defecto (la cambia en su primer ingreso).</small>
+            </fieldset>
             <label class="campo ancho">Alojamiento
                 <select name="alojamientoId" required>
                     <option value="">Elegí un alojamiento…</option>
@@ -616,6 +697,8 @@
                 poner('dr-huespedes', d.huespedes + (d.huespedes === '1' ? ' persona' : ' personas'));
                 poner('dr-telefono', d.telefono || '—');
                 poner('dr-documento', d.documento || '—');
+                poner('dr-procedencia', d.procedencia || '—');
+                poner('dr-precio', d.precio);
                 document.getElementById('dr-superpuesta').hidden = d.superpuesta !== 'true';
 
                 var whatsapp = document.getElementById('dr-whatsapp');
@@ -629,8 +712,27 @@
                 confirmar.querySelector('[name=id]').value = d.id;
                 document.getElementById('dr-cancelar').querySelector('[name=id]').value = d.id;
 
+                reservaActual = d;
                 ventana.showModal();
             });
+        });
+
+        // Editar la reserva abierta: llenar el formulario con sus datos
+        var reservaActual = null;
+        document.getElementById('dr-editar').addEventListener('click', function () {
+            var d = reservaActual;
+            var editar = document.getElementById('m-editar');
+            var f = editar.querySelector('form');
+            ventana.close();
+            f.querySelector('[name=id]').value = d.id; // (f.id sería el id del formulario)
+            f.clienteId.value = d.clienteId || '';
+            f.alojamientoId.value = d.casaId;
+            f.fechaIngreso.value = d.ingresoIso;
+            f.fechaSalida.value = d.salidaIso;
+            f.huespedes.value = d.huespedes;
+            f.medioDiaExtra.value = d.medioDia === 'true' ? '1' : '0';
+            editar.showModal();
+            f.clienteId.focus();
         });
 
         // ---- Casillero libre: elegir entre reservar o anotar precio y color ----
@@ -725,5 +827,49 @@
 
 </c:otherwise>
 </c:choose>
+
+<style>
+    /* Campos del cliente nuevo dentro de "Nueva reserva" */
+    .cliente-nuevo { grid-column: 1 / -1; border: 1px solid var(--linea); border-radius: 10px; padding: .6rem .9rem .8rem; margin: 0; }
+    .cliente-nuevo legend { padding: 0 .4rem; }
+    .cliente-nuevo .campos { margin-top: .4rem; }
+    .cliente-nuevo > small { display: block; margin-top: .6rem; color: var(--texto-suave); font-weight: 400; }
+    .cliente-nuevo[hidden] { display: none; }
+    .boton-cliente-nuevo { margin-top: .5rem; padding: .4rem .8rem; font-size: .88rem; }
+</style>
+
+<script>
+    // "Nueva reserva": al elegir "+ Agregar cliente nuevo…" se muestran los campos para registrarlo
+    (function () {
+        'use strict';
+        var ventana = document.getElementById('m-crear');
+        if (!ventana) return;
+        var selector = ventana.querySelector('select[name=clienteId]');
+        var bloque = ventana.querySelector('[data-cliente-nuevo]');
+
+        function actualizar() {
+            var nuevo = selector.value === 'nuevo';
+            bloque.hidden = !nuevo;
+            bloque.querySelectorAll('[data-requerido]').forEach(function (campo) {
+                campo.required = nuevo;
+            });
+        }
+
+        // Botón "+ Agregar cliente nuevo": elige esa opción del desplegable y muestra los campos
+        ventana.querySelector('[data-elegir-cliente-nuevo]').addEventListener('click', function () {
+            selector.value = 'nuevo';
+            actualizar();
+            bloque.querySelector('[name=nuevoNombre]').focus();
+        });
+
+        selector.addEventListener('change', function () {
+            actualizar();
+            if (selector.value === 'nuevo') {
+                bloque.querySelector('[name=nuevoNombre]').focus();
+            }
+        });
+        actualizar();
+    })();
+</script>
 
 <%@ include file="layout-bottom.jspf" %>

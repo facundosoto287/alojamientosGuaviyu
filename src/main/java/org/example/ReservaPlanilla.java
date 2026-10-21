@@ -14,11 +14,58 @@ public class ReservaPlanilla extends ReservaDetalle {
     private static final DateTimeFormatter DIA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final String clienteTelefono;
+    private final String clienteProcedencia;
+    private final double precioNoche;   // precio por noche del alojamiento
 
     public ReservaPlanilla(Reserva reserva, String alojamientoNombre, Integer clienteId,
-                           String clienteNombre, String clienteDocumento, String clienteTelefono) {
+                           String clienteNombre, String clienteDocumento, String clienteTelefono,
+                           String clienteProcedencia, double precioNoche) {
         super(reserva, alojamientoNombre, clienteId, clienteNombre, clienteDocumento);
         this.clienteTelefono = clienteTelefono;
+        this.clienteProcedencia = clienteProcedencia;
+        this.precioNoche = precioNoche;
+    }
+
+    public String getClienteProcedencia() {
+        return clienteProcedencia;
+    }
+
+    /**
+     * Precio total de la estadía, con la misma cuenta que "Mis reservas" del cliente:
+     * noches × precio del alojamiento, más media noche si pidió medio día extra.
+     */
+    public double getPrecioTotal() {
+        return getNoches() * precioNoche + (isMedioDiaExtra() ? precioNoche / 2 : 0);
+    }
+
+    /** Precio total para mostrar: "$ 17.500". */
+    public String getPrecioTexto() {
+        return PlanillaDia.precioTexto(java.math.BigDecimal.valueOf(getPrecioTotal()));
+    }
+
+    /** Precio por noche para mostrar: "$ 2.500". */
+    public String getPrecioNocheTexto() {
+        return PlanillaDia.precioTexto(java.math.BigDecimal.valueOf(precioNoche));
+    }
+
+    /**
+     * Noches por precio, como en la planilla de Excel: "8 × $ 2.500".
+     * Si pidió medio día extra se agrega "+ ½".
+     */
+    public String getCuenta() {
+        return getNoches() + " × " + getPrecioNocheTexto() + (isMedioDiaExtra() ? " + ½" : "");
+    }
+
+    /** Texto "3 noches" / "1 noche". */
+    public String getNochesTexto() {
+        long n = getNoches();
+        return n + (n == 1 ? " noche" : " noches");
+    }
+
+    /** Texto "4 huéspedes" / "1 huésped". */
+    public String getHuespedesTexto() {
+        int n = getCantidadHuespedes();
+        return n + (n == 1 ? " huésped" : " huéspedes");
     }
 
     public String getClienteTelefono() {
