@@ -1,5 +1,8 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Alojamiento {
 
     private int id;
@@ -14,6 +17,9 @@ public class Alojamiento {
     // Coordenadas para el mapa (null si todavía no se cargaron)
     private Double latitud;
     private Double longitud;
+
+    // Fotos en Cloudinary: identificadores (public_id) separados por "|". La primera es la portada.
+    private String imagenes;
 
     public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, String ubicacion, float distanciaApiscina) {
         this.id = id;
@@ -100,6 +106,44 @@ public class Alojamiento {
     public boolean getPermiteMascotas() {return permiteMascotas;}
 
     public void setPermiteMascotas(boolean permiteMascotas) {this.permiteMascotas = permiteMascotas;}
+
+    /** Texto tal como se guarda en la columna "imagenes" (null si no hay fotos). */
+    public String getImagenes() {
+        return imagenes;
+    }
+
+    public void setImagenes(String imagenes) {
+        this.imagenes = imagenes;
+    }
+
+    /** Identificadores de las fotos, en orden (la primera es la portada). Nunca es null. */
+    public List<String> getListaImagenes() {
+        return separarImagenes(imagenes);
+    }
+
+    /** Identificador de la foto de portada, o null si no hay fotos. */
+    public String getPortada() {
+        List<String> lista = getListaImagenes();
+        return lista.isEmpty() ? null : lista.get(0);
+    }
+
+    /** "a|b|c" a [a, b, c]. Ignora vacíos y espacios. */
+    public static List<String> separarImagenes(String texto) {
+        List<String> lista = new ArrayList<>();
+        if (texto != null) {
+            for (String parte : texto.split("\\|")) {
+                if (!parte.isBlank()) {
+                    lista.add(parte.trim());
+                }
+            }
+        }
+        return lista;
+    }
+
+    /** [a, b, c] a "a|b|c", o null si la lista está vacía (así la columna queda NULL). */
+    public static String unirImagenes(List<String> lista) {
+        return lista == null || lista.isEmpty() ? null : String.join("|", lista);
+    }
 
     // true si el alojamiento tiene ubicación cargada para mostrarse en el mapa
     public boolean tieneCoordenadas() {

@@ -28,7 +28,7 @@ fotos.forEach((foto, indice) => {
 /* Mostrar imagen actual */
 function mostrarImagen() {
 
-    imagenAmpliada.src = fotos[indiceActual].src;
+    imagenAmpliada.src = fotos[indiceActual].dataset.grande || fotos[indiceActual].src;
     imagenAmpliada.alt = fotos[indiceActual].alt;
 }
 

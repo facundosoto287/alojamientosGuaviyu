@@ -94,7 +94,7 @@ Riesgo: cualquiera que conozca el correo de un cliente y la contraseña por defe
 - Alojamientos existentes: quedan sin fotos (imagen por defecto) hasta que se les suban.
 
 ### 4.5 Reglas de seguridad para las fotos
-- Aceptar solo JPG, PNG y WebP, comprobando el contenido real del archivo (no solo la extensión); rechazar SVG.
+- Aceptar solo JPG, PNG, WebP y HEIC (las fotos del iPhone; Cloudinary las convierte al mostrarlas), comprobando el contenido real del archivo (no solo la extensión); rechazar SVG.
 - Tamaño máximo por foto (propuesta: 5 MB) y máximo por alojamiento (propuesta: 8 fotos).
 - Nombres generados por el sistema (UUID): nunca se usa el nombre que manda el usuario, para evitar rutas maliciosas y choques.
 - La carpeta de fotos queda fuera de la aplicación, para que no se pierda al volver a desplegar ni se pueda ejecutar nada subido.
@@ -105,3 +105,28 @@ Riesgo: cualquiera que conozca el correo de un cliente y la contraseña por defe
 1. ¿Opción A, B o C?
 2. ¿Máximo de fotos por alojamiento y tamaño máximo? (propuesta: 8 y 5 MB)
 3. ¿Hace falta el caso 32 (portada), o alcanza con que la primera subida sea la portada?
+
+### 4.7 Decisión tomada e implementación: fotos en Cloudinary
+
+Se eligió guardar las fotos en **Cloudinary** (en la nube) y, en la base, solo una columna `imagenes` con los identificadores. Así todo el equipo ve las mismas fotos y no hace falta una tabla nueva. Se usaron los valores propuestos: **8 fotos por alojamiento, 5 MB cada una, JPG/PNG/WebP/HEIC**, y la primera foto es la portada (con un botón para cambiarla).
+
+**Configuración (una sola vez por equipo y por servidor)**
+- Variable de entorno `CLOUDINARY_URL` con el formato `cloudinary://API_KEY:API_SECRET@CLOUD_NAME`, en la configuración de Tomcat de IntelliJ (igual que `ALOJAMIENTOS_DB_PASSWORD`). Nunca va en el código ni en Git.
+- Columna en la base: `ALTER TABLE alojamiento ADD COLUMN imagenes TEXT NULL;`
+- Sin `CLOUDINARY_URL` el sitio sigue funcionando: muestra la imagen por defecto y el panel avisa que las fotos no están configuradas.
+
+**Cómo funciona**
+- `CloudinaryServicio` (sin librerías externas) sube y borra fotos con una petición firmada. Cada foto queda en `alojamientos/{id}/{uuid}`.
+- `Alojamiento.imagenes` guarda `alojamientos/3/uuid1|alojamientos/3/uuid2|...`; `getListaImagenes()` y `getPortada()` lo leen.
+- `ConfiguracionImagenes` deja en la aplicación la dirección base de las fotos; las JSP arman cada foto con una transformación (por ejemplo `w_600,h_400,c_fill`), así Cloudinary entrega el tamaño y formato justo.
+- Panel, pestaña Alojamientos: al **agregar** se pueden adjuntar fotos; el botón **Fotos (n)** de cada fila abre una ventana para subir más, usar una como portada o eliminar. Al eliminar un alojamiento también se borran sus fotos de la nube.
+- Sitio público: el inicio muestra la portada; el detalle muestra la galería (principal, 5 miniaturas y el resto en el visor). Sin fotos se usa `img/alojamiento-default.svg`; mientras "La Grandiosa" (id 5) no tenga fotos propias, conserva las fijas.
+
+**Seguridad**
+- Se valida el contenido real del archivo (no la extensión), el tamaño y la cantidad; los nombres los genera el sistema.
+- Solo se pueden quitar o mover fotos que pertenezcan a ese alojamiento, y solo se borran identificadores con el formato propio.
+- Las subidas llevan el mismo token anti-CSRF del panel.
+
+**Herramientas de prueba (carpeta `tools/`)**
+- `CloudinaryProbar.java`: comprueba la conexión y crea la carpeta `alojamientos`.
+- `CloudinarySubidaPrueba.java`: sube una imagen de 1x1 píxel con el mismo código del panel, comprueba que Cloudinary la entrega y la borra.

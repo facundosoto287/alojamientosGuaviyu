@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ include file="layout-top.jspf" %>
 
 <nav class="migas" aria-label="Ruta"><a href="${base}/inicio">Inicio</a> <span>/</span> Alojamientos</nav>
@@ -51,6 +52,7 @@
                             <td><c:out value="${a.ubicacion}"/></td>
                             <td>${a.distanciaApiscina} m</td>
                             <td class="acciones">
+                                <button type="button" class="btn btn-secundario" data-modal-abrir="m-fotos-${a.id}">Fotos (${fn:length(a.listaImagenes)})</button>
                                 <button type="button" class="btn btn-editar" data-modal-abrir="m-editar"
                                         data-f-id="${a.id}"
                                         data-f-nombre="<c:out value='${a.nombre}'/>"
@@ -79,7 +81,7 @@
 
 <%-- ============ Agregar ============ --%>
 <dialog id="m-agregar" class="modal">
-    <form action="${base}/alojamientos" method="post" class="modal-form">
+    <form action="${base}/alojamientos" method="post" enctype="multipart/form-data" class="modal-form">
         <h2>Agregar alojamiento</h2>
         <input type="hidden" name="_csrf" value="${csrf}">
         <input type="hidden" name="accion" value="agregar">
@@ -100,6 +102,13 @@
                 <input type="checkbox" name="permiteMascotas">
                 Permite mascotas
             </label>
+            <c:if test="${not empty imagenBase}">
+                <label class="campo ancho">Fotos (opcional)
+                    <input type="file" name="fotos" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple
+                           data-max-mb="5" data-max-files="${maxFotos}">
+                    <small>JPG, PNG, WebP o HEIC (fotos de iPhone), hasta 5 MB cada una y ${maxFotos} como máximo. La primera será la portada.</small>
+                </label>
+            </c:if>
         </div>
         <div class="modal-pie">
             <button type="button" class="btn btn-secundario" data-modal-cerrar>Cancelar</button>
@@ -139,5 +148,77 @@
         </div>
     </form>
 </dialog>
+
+<%-- ============ Fotos de cada alojamiento ============ --%>
+<c:forEach var="a" items="${alojamientos}">
+    <c:set var="fotos" value="${a.listaImagenes}"/>
+    <dialog id="m-fotos-${a.id}" class="modal modal-fotos" ${param.fotos == a.id ? 'data-abrir-al-cargar' : ''}>
+        <div class="modal-form">
+            <h2>Fotos de <c:out value="${a.nombre}"/></h2>
+
+            <c:choose>
+                <c:when test="${empty imagenBase}">
+                    <p class="aviso aviso-error" role="alert"><span>Las fotos no están configuradas: falta definir la variable CLOUDINARY_URL en el servidor.</span></p>
+                </c:when>
+                <c:otherwise>
+                    <p class="muted">${fn:length(fotos)} de ${maxFotos} fotos. La primera es la portada y es la que se ve en el inicio.</p>
+
+                    <c:if test="${empty fotos}"><p class="vacio">Este alojamiento todavía no tiene fotos.</p></c:if>
+
+                    <ul class="fotos-grid">
+                        <c:forEach var="foto" items="${fotos}" varStatus="posicion">
+                            <li class="foto-item">
+                                <img src="${imagenBase},w_320,h_220,c_fill/${foto}"
+                                     alt="Foto ${posicion.index + 1} de <c:out value='${a.nombre}'/>" loading="lazy">
+                                <c:if test="${posicion.first}"><span class="foto-etiqueta">Portada</span></c:if>
+                                <div class="foto-acciones">
+                                    <c:if test="${not posicion.first}">
+                                        <form action="${base}/alojamientos" method="post">
+                                            <input type="hidden" name="_csrf" value="${csrf}">
+                                            <input type="hidden" name="accion" value="portada">
+                                            <input type="hidden" name="id" value="${a.id}">
+                                            <input type="hidden" name="foto" value="<c:out value='${foto}'/>">
+                                            <button type="submit" class="btn btn-editar">Usar de portada</button>
+                                        </form>
+                                    </c:if>
+                                    <form action="${base}/alojamientos" method="post" data-confirmar="¿Eliminar esta foto? No se puede deshacer.">
+                                        <input type="hidden" name="_csrf" value="${csrf}">
+                                        <input type="hidden" name="accion" value="quitarFoto">
+                                        <input type="hidden" name="id" value="${a.id}">
+                                        <input type="hidden" name="foto" value="<c:out value='${foto}'/>">
+                                        <button type="submit" class="btn btn-eliminar">Eliminar</button>
+                                    </form>
+                                </div>
+                            </li>
+                        </c:forEach>
+                    </ul>
+
+                    <c:choose>
+                        <c:when test="${fn:length(fotos) < maxFotos}">
+                            <form action="${base}/alojamientos" method="post" enctype="multipart/form-data" class="subir-fotos">
+                                <input type="hidden" name="_csrf" value="${csrf}">
+                                <input type="hidden" name="accion" value="subirFotos">
+                                <input type="hidden" name="id" value="${a.id}">
+                                <label class="campo ancho">Agregar fotos
+                                    <input type="file" name="fotos" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple required
+                                           data-max-mb="5" data-max-files="${maxFotos - fn:length(fotos)}">
+                                    <small>JPG, PNG, WebP o HEIC (fotos de iPhone), hasta 5 MB cada una. Podés agregar ${maxFotos - fn:length(fotos)} más.</small>
+                                </label>
+                                <button type="submit" class="btn btn-primario">Subir fotos</button>
+                            </form>
+                        </c:when>
+                        <c:otherwise>
+                            <p class="muted">Llegaste al máximo de ${maxFotos} fotos. Eliminá una para poder agregar otra.</p>
+                        </c:otherwise>
+                    </c:choose>
+                </c:otherwise>
+            </c:choose>
+
+            <div class="modal-pie">
+                <button type="button" class="btn btn-secundario" data-modal-cerrar>Cerrar</button>
+            </div>
+        </div>
+    </dialog>
+</c:forEach>
 
 <%@ include file="layout-bottom.jspf" %>

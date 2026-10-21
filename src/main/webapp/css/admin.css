@@ -234,6 +234,19 @@ td.acciones > * { display: inline-block; vertical-align: middle; margin: 0 0 0 .
 .opciones input { width: auto; margin: 0; }
 .modal-pie { display: flex; justify-content: flex-end; gap: .7rem; margin-top: 1.4rem; }
 
+/* ===================== FOTOS DE ALOJAMIENTOS ===================== */
+
+.modal-fotos { width: min(780px, calc(100vw - 2rem)); }
+.fotos-grid { list-style: none; padding: 0; margin: 1rem 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .9rem; }
+.foto-item { position: relative; border: 1px solid var(--linea); border-radius: 12px; overflow: hidden; background: #fff; }
+.foto-item img { display: block; width: 100%; height: 130px; object-fit: cover; background: var(--azul-50); }
+.foto-etiqueta { position: absolute; top: .5rem; left: .5rem; background: var(--azul-700); color: #fff; font-size: .75rem; font-weight: 700; padding: .15rem .6rem; border-radius: 999px; }
+.foto-acciones { display: flex; flex-wrap: wrap; gap: .4rem; padding: .55rem; }
+.foto-acciones form { margin: 0; }
+.foto-acciones .btn { padding: .35rem .7rem; font-size: .82rem; }
+.subir-fotos { margin-top: .5rem; padding-top: 1rem; border-top: 1px solid var(--linea); }
+.subir-fotos .btn { margin-top: .8rem; }
+
 /* ===================== RESUMEN DEL INICIO ===================== */
 
 .tarjetas-resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.3rem; }

@@ -53,6 +53,35 @@
         });
     });
 
+    // Ventanas que deben abrirse solas al cargar la página (por ejemplo, la de fotos después de subir una).
+    document.querySelectorAll('dialog[data-abrir-al-cargar]').forEach(function (ventana) {
+        ventana.showModal();
+    });
+
+    // Selectores de fotos: avisan antes de enviar si hay demasiadas fotos o alguna pesa de más.
+    document.querySelectorAll('input[type=file][data-max-mb]').forEach(function (selector) {
+        selector.addEventListener('change', function () {
+            var maxBytes = Number(selector.dataset.maxMb) * 1024 * 1024;
+            var maxArchivos = Number(selector.dataset.maxFiles) || Infinity;
+            var archivos = Array.prototype.slice.call(selector.files);
+            var problema = '';
+
+            if (archivos.length > maxArchivos) {
+                problema = 'Elegiste ' + archivos.length + ' fotos y solo se pueden agregar ' + maxArchivos + '.';
+            } else {
+                var grande = archivos.filter(function (archivo) { return archivo.size > maxBytes; })[0];
+                if (grande) {
+                    problema = '"' + grande.name + '" pesa más de ' + selector.dataset.maxMb + ' MB.';
+                }
+            }
+
+            if (problema) {
+                window.alert(problema);
+                selector.value = '';
+            }
+        });
+    });
+
     // Cerrar los avisos.
     document.querySelectorAll('[data-cerrar-aviso]').forEach(function (boton) {
         boton.addEventListener('click', function () {

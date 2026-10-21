@@ -208,21 +208,23 @@
             <article class="alojamiento-card">
 
 
-            <%-- Imagen fija para el alojamiento 6 --%>
-            <c:if test="${alojamiento.id == 5}">
-                <div class="alojamiento-card-imagen">
-                    <img src="${pageContext.request.contextPath}/img/grandiosa1.jpg"
-                         alt="Imagen de ${alojamiento.nombre}">
-                </div>
-            </c:if>
-
-            <%-- Imagen por defecto para los demás --%>
-            <c:if test="${alojamiento.id != 5}">
-                <div class="alojamiento-card-imagen">
-                    <img src="${pageContext.request.contextPath}/img/alojamiento-default.jpg"
-                         alt="Imagen de ${alojamiento.nombre}">
-                </div>
-            </c:if>
+            <%-- Portada del alojamiento (Cloudinary). Sin fotos: la foto fija de La Grandiosa (id 5) o la imagen por defecto --%>
+            <div class="alojamiento-card-imagen">
+                <c:choose>
+                    <c:when test="${not empty alojamiento.portada and not empty imagenBase}">
+                        <img src="${imagenBase},w_600,h_400,c_fill/${alojamiento.portada}"
+                             alt="Imagen de <c:out value='${alojamiento.nombre}'/>" loading="lazy">
+                    </c:when>
+                    <c:when test="${alojamiento.id == 5}">
+                        <img src="${pageContext.request.contextPath}/img/grandiosa1.jpg"
+                             alt="Imagen de <c:out value='${alojamiento.nombre}'/>">
+                    </c:when>
+                    <c:otherwise>
+                        <img src="${pageContext.request.contextPath}/img/alojamiento-default.svg"
+                             alt="Imagen de <c:out value='${alojamiento.nombre}'/>">
+                    </c:otherwise>
+                </c:choose>
+            </div>
 
                 <div class="alojamiento-card-contenido">
                     <h3>

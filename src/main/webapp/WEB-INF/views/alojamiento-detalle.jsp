@@ -62,9 +62,52 @@
 
             <section class="galeria-principal">
 
+                <c:set var="fotos" value="${alojamiento.listaImagenes}"/>
+                <c:set var="totalFotos" value="${fn:length(fotos)}"/>
+
                 <c:choose>
 
-                    <%-- Solo "La Grandiosa" (id 5) tiene fotos propias: se muestra su galería --%>
+                    <%-- Fotos del alojamiento (Cloudinary): la primera es la principal y hasta 5 miniaturas.
+                         Las que sobran quedan ocultas para poder recorrerlas con las flechas del visor. --%>
+                    <c:when test="${totalFotos > 0 and not empty imagenBase}">
+
+                        <div class="imagen-grande">
+                            <img src="${imagenBase},w_1200,c_limit/${fotos[0]}"
+                                 data-grande="${imagenBase},w_2000,c_limit/${fotos[0]}"
+                                 alt="Imagen principal de <c:out value='${alojamiento.nombre}'/>"
+                                 class="foto-galeria" data-indice="0">
+                        </div>
+
+                        <c:if test="${totalFotos > 1}">
+                            <div class="imagenes-secundarias">
+
+                                <c:forEach var="foto" items="${fotos}" begin="1" end="5" varStatus="posicion">
+                                    <c:set var="hayMas" value="${posicion.index == 5 and totalFotos > 6}"/>
+                                    <div class="miniatura ${hayMas ? 'miniatura-mas' : ''}">
+                                        <img src="${imagenBase},w_400,h_300,c_fill/${foto}"
+                                             data-grande="${imagenBase},w_2000,c_limit/${foto}"
+                                             alt="Imagen ${posicion.index + 1} de <c:out value='${alojamiento.nombre}'/>"
+                                             class="foto-galeria" data-indice="${posicion.index}">
+                                        <c:if test="${hayMas}">
+                                            <div class="miniatura-overlay" style="pointer-events:none">+${totalFotos - 6}</div>
+                                        </c:if>
+                                    </div>
+                                </c:forEach>
+
+                                <c:forEach var="foto" items="${fotos}" begin="6" varStatus="posicion">
+                                    <img hidden
+                                         src="${imagenBase},w_400,c_limit/${foto}"
+                                         data-grande="${imagenBase},w_2000,c_limit/${foto}"
+                                         alt="Imagen ${posicion.index + 1} de <c:out value='${alojamiento.nombre}'/>"
+                                         class="foto-galeria" data-indice="${posicion.index}">
+                                </c:forEach>
+
+                            </div>
+                        </c:if>
+
+                    </c:when>
+
+                    <%-- Sin fotos propias: las fijas de "La Grandiosa" (id 5) --%>
                     <c:when test="${alojamiento.id == 5}">
 
                         <!-- Foto principal -->
@@ -120,11 +163,11 @@
 
                     </c:when>
 
-                    <%-- Los demás alojamientos todavía no tienen fotos: imagen por defecto (la misma que en el inicio) --%>
+                    <%-- Sin fotos: imagen por defecto --%>
                     <c:otherwise>
 
                         <div class="imagen-grande">
-                            <img src="${pageContext.request.contextPath}/img/alojamiento-default.jpg"
+                            <img src="${pageContext.request.contextPath}/img/alojamiento-default.svg"
                                  alt="Imagen de ${alojamiento.nombre}"
                                  class="foto-galeria" data-indice="0">
                         </div>

@@ -54,7 +54,12 @@ public class AdminFilter implements Filter {
         }
 
         if ("POST".equalsIgnoreCase(request.getMethod()) && !tokenValido(request)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Solicitud no válida. Volvé a cargar la página e intentá de nuevo.");
+            // Si el envío traía archivos, lo más probable es que alguna foto supere el tamaño máximo
+            String tipo = request.getContentType();
+            boolean conArchivos = tipo != null && tipo.toLowerCase().startsWith("multipart/");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, conArchivos
+                    ? "No se pudo procesar el envío. Si subías fotos, cada una puede pesar hasta 5 MB. Volvé a la página e intentá de nuevo."
+                    : "Solicitud no válida. Volvé a cargar la página e intentá de nuevo.");
             return;
         }
 
