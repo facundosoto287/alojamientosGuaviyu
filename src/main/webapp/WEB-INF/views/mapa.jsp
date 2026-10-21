@@ -186,7 +186,7 @@
 
     // ===== 4. Lugares de las termas (para que el turista se ubique) =====
     const lugares = [
-        { tipo: "piscinas",   nombre: "Piscinas termales", info: "Piscinas al aire libre del complejo termal", lat: -31.84163, lng: -57.88647 },
+        { tipo: "piscinas",   nombre: "Piscinas Los Chorritos ", info: "Piscinas al aire libre del complejo termal", lat: -31.841539904199543, lng:-57.88662137625397 },
         { tipo: "piscinas",   nombre: "Piscinas cerradas", info: "Piscinas termales techadas",                 lat: -31.83906, lng: -57.88844 },
         { tipo: "naturaleza", nombre: "Camping",           info: "Zona de camping con parrilleros",            lat: -31.84261, lng: -57.88586 },
         { tipo: "naturaleza", nombre: "Sendero Guaviyú",   info: "Sendero junto al arroyo",                    lat: -31.84408, lng: -57.88912 },

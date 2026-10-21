@@ -78,6 +78,13 @@ public class AdminReservasServlet extends AdminServlet {
             avisoError(request, "No pudimos completar la operación. Intentá de nuevo en unos minutos.");
         }
 
+        // Si la acción se hizo desde Disponibilidad (vista de todas las casas), volver ahí (al mismo mes)
+        String volver = texto(request, "volver");
+        if (volver.matches("/disponibilidad(\\?mes=\\d{4}-\\d{2})?")) {
+            redirigir(request, response, volver);
+            return;
+        }
+
         redirigir(request, response, "/reservas" + filtrosActuales(request));
     }
 

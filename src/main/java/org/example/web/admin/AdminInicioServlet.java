@@ -22,21 +22,21 @@ public class AdminInicioServlet extends AdminServlet {
     private final AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
     private final ServicioDAO servicioDAO = new ServicioDAO();
     private final ClienteDAO clienteDAO = new ClienteDAO();
-    private final ReservaDao reservaDao = new ReservaDao();
+    private final ReservaDao ReservaDAO = new ReservaDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            List<ReservaDetalle> pendientes = reservaDao.listarDetalle(EstadoReserva.PENDIENTE, null, null, null);
+            List<ReservaDetalle> pendientes = ReservaDAO.listarDetalle(EstadoReserva.PENDIENTE, null, null, null);
 
             request.setAttribute("totalAlojamientos", alojamientoDAO.listarAlojamientos().size());
             request.setAttribute("totalServicios", servicioDAO.listarServicios().size());
             request.setAttribute("totalClientes", clienteDAO.listarClientes().size());
             request.setAttribute("totalPendientes", pendientes.size());
             request.setAttribute("totalConfirmadas",
-                    reservaDao.listarDetalle(EstadoReserva.CONFIRMADA, null, null, null).size());
+                    ReservaDAO.listarDetalle(EstadoReserva.CONFIRMADA, null, null, null).size());
             request.setAttribute("ultimasPendientes", pendientes.subList(0, Math.min(5, pendientes.size())));
         } catch (SQLException e) {
             log("Error al cargar el inicio del panel", e);

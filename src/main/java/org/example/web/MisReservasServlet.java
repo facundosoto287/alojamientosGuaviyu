@@ -17,7 +17,7 @@ import java.util.List;
 @WebServlet("/mis-reservas")
 public class MisReservasServlet extends HttpServlet {
 
-    private final ReservaDao reservaDao = new ReservaDao();
+    private final ReservaDao ReservaDAO = new ReservaDao();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -33,7 +33,7 @@ public class MisReservasServlet extends HttpServlet {
 
         Cliente cliente = (Cliente) session.getAttribute("clienteSesion");
 
-        List<Reserva> reservas = reservaDao.listarReservasCliente(cliente.getId());
+        List<Reserva> reservas = ReservaDAO.listarReservasCliente(cliente.getId());
 
         request.setAttribute("reservas", reservas);
 

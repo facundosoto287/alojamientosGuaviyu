@@ -24,7 +24,7 @@ import java.util.Map;
 public class AdminClientesServlet extends AdminServlet {
 
     private final ClienteDAO clienteDAO = new ClienteDAO();
-    private final ReservaDao reservaDao = new ReservaDao();
+    private final ReservaDao ReservaDAO = new ReservaDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -42,7 +42,7 @@ public class AdminClientesServlet extends AdminServlet {
                 if (cliente != null) {
                     cliente.setContrasena(null); // el hash nunca llega a la página
                     request.setAttribute("clienteHistorial", cliente);
-                    request.setAttribute("historial", reservaDao.listarDetalle(null, null, historialId, null));
+                    request.setAttribute("historial", ReservaDAO.listarDetalle(null, null, historialId, null));
                 }
             }
         } catch (SQLException e) {

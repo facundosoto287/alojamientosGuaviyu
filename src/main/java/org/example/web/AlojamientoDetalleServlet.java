@@ -28,7 +28,7 @@ public class AlojamientoDetalleServlet extends HttpServlet {
 
     private final AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
 
-    private final ReservaDao reservaDao = new ReservaDao();
+    private final ReservaDao ReservaDAO = new ReservaDao();
 
     private final ResenaDAO resenaDAO = new ResenaDAO();
 
@@ -56,7 +56,7 @@ public class AlojamientoDetalleServlet extends HttpServlet {
                 return;
             }
 
-            List<Reserva> reservasConfirmadas = reservaDao.reservasConfirmadasAlojamiento(id);
+            List<Reserva> reservasConfirmadas = ReservaDAO.reservasConfirmadasAlojamiento(id);
             request.setAttribute("reservasConfirmadas", reservasConfirmadas);
 
             // Buscar los servicios asociados a ese alojamiento

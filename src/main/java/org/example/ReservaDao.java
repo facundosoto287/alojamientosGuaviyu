@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -50,7 +51,7 @@ public class ReservaDao {
             int alojamientoId,
             java.sql.Date fechaIngreso,
             java.sql.Date fechaSalida
-        ) throws SQLException {
+    ) throws SQLException {
         String sql = """
         SELECT 1
         FROM reserva
@@ -990,5 +991,61 @@ public class ReservaDao {
 
         return reservas;
     }
-} //fin dao
+    /* ==================================================
+       DISPONIBILIDAD: planilla de todas las casas y calendario por casa
+       Reservas PENDIENTES y CONFIRMADAS de TODAS las casas que ocupan
+       al menos un día entre "desde" (incluido) y "hasta" (excluido).
+       Con medio día extra, el día de salida también queda ocupado
+       (la misma regla que usa crearSolicitudReserva).
+       Primero las confirmadas, así en la planilla tienen prioridad.
+       ================================================== */
 
+    public List<ReservaPlanilla> listarParaPlanilla(LocalDate desde, LocalDate hasta) throws SQLException {
+
+        String sql = """
+                SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado,
+                       r.fechaSolicitud, r.alojamiento_id, r.medioDiaExtra,
+                       a.nombre AS alojamiento,
+                       c.id AS cliente_id, c.nombre AS cliente, c.documento, c.telefono
+                FROM reserva r
+                LEFT JOIN alojamiento a ON a.id = r.alojamiento_id
+                LEFT JOIN cliente_reserva cr ON cr.idReserva = r.id
+                LEFT JOIN cliente c ON c.id = cr.idCliente
+                WHERE r.estado IN ('PENDIENTE', 'CONFIRMADA')
+                AND r.fechaIngreso < ?
+                AND (CASE WHEN r.medioDiaExtra = 1
+                          THEN DATE_ADD(r.fechaSalida, INTERVAL 1 DAY)
+                          ELSE r.fechaSalida END) > ?
+                ORDER BY (r.estado = 'CONFIRMADA') DESC, r.fechaIngreso, r.id
+                """;
+
+        List<ReservaPlanilla> lista = new ArrayList<>();
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setDate(1, Date.valueOf(hasta));
+            sentencia.setDate(2, Date.valueOf(desde));
+
+            try (ResultSet fila = sentencia.executeQuery()) {
+                while (fila.next()) {
+                    int idCliente = fila.getInt("cliente_id");
+                    boolean sinCliente = fila.wasNull();
+
+                    Reserva reserva = mapearReserva(fila);
+                    reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
+
+                    lista.add(new ReservaPlanilla(
+                            reserva,
+                            fila.getString("alojamiento"),
+                            sinCliente ? null : idCliente,
+                            fila.getString("cliente"),
+                            fila.getString("documento"),
+                            fila.getString("telefono")));
+                }
+            }
+        }
+
+        return lista;
+    }
+} //fin dao
