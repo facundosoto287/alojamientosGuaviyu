@@ -337,12 +337,20 @@
 
                        <div class="servicio-detalle-item">
 
-                           <svg viewBox="0 0 24 24" aria-hidden="true">
-                               <circle cx="8" cy="7" r="2"/>
-                               <circle cx="16" cy="7" r="2"/>
-                               <circle cx="5" cy="12" r="2"/>
-                               <circle cx="19" cy="12" r="2"/>
-                               <path d="M8 18c1-4 7-4 8 0"/>
+                           <svg class="icono-mascotas"
+                                viewBox="0 0 100 100"
+                                aria-hidden="true">
+                               <ellipse cx="35" cy="22" rx="12" ry="17"/>
+                               <ellipse cx="65" cy="22" rx="12" ry="17"/>
+                               <ellipse cx="15" cy="47" rx="11" ry="15" transform="rotate(-20 15 47)"/>
+                               <ellipse cx="85" cy="47" rx="11" ry="15" transform="rotate(20 85 47)"/>
+                               <path d="M50 47
+                                        C36 47 26 59 20 70
+                                        C14 81 20 91 33 92
+                                        C40 92 45 87 50 85
+                                        C55 87 60 92 67 92
+                                        C80 91 86 81 80 70
+                                        C74 59 64 47 50 47Z"/>
                            </svg>
 
                            <span>

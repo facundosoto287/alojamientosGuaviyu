@@ -36,7 +36,7 @@
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/footer.css">
       <link rel="stylesheet"
-            href="${pageContext.request.contextPath}/css/inicio.css?v=2">
+           href="${pageContext.request.contextPath}/css/inicio.css?v=5">
 </head>
 
 <body>
@@ -90,11 +90,11 @@
     </div>
 </section>
 
-<section class="alojamientos-inicio">
+<section class="alojamientos-inicio" id="alojamientos">
 <div class="alojamientos-contenido">
 
        <form class="buscador-inicio"
-             action="${pageContext.request.contextPath}/inicio"
+             action="${pageContext.request.contextPath}/inicio#alojamientos"
              method="get">
 
            <div class="campo-buscador">
@@ -113,8 +113,7 @@
                           name="fechaIngreso"
                           value="${param.fechaIngreso}"
                           placeholder="Seleccionar fecha"
-                          autocomplete="off"
-                          required>
+                          autocomplete="off">
                </div>
            </div>
 
@@ -134,8 +133,7 @@
                            name="fechaSalida"
                            value="${param.fechaSalida}"
                            placeholder="Seleccionar fecha"
-                           autocomplete="off"
-                           required>
+                           autocomplete="off">
                </div>
            </div>
 
@@ -153,8 +151,7 @@
                           name="huespedes"
                           min="1"
                           placeholder="2"
-                          value="${param.huespedes}"
-                          required>
+                          value="${param.huespedes}">
                </div>
            </div>
 
@@ -172,31 +169,69 @@
                           name="precioMax"
                           min="0"
                           placeholder="$"
-                          value="${param.precioMax}"
-                          required>
+                          value="${param.precioMax}">
                </div>
            </div>
 
-           <button type="submit" class="boton-buscar">
-               <svg viewBox="0 0 24 24" aria-hidden="true">
-                   <circle cx="11" cy="11" r="7"/>
-                   <path d="M20 20l-4-4"/>
-               </svg>
+          <div class="campo-buscador campo-mascotas">
+              <label for="mascotas">Mascotas</label>
 
-               Buscar alojamientos
-           </button>
+              <div class="input-con-icono">
+                  <svg viewBox="0 0 100 100" aria-hidden="true">
+                      <ellipse cx="35" cy="22" rx="12" ry="17"/>
+                      <ellipse cx="65" cy="22" rx="12" ry="17"/>
+                      <ellipse cx="15" cy="47" rx="11" ry="15" transform="rotate(-20 15 47)"/>
+                      <ellipse cx="85" cy="47" rx="11" ry="15" transform="rotate(20 85 47)"/>
+                      <path d="M50 47
+                               C36 47 26 59 20 70
+                               C14 81 20 91 33 92
+                               C40 92 45 87 50 85
+                               C55 87 60 92 67 92
+                               C80 91 86 81 80 70
+                               C74 59 64 47 50 47Z"/>
+                  </svg>
 
-           <a class="boton-limpiar"
-              href="${pageContext.request.contextPath}/inicio">
+                  <select id="mascotas" name="mascotas">
+                      <option value="">Cualquiera</option>
+                      <option value="si" ${param.mascotas == 'si' ? 'selected' : ''}>Permite mascotas</option>
+                      <option value="no" ${param.mascotas == 'no' ? 'selected' : ''}>No permite mascotas</option>
+                  </select>
+              </div>
+          </div>
 
-               <svg viewBox="0 0 24 24" aria-hidden="true">
-                   <path d="M4 4v6h6"/>
-                   <path d="M20 11a8 8 0 1 0-2.3 5.7"/>
-               </svg>
+           <div class="acciones-buscador">
+               <button type="submit" class="boton-buscar">
+                   <svg viewBox="0 0 24 24" aria-hidden="true">
+                       <circle cx="11" cy="11" r="7"/>
+                       <path d="M20 20l-4-4"/>
+                   </svg>
+                   Buscar alojamientos
+               </button>
 
-               Limpiar filtros
-           </a>
+               <a class="boton-limpiar"
+                  href="${pageContext.request.contextPath}/inicio#alojamientos">
+                   <svg viewBox="0 0 24 24" aria-hidden="true">
+                       <path d="M6 6l12 12"/>
+                       <path d="M18 6L6 18"/>
+                   </svg>
+                   Limpiar filtros
+               </a>
+           </div>
        </form>
+
+       <c:if test="${not empty param.fechaIngreso
+                 or not empty param.fechaSalida
+                 or not empty param.huespedes
+                 or not empty param.precioMax
+                 or not empty param.mascotas}">
+
+           <div class="resultado-filtros">
+               <strong>
+                   Se encontraron ${fn:length(alojamientos)} alojamientos
+               </strong>
+           </div>
+
+       </c:if>
 
     <div class="alojamientos-titulo">
         <span class="titulo-etiqueta">Alojamientos Guaviyú</span>
@@ -206,6 +241,18 @@
         <p>¡Las mejores opciones para disfrutar tu estadía en las termas!</p>
     </div>
 
+    <c:if test="${empty alojamientos}">
+        <div class="sin-resultados">
+            <h3>No encontramos alojamientos</h3>
+
+            <p>
+                Probá cambiando los filtros seleccionados
+            </p>
+        </div>
+    </c:if>
+
+
+<c:if test="${not empty alojamientos}">
     <div class="alojamientos-grid">
 
         <c:forEach var="alojamiento" items="${alojamientos}">
@@ -388,6 +435,7 @@
         </c:forEach>
 
     </div>
+   </c:if>
 </div>
 </section>
 <%@ include file="/WEB-INF/views/components/loading.jsp" %>

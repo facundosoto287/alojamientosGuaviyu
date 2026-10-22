@@ -18,10 +18,17 @@ function ocultarLoading() {
 
 document.querySelectorAll("form").forEach(formulario => {
 
-    formulario.addEventListener("submit", () => {
+    formulario.addEventListener("submit", function () {
+
+        setTimeout(() => {
+
+            if (document.visibilityState === "visible") {
+                ocultarLoading();
+            }
+
+        }, 1500);
 
         mostrarLoading();
-
     });
 
 });
@@ -72,22 +79,24 @@ document.querySelectorAll("a[href]").forEach(enlace => {
 
 });
 
+document.querySelectorAll("select").forEach(select => {
+
+    select.addEventListener("change", function () {
+
+        const onchange = this.getAttribute("onchange");
+
+        if (
+            this.form &&
+            onchange &&
+            onchange.includes("submit")
+        ) {
+            mostrarLoading();
+        }
+    });
+});
 
 /*OCULTAR AL VOLVER CON ATRAS*/
 
 window.addEventListener("pageshow", () => {
     ocultarLoading();
-});
-
-document.querySelectorAll("select").forEach(select => {
-
-    select.addEventListener("change", function () {
-
-        const formulario = this.form;
-        if (!formulario) {
-            return;
-        }
-        mostrarLoading();
-    });
-
 });

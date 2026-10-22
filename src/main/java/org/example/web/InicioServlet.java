@@ -28,16 +28,36 @@ public class InicioServlet extends HttpServlet {
 
         String huespedesTexto = request.getParameter("huespedes");
         String precioMaxTexto = request.getParameter("precioMax");
+        String mascotas = request.getParameter("mascotas");
 
-        List<Alojamiento> alojamientos;
+        List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
 
-        if (huespedesTexto != null && !huespedesTexto.isBlank() && precioMaxTexto != null && !precioMaxTexto.isBlank()) {
+        if (huespedesTexto != null && !huespedesTexto.isBlank()) {
             int huespedes = Integer.parseInt(huespedesTexto);
+
+            alojamientos = alojamientos.stream()
+                    .filter(a -> a.getCapacidad() >= huespedes)
+                    .toList();
+        }
+
+        if (precioMaxTexto != null && !precioMaxTexto.isBlank()) {
             double precioMax = Double.parseDouble(precioMaxTexto);
 
-            alojamientos = alojamientoDAO.filtrarAlojamientosporPrecio(huespedes,0,precioMax);
-        } else {
-            alojamientos = alojamientoDAO.listarAlojamientos();
+            alojamientos = alojamientos.stream()
+                    .filter(a -> a.getPrecio() <= precioMax)
+                    .toList();
+        }
+
+        if ("si".equals(mascotas)) {
+
+            alojamientos = alojamientos.stream()
+                    .filter(Alojamiento::getPermiteMascotas)
+                    .toList();
+        } else if ("no".equals(mascotas)) {
+
+            alojamientos = alojamientos.stream()
+                    .filter(a -> !a.getPermiteMascotas())
+                    .toList();
         }
         request.setAttribute("alojamientos", alojamientos);
 
