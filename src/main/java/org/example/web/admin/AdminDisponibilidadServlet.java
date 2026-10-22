@@ -12,6 +12,7 @@ import org.example.PlanillaDiaDAO;
 import org.example.ReservaDao;
 import org.example.ReservaDetalle;
 import org.example.ReservaPlanilla;
+import org.example.web.LoginServlet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -114,6 +115,7 @@ public class AdminDisponibilidadServlet extends AdminServlet {
 
                 // Para el formulario "Nueva reserva" (el mismo de la sección Reservas)
                 request.setAttribute("clientes", clienteDAO.listarClientes());
+                request.setAttribute("procedencias", LoginServlet.PROCEDENCIAS);
                 request.setAttribute("hoy", LocalDate.now().toString());
             }
         } catch (SQLException e) {

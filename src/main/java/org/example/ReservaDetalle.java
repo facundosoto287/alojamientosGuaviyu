@@ -32,4 +32,5 @@ public class ReservaDetalle {
     public EstadoReserva getEstado() { return reserva.getEstado(); }
     public java.sql.Date getFechaSolicitud() { return reserva.getFechaSolicitud(); }
     public int getAlojamientoId() { return reserva.getAlojamientoId(); }
+    public boolean isMedioDiaExtra() { return reserva.isMedioDiaExtra(); }
 }
