@@ -14,6 +14,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre nosotros | Alojamientos Guaviyú</title>
+    <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Caveat para el sello; Poppins y Nunito Sans son las del header y el footer (igual que en el inicio) -->

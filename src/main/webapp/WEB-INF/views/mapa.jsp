@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mapa | Alojamientos Guaviyú</title>
+    <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
 
     <!-- Leaflet: librería gratuita de mapas (no necesita clave) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">

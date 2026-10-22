@@ -188,10 +188,10 @@ const calendarioReserva = flatpickr("#calendarioReserva", {
 
             const fechaMinimaSalida = new Date(ingreso);
 
-            fechaMinimaSalida.setDate(fechaMinimaSalida.getDate() + 1);
+            fechaMinimaSalida.setDate(fechaMinimaSalida.getDate() + 2);
 
             if (salida < fechaMinimaSalida) {
-                mensajeReserva.textContent = "La estadía debe ser de al menos una noche";
+                mensajeReserva.textContent = "La estadía debe ser de al menos dos noches";
 
                 mensajeReserva.hidden = false;
 

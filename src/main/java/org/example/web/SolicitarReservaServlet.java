@@ -81,20 +81,16 @@ public class SolicitarReservaServlet extends HttpServlet {
 
 
         /*Validaciones básicas.*/
+        long cantidadNoches = ChronoUnit.DAYS.between(fechaIngreso, fechaSalida);
 
-        if (cantidadHuespedes < 1 || !fechaSalida.isAfter(fechaIngreso)) {
-
+        if (cantidadHuespedes < 1 || cantidadNoches < 2) {
             response.sendRedirect(request.getContextPath() + "/alojamiento-detalle?id=" + alojamientoId);
-
             return;
         }
-
 
         /*Comprobar sesión.*/
 
         HttpSession session = request.getSession(false);
-
-
         if (session == null || session.getAttribute(LoginServlet.CLIENTE_SESION) == null) {
 
             String destino = "/solicitar-reserva"
@@ -149,7 +145,7 @@ public class SolicitarReservaServlet extends HttpServlet {
 
             /*Calcular noches.*/
 
-            long cantidadNoches = ChronoUnit.DAYS.between(fechaIngreso, fechaSalida);
+            cantidadNoches = ChronoUnit.DAYS.between(fechaIngreso, fechaSalida);
 
 
             /*Calcular precio.*/
