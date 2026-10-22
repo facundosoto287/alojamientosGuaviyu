@@ -57,6 +57,93 @@
 
 /* La grilla */
 .planilla-caja { overflow: auto; max-height: 72vh; border: 1px solid var(--linea); border-radius: 14px; background: #fff; }
+.planilla-controles {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: .55rem;
+}
+
+.boton-ampliar-planilla {
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid var(--linea);
+    border-radius: 9px;
+
+    background: #fff;
+    color: var(--azul-700);
+
+    cursor: pointer;
+
+    transition:
+            background .15s ease,
+            border-color .15s ease,
+            transform .15s ease;
+}
+
+.boton-ampliar-planilla:hover {
+    background: var(--azul-50);
+    border-color: var(--azul-600);
+}
+
+.boton-ampliar-planilla:active {
+    transform: scale(.96);
+}
+
+.boton-ampliar-planilla svg {
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.planilla-ampliada {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    padding: 20px;
+
+    background: #f4f7fb;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.planilla-ampliada .planilla-controles {
+    margin-bottom: .7rem;
+}
+
+.planilla-ampliada .planilla-caja {
+    flex: 1;
+
+    width: 100%;
+    max-height: none;
+
+    overflow: auto;
+
+    border-radius: 14px;
+}
+
+.planilla-ampliada .planilla {
+    min-width: 1650px;
+}
+
+body.planilla-abierta {
+    overflow: hidden;
+}
 .planilla { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1650px; table-layout: fixed; }
 .planilla th, .planilla td { border-right: 1px solid #e3e8f0; border-bottom: 1px solid #e3e8f0; padding: 0; vertical-align: top; }
 
@@ -314,6 +401,28 @@
         <section class="tarjeta"><p class="muted">Todavía no hay alojamientos cargados.</p></section>
     </c:when>
     <c:otherwise>
+
+        <div class="planilla-controles">
+            <button type="button"
+                    class="boton-ampliar-planilla"
+                    id="botonAmpliarPlanilla"
+                    aria-label="Ampliar calendario"
+                    title="Ampliar calendario">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 3H3v5"/>
+                    <path d="M3 3l6 6"/>
+                    <path d="M16 3h5v5"/>
+                    <path d="M21 3l-6 6"/>
+                    <path d="M8 21H3v-5"/>
+                    <path d="M3 21l6-6"/>
+                    <path d="M16 21h5v-5"/>
+                    <path d="M21 21l-6-6"/>
+                </svg>
+
+            </button>
+        </div>
+
         <div class="planilla-caja">
             <table class="planilla">
                 <caption class="solo-lector">Ocupación de <c:out value="${mesTexto}"/></caption>
@@ -864,6 +973,119 @@
             var caja = document.querySelector('.planilla-caja');
             caja.scrollTop = Math.max(0, hoy.offsetTop - 140);
         }
+
+        // Ampliar / restaurar la planilla de disponibilidad
+        var botonAmpliar = document.getElementById('botonAmpliarPlanilla');
+
+        var cajaPlanilla = document.querySelector('.planilla-caja');
+
+        var controlesPlanilla = document.querySelector('.planilla-controles');
+
+        if (botonAmpliar && cajaPlanilla && controlesPlanilla) {
+
+            var contenedorNormal = cajaPlanilla.parentElement;
+
+            var siguienteControles = controlesPlanilla.nextSibling;
+
+            var siguienteCaja = cajaPlanilla.nextSibling;
+
+            var vistaAmpliada = false;
+
+            botonAmpliar.addEventListener('click', function () {
+
+                if (!vistaAmpliada) {
+                    var capa = document.createElement('div');
+
+                    capa.className = 'planilla-ampliada';
+
+                    capa.id = 'planillaAmpliada';
+
+                    document.body.appendChild(capa);
+
+                    capa.appendChild(controlesPlanilla);
+                    capa.appendChild(cajaPlanilla);
+
+                    document.body.classList.add('planilla-abierta');
+
+                    var tablaPlanilla = cajaPlanilla.querySelector('.planilla');
+
+                    cajaPlanilla.style.overflowX = 'hidden';
+                    cajaPlanilla.style.width = '100%';
+                    cajaPlanilla.style.maxWidth = '100%';
+                    cajaPlanilla.style.minWidth = '0';
+
+                    if (tablaPlanilla) {
+                        tablaPlanilla.style.setProperty('width', '100%', 'important');
+                        tablaPlanilla.style.setProperty('min-width', '0', 'important');
+                        tablaPlanilla.style.setProperty('max-width', '100%', 'important');
+                        tablaPlanilla.style.setProperty('table-layout', 'fixed', 'important');
+                    }
+
+                    botonAmpliar.setAttribute('title','Restaurar calendario');
+
+                    botonAmpliar.setAttribute('aria-label','Restaurar calendario');
+
+                    botonAmpliar.innerHTML = `
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M9 9H4V4"/>
+                            <path d="M4 9l5-5"/>
+                            <path d="M15 9h5V4"/>
+                            <path d="M20 9l-5-5"/>
+                            <path d="M9 15H4v5"/>
+                            <path d="M4 15l5 5"/>
+                            <path d="M15 15h5v5"/>
+                            <path d="M20 15l-5 5"/>
+                        </svg>
+                    `;
+
+                    vistaAmpliada = true;
+
+                } else {
+                    var capa = document.getElementById('planillaAmpliada');
+
+                    contenedorNormal.insertBefore(controlesPlanilla, siguienteControles);
+
+                    contenedorNormal.insertBefore(cajaPlanilla, siguienteCaja);
+
+                    if (capa) {
+                        capa.remove();
+                    }
+
+                    document.body.classList.remove('planilla-abierta');
+
+                    cajaPlanilla.style.overflowX = '';
+                    cajaPlanilla.style.width = '';
+                    cajaPlanilla.style.maxWidth = '';
+                    cajaPlanilla.style.minWidth = '';
+
+                    if (tablaPlanilla) {
+                        tablaPlanilla.style.removeProperty('width');
+                        tablaPlanilla.style.removeProperty('min-width');
+                        tablaPlanilla.style.removeProperty('max-width');
+                        tablaPlanilla.style.removeProperty('table-layout');
+                    }
+
+                    botonAmpliar.setAttribute('title', 'Ampliar calendario');
+
+                    botonAmpliar.setAttribute( 'aria-label', 'Ampliar calendario');
+
+                    botonAmpliar.innerHTML = `
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M8 3H3v5"/>
+                            <path d="M3 3l6 6"/>
+                            <path d="M16 3h5v5"/>
+                            <path d="M21 3l-6 6"/>
+                            <path d="M8 21H3v-5"/>
+                            <path d="M3 21l6-6"/>
+                            <path d="M16 21h5v-5"/>
+                            <path d="M21 21l-6-6"/>
+                        </svg>
+                    `;
+                    vistaAmpliada = false;
+                }
+            });
+        }
+
     })();
 </script>
 

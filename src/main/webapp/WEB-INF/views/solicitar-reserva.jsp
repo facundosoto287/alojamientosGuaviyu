@@ -29,7 +29,7 @@
           rel="stylesheet">
 
     <link rel="stylesheet" href="${ctx}/css/header.css">
-    <link rel="stylesheet" href="${ctx}/css/solicitar-reserva.css">
+    <link rel="stylesheet" href="${ctx}/css/solicitar-reserva.css?v=2">
     <link rel="stylesheet" href="${ctx}/css/footer.css">
 </head>
 
@@ -414,6 +414,10 @@
                                        placeholder="Edad"
                                        required>
 
+                                <span class="mensaje-error-edad"
+                                      id="errorEdad${numero}">
+                                </span>
+
                             </div>
 
                         </c:forEach>
@@ -764,6 +768,111 @@
         }
     );
 
+</script>
+<script>
+    const formularioReserva =
+        document.getElementById("formSolicitudReserva");
+
+    formularioReserva.setAttribute("novalidate", "");
+
+    formularioReserva.addEventListener("submit", function (evento) {
+
+        let formularioValido = true;
+        let primerCampoError = null;
+
+        const camposEdad =
+            formularioReserva.querySelectorAll('input[name="edad"]');
+
+        camposEdad.forEach(function (campo) {
+
+            const mensaje =
+                document.getElementById(
+                    "error" +
+                    campo.id.charAt(0).toUpperCase() +
+                    campo.id.slice(1)
+                );
+
+            campo.classList.remove("campo-error");
+
+            if (mensaje) {
+                mensaje.textContent = "";
+                mensaje.classList.remove("visible");
+            }
+
+            if (campo.value.trim() === "") {
+
+                formularioValido = false;
+
+                campo.classList.add("campo-error");
+
+                if (mensaje) {
+                    mensaje.textContent =
+                        "Ingresá la edad de este huésped.";
+                    mensaje.classList.add("visible");
+                }
+
+                if (!primerCampoError) {
+                    primerCampoError = campo;
+                }
+
+                return;
+            }
+
+            const edad = Number(campo.value);
+
+            if (edad < 0 || edad > 120) {
+
+                formularioValido = false;
+
+                campo.classList.add("campo-error");
+
+                if (mensaje) {
+                    mensaje.textContent =
+                        "Ingresá una edad válida entre 0 y 120 años.";
+                    mensaje.classList.add("visible");
+                }
+
+                if (!primerCampoError) {
+                    primerCampoError = campo;
+                }
+            }
+        });
+
+        if (!formularioValido) {
+
+            evento.preventDefault();
+
+            primerCampoError.focus();
+
+            primerCampoError.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+    });
+
+
+    formularioReserva
+        .querySelectorAll('input[name="edad"]')
+        .forEach(function (campo) {
+
+            campo.addEventListener("input", function () {
+
+                const mensaje =
+                    document.getElementById(
+                        "error" +
+                        campo.id.charAt(0).toUpperCase() +
+                        campo.id.slice(1)
+                    );
+
+                campo.classList.remove("campo-error");
+
+                if (mensaje) {
+                    mensaje.textContent = "";
+                    mensaje.classList.remove("visible");
+                }
+            });
+        });
 </script>
 <%@ include file="/WEB-INF/views/components/loading.jsp" %>
 <script src="${pageContext.request.contextPath}/js/loading.js"></script>

@@ -183,7 +183,7 @@
 
 
             <!-- Información del alojamiento -->
-            <section class="informacion-alojamiento">
+            <section class="informacion-alojamiento" id="descripcion">
 
                 <span class="detalle-etiqueta">
                     Alojamientos Guaviyú
@@ -211,6 +211,23 @@
                     ${alojamiento.descripcion}
                 </p>
 
+                <div class="detalle-accion-fija">
+
+                    <a href="#bloqueDisponibilidad"
+                       class="boton-ver-disponibilidad">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="16" rx="2"/>
+                            <path d="M8 3v4"/>
+                            <path d="M16 3v4"/>
+                            <path d="M3 10h18"/>
+                        </svg>
+
+                        <span>Ver disponibilidad</span>
+
+                    </a>
+
+                </div>
 
                 <!-- Características principales -->
                 <div class="detalle-caracteristicas">
@@ -252,7 +269,7 @@
                 </div>
 
                    <!-- Servicios incluidos -->
-                   <section class="servicios-detalle">
+                   <section class="servicios-detalle animar-scroll" id="servicios">
 
                        <h2>Servicios incluidos</h2>
 
@@ -375,7 +392,7 @@
 
 
             <!-- Ubicación -->
-            <section class="ubicacion-seccion">
+            <section class="ubicacion-seccion animar-scroll" id="ubicacion">
 
                 <h2>Ubicación en el complejo</h2>
 
@@ -458,7 +475,7 @@
 
 
             <!-- ===== RESEÑAS ===== -->
-            <section class="resenas-seccion" id="resenas">
+            <section class="resenas-seccion animar-scroll" id="resenas">
 
                 <h2>Reseñas</h2>
 
@@ -644,7 +661,7 @@
 
 
             <!-- Disponibilidad -->
-            <div class="disponibilidad">
+            <div class="disponibilidad" id="bloqueDisponibilidad">
 
                 <h3>Disponibilidad</h3>
 
@@ -872,6 +889,30 @@
     });
 
 </script>
+
+<script>
+    const elementosAnimados = document.querySelectorAll(".animar-scroll");
+    const observadorScroll = new IntersectionObserver((elementos) => {
+
+        elementos.forEach((elemento) => {
+
+            if (elemento.isIntersecting) {
+                elemento.target.classList.add("visible");
+                observadorScroll.unobserve(elemento.target);
+            }
+
+        });
+
+    }, {
+        threshold: 0.12
+    });
+
+
+    elementosAnimados.forEach((elemento) => {
+        observadorScroll.observe(elemento);
+    });
+</script>
+
 <%@ include file="/WEB-INF/views/components/loading.jsp" %>
 <script src="${pageContext.request.contextPath}/js/loading.js"></script>
 <%@ include file="components/footer.jsp" %>

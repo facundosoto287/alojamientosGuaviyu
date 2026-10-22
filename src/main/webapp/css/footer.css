@@ -227,6 +227,30 @@
     text-decoration: none;
 }
 
+/* Evita que el contenido del footer genere ancho extra */
+.site-footer {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.footer-contenido {
+    width: 100%;
+    max-width: 1200px;
+    min-width: 0;
+}
+
+.footer-marca,
+.footer-columna {
+    min-width: 0;
+}
+
+/* Permite cortar textos largos como el correo */
+.footer-item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
 
 /*RESPONSIVE*/
 
@@ -242,5 +266,63 @@
     .footer-contenido {
         grid-template-columns: 1fr;
         gap: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .footer-contenido {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        grid-template-columns: minmax(0, 1fr);
+
+        gap: 30px;
+
+        padding: 40px 20px 35px;
+    }
+
+    .footer-columna,
+    .footer-marca {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .footer-item {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .footer-item span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .site-footer {
+        width: 100vw;
+        max-width: none;
+
+        margin-left: 0;
+        margin-right: 0;
+
+        overflow: hidden;
+    }
+
+    .footer-contenido {
+        width: 100%;
+        max-width: 100%;
+
+        grid-template-columns: minmax(0, 1fr);
+
+        padding: 40px 20px 35px;
+    }
+
+    .footer-inferior {
+        width: 100%;
+        max-width: 100%;
     }
 }

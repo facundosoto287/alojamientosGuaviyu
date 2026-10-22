@@ -1185,6 +1185,113 @@ body {
     stroke: none !important;
 }
 
+.detalle-acciones {
+    margin-top: 18px;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+.boton-ver-disponibilidad {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    padding: 12px 18px;
+
+    border: 1px solid #cfe0ff;
+    border-radius: 12px;
+
+    background: #f5f9ff;
+    color: #0b47b8;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    box-shadow: 0 6px 18px rgba(11, 71, 184, .10);
+
+    transition:
+            background .15s ease,
+            border-color .15s ease,
+            transform .15s ease,
+            box-shadow .15s ease;
+}
+
+.boton-ver-disponibilidad:hover {
+    background: #eaf2ff;
+    border-color: #0b47b8;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 8px 22px rgba(11, 71, 184, .15);
+}
+
+.boton-ver-disponibilidad:active {
+    transform: translateY(0);
+}
+
+.boton-ver-disponibilidad svg {
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+
+/* Para que al tocar el botón baje suavemente al calendario */
+html {
+    scroll-behavior: smooth;
+}
+
+
+/* Evita que el calendario quede pegado arriba */
+#bloqueDisponibilidad {
+    scroll-margin-top: 110px;
+}
+
+/*ANIMACIONES AL HACER SCROLL*/
+
+.animar-scroll {
+    opacity: 0;
+    transform: translateY(25px);
+
+    transition:
+            opacity 0.6s ease,
+            transform 0.6s ease;
+}
+
+.animar-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* En caso de que el usuario tenga reducidas las animaciones */
+@media (prefers-reduced-motion: reduce) {
+
+    .animar-scroll {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+}
+
+
 /*RESPONSIVE*/
 
 @media (max-width: 1050px) {
@@ -1424,5 +1531,93 @@ body {
 @media (max-width: 500px) {
     .boton-resena {
         width: 100%;
+    }
+}
+
+/* BOTÓN FLOTANTE VER DISPONIBILIDAD */
+/* En computadora se comporta como un botón normal */
+.detalle-accion-fija {
+    width: 100%;
+    margin-top: 18px;
+}
+
+/* En celular queda flotando abajo */
+@media (max-width: 768px) {
+
+    .detalle-accion-fija {
+        position: fixed;
+
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+
+        width: auto;
+        margin: 0;
+
+        z-index: 2000;
+
+        padding: 3px;
+
+        background: rgba(255, 255, 255, .94);
+
+        border: 1px solid rgba(207, 224, 255, .9);
+        border-radius: 13px;
+
+        box-shadow: 0 10px 30px rgba(11, 61, 145, .18);
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+
+    .detalle-accion-fija .boton-ver-disponibilidad {
+        width: 100%;
+
+        margin: 0;
+        padding: 12px 16px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 8px;
+
+        border-radius: 11px;
+
+        background: #0d6efd;
+        border-color: #0d6efd;
+
+        color: white;
+
+        text-decoration: none;
+
+        box-shadow: none;
+    }
+
+
+    .detalle-accion-fija .boton-ver-disponibilidad:hover {
+        background: #0b5ed7;
+        border-color: #0b5ed7;
+
+        transform: none;
+    }
+
+
+    .detalle-accion-fija .boton-ver-disponibilidad svg {
+        width: 18px;
+        height: 18px;
+
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+
+    /* Espacio para que el botón no tape contenido */
+    .detalle-pagina {
+        padding-bottom: 105px;
     }
 }
