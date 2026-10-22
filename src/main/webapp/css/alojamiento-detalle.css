@@ -849,7 +849,6 @@ body {
     flex-shrink: 0;
 }
 
-
 /* Nombre del servicio */
 .servicio-detalle-item span {
     font-family: "Nunito Sans", sans-serif;
@@ -975,9 +974,7 @@ body {
     text-decoration: underline;
 }
 
-/* =========================================
-   CALENDARIO FLATPICKR - ESTILO DEL PROYECTO
-   ========================================= */
+/*CALENDARIO FLATPICKR - ESTILO DEL PROYECTO*/
 
 .calendario-reserva {
     width: 100%;
@@ -1175,6 +1172,17 @@ body {
 
     font-size: 12px;
     line-height: 1.5;
+}
+
+.icono-mascotas {
+    fill: #0d6efd !important;
+    stroke: none !important;
+}
+
+.icono-mascotas ellipse,
+.icono-mascotas path {
+    fill: #0d6efd !important;
+    stroke: none !important;
 }
 
 /*RESPONSIVE*/

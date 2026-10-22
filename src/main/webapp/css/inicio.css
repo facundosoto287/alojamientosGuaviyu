@@ -164,11 +164,12 @@ body {
 }
 
 /* Inputs dentro del contenedor con icono */
-.input-con-icono input {
+.input-con-icono input,
+.input-con-icono select {
     width: 100%;
     height: 44px;
 
-    padding: 0 12px 0 42px;
+    padding: 0 36px 0 42px;
 
     border: 1px solid #d9e1ea;
     border-radius: 10px;
@@ -182,6 +183,10 @@ body {
     outline: none;
 }
 
+.input-con-icono select {
+    cursor: pointer;
+}
+
 /* Los inputs de fecha dejan espacio para el calendario de la derecha */
 .input-con-icono input[type="date"] {
     padding-right: 38px;
@@ -189,7 +194,8 @@ body {
 }
 
 /* Cuando se selecciona el input */
-.input-con-icono input:focus {
+.input-con-icono input:focus,
+.input-con-icono select:focus {
     border-color: #0d6efd;
     background-color: white;
     box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.10);
@@ -388,8 +394,12 @@ body {
 
 /*boton de busqueda alojamientos*/
 .buscador-inicio {
-    max-width: 1150px;
-    margin: -105px auto 45px;
+    width: calc(100vw - 68px);
+    max-width: 1250px;
+
+    margin: -105px 50% 45px;
+    transform: translateX(-50%);
+
     padding: 24px;
 
     background-color: white;
@@ -397,6 +407,7 @@ body {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-end;
     gap: 16px;
 
@@ -406,8 +417,8 @@ body {
 
 /* Cada campo del buscador */
 .campo-buscador {
-    flex: 1;
-    min-width: 0;
+    flex: 1 1 125px;
+    min-width: 115px;
     font-family: "Nunito Sans", sans-serif;
 }
 
@@ -438,6 +449,8 @@ body {
     cursor: pointer;
 
     white-space: nowrap;
+
+    flex-shrink: 0;
 }
 
 .boton-limpiar {    /* Botón para eliminar los filtros aplicados */
@@ -460,6 +473,8 @@ body {
     font-weight: 600;
 
     white-space: nowrap;
+
+    flex-shrink: 0;
 }
 
 .boton-buscar,
@@ -499,14 +514,40 @@ body {
     background-color: #0b5ed7;
 }
 
+.campo-buscador:has(#mascotas) {
+    flex: 1.15 1 160px;
+    min-width: 155px;
+}
+
+.campo-mascotas .input-con-icono svg {
+    fill: #0d6efd;
+    stroke: none;
+}
+
 /*DISEÑO RESPONSIVE*/
 @media (max-width: 900px) { /* Ajustes para tablets y pantallas medianas */
     .buscador-inicio {
+        width: calc(100% - 32px);
+
+        margin-left: 50%;
+        margin-right: 0;
+
         flex-wrap: wrap;
     }
 
     .campo-buscador {
+        flex: 1 1 calc(50% - 8px);
         min-width: 200px;
+    }
+
+    .campo-buscador:has(#mascotas) {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 200px;
+    }
+
+    .boton-buscar,
+    .boton-limpiar {
+        flex: 1 1 calc(50% - 8px);
     }
 }
 
@@ -591,7 +632,9 @@ body {
     .buscador-inicio {
         width: calc(100% - 32px);
 
-        margin: -85px auto 30px;
+        margin: -85px 50% 30px;
+        transform: translateX(-50%);
+
         padding: 20px;
 
         flex-direction: column;
@@ -605,9 +648,19 @@ body {
         min-width: 0;
     }
 
+    .campo-buscador:has(#mascotas) {
+        width: 100%;
+        min-width: 0;
+    }
+
     .boton-buscar,
     .boton-limpiar {
         width: 100%;
+        flex: none;
+    }
+
+    .boton-limpiar {
+        margin-top: 10px;
     }
 }
 
