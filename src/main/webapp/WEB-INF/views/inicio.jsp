@@ -233,7 +233,7 @@
 
        </c:if>
 
-    <div class="alojamientos-titulo">
+    <div class="alojamientos-titulo animar-scroll">
         <span class="titulo-etiqueta">Alojamientos Guaviyú</span>
 
         <h2>Conocé nuestros alojamientos</h2>
@@ -256,7 +256,7 @@
     <div class="alojamientos-grid">
 
         <c:forEach var="alojamiento" items="${alojamientos}">
-            <article class="alojamiento-card">
+            <article class="alojamiento-card animar-scroll">
 
 
             <%-- Portada del alojamiento (Cloudinary). Sin fotos: la foto fija de La Grandiosa (id 5) o la imagen por defecto --%>
@@ -436,8 +436,117 @@
 
     </div>
    </c:if>
+
+   <!--PREGUNTAS FRECUENTES-->
+   <section class="faq-seccion animar-scroll">
+       <div class="faq-encabezado">
+
+           <span class="titulo-etiqueta">
+               Información útil
+           </span>
+
+           <h2>
+               Preguntas frecuentes
+           </h2>
+           <p>
+               Todo lo que necesitás saber antes de reservar tu estadía.
+           </p>
+
+       </div>
+
+
+       <div class="faq-lista">
+
+           <details class="faq-item">
+
+               <summary>
+                   ¿Cómo hago una reserva?
+               </summary>
+               <p>
+                   Elegí el alojamiento que más te guste, consultá su disponibilidad
+                   y completá la solicitud de reserva.
+               </p>
+
+           </details>
+
+
+           <details class="faq-item">
+
+               <summary>
+                   ¿Cómo sé si un alojamiento está disponible?
+               </summary>
+               <p>
+                   Dentro del detalle de cada alojamiento podés consultar el calendario
+                   y verificar las fechas disponibles antes de realizar la solicitud.
+               </p>
+
+           </details>
+
+
+           <details class="faq-item">
+
+               <summary>
+                   ¿Se permiten mascotas?
+               </summary>
+               <p>
+                   Depende de cada alojamiento. Esta información aparece indicada
+                   en sus características y servicios.
+               </p>
+
+           </details>
+
+
+           <details class="faq-item">
+
+               <summary>
+                   ¿Puedo reservar solamente una noche?
+               </summary>
+               <p>
+                   Para consultar por una estadía de una sola noche y un día,
+                   podés comunicarte por WhatsApp el día anterior después de las 20:00 hs.
+               </p>
+
+           </details>
+
+
+           <details class="faq-item">
+
+               <summary>
+                   ¿Dónde se encuentran los alojamientos?
+               </summary>
+               <p>
+                   Los alojamientos se encuentran dentro del complejo Termas de Guaviyú,
+                   en Paysandú, Uruguay.
+               </p>
+
+           </details>
+       </div>
+   </section>
+
 </div>
 </section>
+
+<script>
+    const elementosAnimados = document.querySelectorAll(".animar-scroll");
+
+    const observadorScroll = new IntersectionObserver((elementos) => {
+
+        elementos.forEach((elemento) => {
+            if (elemento.isIntersecting) {
+                elemento.target.classList.add("visible");
+                observadorScroll.unobserve(elemento.target);
+            }
+        });
+
+    }, {
+        threshold: 0.12
+    });
+
+    elementosAnimados.forEach((elemento) => {
+        observadorScroll.observe(elemento);
+    });
+</script>
+
 <%@ include file="/WEB-INF/views/components/loading.jsp" %>
 <script src="${pageContext.request.contextPath}/js/loading.js"></script>
 <%@ include file="components/footer.jsp" %>
