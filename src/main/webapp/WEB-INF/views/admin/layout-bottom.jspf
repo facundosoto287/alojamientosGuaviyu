@@ -3,5 +3,7 @@
 </div>
 
 <script src="${ctx}/js/admin.js"></script>
+<%@ include file="/WEB-INF/views/components/loading.jsp" %>
+<script src="${pageContext.request.contextPath}/js/loading.js"></script>
 </body>
 </html>
