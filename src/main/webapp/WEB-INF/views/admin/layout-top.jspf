@@ -50,6 +50,8 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M6 18a6 6 0 0 1 12 0M12 8V6M10 6h4"/></svg>Servicios</a>
             <a href="${base}/reservas" class="${seccion == 'reservas' ? 'activo' : ''}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></svg>Reservas</a>
+            <a href="${base}/senas" class="${seccion == 'senas' ? 'activo' : ''}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10H3zM12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4M6 10v4M18 10v4"/></svg>Señas</a>
             <a href="${base}/clientes" class="${seccion == 'clientes' ? 'activo' : ''}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14c2.8 0 5 1.6 5 4"/></svg>Clientes</a>
             <a href="${base}/disponibilidad" class="${seccion == 'disponibilidad' ? 'activo' : ''}">

@@ -11,10 +11,12 @@ import org.example.EstadoReserva;
 import org.example.Reserva;
 import org.example.ReservaDao;
 import org.example.ReservaDetalle;
+import org.example.SenaDAO;
 import org.example.web.LoginServlet;
 import org.example.web.ValidacionCliente;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import java.util.Map;
  * Casos de uso: ver todas / pendientes / confirmadas / canceladas, buscar por cliente, ver reservas de un
  * alojamiento, crear (también reservas hechas por otros medios de contacto), editar, confirmar y cancelar.
  * GET  → listado con filtros ?estado= &q= &alojamiento=.
- * POST → accion = crear | editar | confirmar | cancelar.
+ * POST → accion = crear | editar | confirmar | cancelar (al cancelar una confirmada, la seña queda a favor 6 meses).
  */
 @WebServlet(AdminSesion.BASE + "/reservas")
 public class AdminReservasServlet extends AdminServlet {
@@ -35,6 +37,7 @@ public class AdminReservasServlet extends AdminServlet {
     private final ReservaDao reservaDao = new ReservaDao();
     private final AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
     private final ClienteDAO clienteDAO = new ClienteDAO();
+    private final SenaDAO senaDAO = new SenaDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -53,6 +56,7 @@ public class AdminReservasServlet extends AdminServlet {
             request.setAttribute("alojamientos", alojamientoDAO.listarAlojamientos());
             request.setAttribute("clientes", clienteDAO.listarClientes());
             request.setAttribute("procedencias", LoginServlet.PROCEDENCIAS);
+            request.setAttribute("senasPorCliente", senaDAO.vigentePorCliente()); // aviso "tiene seña a favor"
         } catch (SQLException e) {
             log("Error al listar reservas", e);
             avisoError(request, "No pudimos cargar las reservas. Intentá de nuevo en unos minutos.");
@@ -155,8 +159,14 @@ public class AdminReservasServlet extends AdminServlet {
         try {
             int id = reservaDao.crearReservaAdmin(
                     new Reserva(0, ingreso, salida, huespedes, estado, hoy, alojamientoId), clienteId);
+            // Si se eligió usar la seña a favor del cliente, queda marcada como usada
+            String avisoSena = "";
+            Integer senaId = entero(request, "usarSena");
+            if (senaId != null && !clienteNuevo && senaDAO.usarEnNuevaReserva(senaId, clienteId)) {
+                avisoSena = " Se usó la seña a favor del cliente.";
+            }
             avisoOk(request, "Reserva #" + id + " creada como " + etiqueta(estado) + "."
-                    + (estado == EstadoReserva.CONFIRMADA ? " Las fechas quedaron ocupadas." : "") + avisoCliente);
+                    + (estado == EstadoReserva.CONFIRMADA ? " Las fechas quedaron ocupadas." : "") + avisoCliente + avisoSena);
         } catch (IllegalArgumentException e) {
             avisoError(request, e.getMessage()
                     + (clienteNuevo ? " (El cliente sí quedó registrado: ahora podés elegirlo de la lista.)" : ""));
@@ -246,8 +256,25 @@ public class AdminReservasServlet extends AdminServlet {
         }
     }
 
-    private void cancelar(HttpServletRequest request) {
+    private void cancelar(HttpServletRequest request) throws SQLException {
         Integer id = entero(request, "id");
+
+        // Reserva confirmada que el cliente tuvo que cancelar: su seña queda a favor por 6 meses
+        if (id != null && "1".equals(texto(request, "guardarSena"))) {
+            BigDecimal importe = importe(texto(request, "importeSena"));
+            if (importe == null || importe.signum() <= 0 || importe.compareTo(new BigDecimal("10000000")) >= 0) {
+                avisoError(request, "Ingresá el importe de la seña (solo números, por ejemplo 2000). La reserva no se canceló.");
+                return;
+            }
+            try {
+                senaDAO.cancelarGuardandoSena(id, importe);
+                avisoOk(request, "Reserva #" + id + " cancelada. La seña quedó a favor del cliente por 6 meses (ver Señas).");
+            } catch (IllegalArgumentException e) {
+                avisoError(request, e.getMessage());
+            }
+            return;
+        }
+
         if (id != null && reservaDao.cancelarReserva(id)) {
             avisoOk(request, "Reserva #" + id + " cancelada. Si estaba confirmada, las fechas quedaron libres.");
         } else {
@@ -274,6 +301,15 @@ public class AdminReservasServlet extends AdminServlet {
         try {
             return EstadoReserva.valueOf(texto);
         } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** Acepta "2000", "2000.50" o "2000,50". */
+    private static BigDecimal importe(String texto) {
+        try {
+            return new BigDecimal(texto.replace(" ", "").replace(',', '.'));
+        } catch (NumberFormatException e) {
             return null;
         }
     }

@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ResenaDAO {
 
@@ -363,6 +365,35 @@ public class ResenaDAO {
                 return fila.next() ? fila.getDouble("promedio") : 0;
             }
         }
+    }
+
+
+    /* ==================================================
+       PROMEDIO Y CANTIDAD DE RESEÑAS DE TODOS LOS ALOJAMIENTOS
+       (para el mapa). Resultado: id del alojamiento → {promedio, cantidad}.
+       Los alojamientos sin reseñas no aparecen.
+       ================================================== */
+
+    public Map<Integer, double[]> promediosPorAlojamiento() throws SQLException {
+
+        String sql = """
+                SELECT alojamiento_id, AVG(puntuacion) AS promedio, COUNT(*) AS cantidad
+                FROM resena
+                GROUP BY alojamiento_id
+                """;
+
+        Map<Integer, double[]> promedios = new HashMap<>();
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql);
+             ResultSet fila = sentencia.executeQuery()) {
+
+            while (fila.next()) {
+                promedios.put(fila.getInt("alojamiento_id"),
+                        new double[]{fila.getDouble("promedio"), fila.getInt("cantidad")});
+            }
+        }
+        return promedios;
     }
 
 

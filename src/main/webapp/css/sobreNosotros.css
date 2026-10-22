@@ -29,7 +29,7 @@ body {
    nunca al header ni al footer compartidos */
 main {
     background: var(--fondo);    /* el celeste clarito queda solo en el contenido */
-    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    font-family: "Nunito Sans", sans-serif;   /* la misma letra de los textos del inicio */
     color: var(--texto);
     line-height: 1.5;
 }
@@ -44,10 +44,27 @@ main .contenedor {
     padding: 0 24px;
 }
 
+/* ===== Header transparente arriba de la foto (igual que en el inicio) ===== */
+.site-header:not(.header-scroll) .brand-texto,
+.site-header:not(.header-scroll) .main-nav a,
+.site-header:not(.header-scroll) .header-user,
+.site-header:not(.header-scroll) .header-login-link,
+.site-header:not(.header-scroll) .header-usuario-boton {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+}
+.site-header:not(.header-scroll) .header-usuario-icono svg,
+.site-header:not(.header-scroll) .main-nav svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+/* Títulos con la misma letra que el inicio */
+main h2, main h3 { font-family: "Poppins", sans-serif; }
+
 /* ===== Portada ===== */
 .portada {
     position: relative;
-    min-height: 280px;
+    min-height: 420px;               /* el mismo alto que el banner del inicio */
+    padding-top: 103px;              /* la foto empieza arriba de todo; el texto queda debajo del header */
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -62,9 +79,13 @@ main .contenedor {
 
 .portada__interno { padding-top: 48px; padding-bottom: 48px; }
 .portada h1 {
-    font-size: clamp(32px, 4.5vw, 52px);
-    font-weight: 800;
-    line-height: 1.05;
+    /* La misma letra que el título del inicio */
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 500;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    line-height: 1.15;
     text-shadow: 0 2px 4px rgba(0, 0, 0, .4), 0 4px 18px rgba(0, 0, 0, .5);
 }
 .portada p {
@@ -108,25 +129,28 @@ main .contenedor {
     padding-bottom: 28px;
 }
 
+/* "main .nosotros" para ganarle a "main .contenedor", que pisaba el espacio de arriba */
+main .nosotros { padding-top: 48px; padding-bottom: 32px; }
+
 .nosotros__texto { padding-right: 40px; border-right: 1px solid var(--borde); }
 
-main .etiqueta {
-    color: var(--azul);
+main .etiqueta {   /* igual que .titulo-etiqueta del inicio */
+    color: #0d6efd;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
 }
 
-.nosotros h2 {
-    color: var(--azul-oscuro);
-    font-size: clamp(28px, 3.2vw, 40px);
-    font-weight: 800;
+.nosotros h2 {   /* igual que los títulos de sección del inicio */
+    color: #0b3d91;
+    font-size: clamp(28px, 3.2vw, 34px);
+    font-weight: 700;
     line-height: 1.15;
     margin: 4px 0 8px;
 }
 
-.nosotros__texto p { color: var(--texto-suave); font-size: 16px; margin-bottom: 18px; }
+.nosotros__texto p { color: #667788; font-size: 16px; margin-bottom: 18px; }
 
 .valores { display: flex; flex-direction: column; gap: 18px; }
 
@@ -159,7 +183,7 @@ main .etiqueta {
 
 .equipo__titulo { display: flex; align-items: flex-start; gap: 12px; margin: 0 0 16px 26px; }
 .equipo__estrella { width: 38px; fill: var(--amarillo); }
-.equipo__titulo h2 { color: var(--azul-oscuro); font-size: 30px; font-weight: 800; line-height: 1.1; }
+.equipo__titulo h2 { color: #0b3d91; font-size: 30px; font-weight: 700; line-height: 1.1; }
 .equipo__titulo p { color: var(--texto-suave); }
 
 .equipo__grilla {
@@ -196,8 +220,23 @@ main .tarjeta__lugar { color: var(--texto-suave); font-size: 15px; }
 @media (max-width: 860px) {
     .nosotros { grid-template-columns: 1fr; }
     .nosotros__texto { padding-right: 0; border-right: none; }
-    .sello { position: static; display: inline-block; margin: 0 0 30px 24px; }
-    .portada { flex-direction: column; align-items: flex-start; }
+    /* En celular el sello va debajo del título, sin taparlo */
+    .portada { flex-direction: column; align-items: flex-start; justify-content: flex-end; }
+    .portada__interno { padding-bottom: 8px; }
+    .sello {
+        position: relative;      /* sigue en el flujo: no se superpone con el título */
+        right: auto; bottom: auto;
+        display: inline-block;
+        margin: 22px 0 36px 24px;
+        transform: rotate(-6deg);
+        font-size: 30px;
+        padding: 14px 58px 14px 26px;
+    }
+    .sello__sol { width: 32px; right: 14px; top: 14px; }
+}
+
+@media (max-width: 700px) {
+    .portada { min-height: 440px; padding-top: 95px; }   /* el header del celular es más bajo */
 }
 
 @media (max-width: 600px) {

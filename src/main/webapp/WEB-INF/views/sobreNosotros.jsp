@@ -17,18 +17,20 @@
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Caveat para el sello; Poppins y Nunito Sans son las del header y el footer (igual que en el inicio) -->
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Las mismas fuentes que el inicio (Cormorant Garamond, Poppins y Nunito Sans) + Caveat para el sello -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${ctx}/css/header.css">
     <link rel="stylesheet" href="${ctx}/css/footer.css">
     <!-- ?v=2 obliga al navegador a bajar el CSS nuevo (subilo cuando lo cambies) -->
-    <link rel="stylesheet" href="${ctx}/css/sobreNosotros.css?v=4">
+    <link rel="stylesheet" href="${ctx}/css/sobreNosotros.css?v=5">
 </head>
 <body>
 <%@ include file="components/header.jsp" %>
 <main>
-    <!-- ===== Portada ===== -->
-    <section class="portada">
+    <!-- ===== Portada =====
+         La clase "banner" hace que el header quede transparente arriba de la foto, igual que en el inicio
+         (lo maneja header.js). Los estilos de la portada están en sobreNosotros.css. -->
+    <section class="portada banner">
         <div class="contenedor portada__interno">
             <h1>Nuestra historia<br>también es tu destino</h1>
         </div>

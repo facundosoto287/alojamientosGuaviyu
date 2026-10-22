@@ -9,12 +9,15 @@
     --borde: #e3e9f4;
     /* Colores de los pins: cambiá estos valores y se actualizan el mapa y la leyenda */
     --casa: #1d4ed8;     /* azul (el del logo): nuestros alojamientos */
-    --piscinas: #ffffff;   /* blanco: piscinas termales */
-    --piscinas-borde: #06b6d4; /* borde celeste para que el pin blanco se vea sobre el mapa */
-    --naturaleza: #dcfce7;  /* verde clarito: naturaleza (camping, sendero) */
+    /* Todos los pins (menos los alojamientos) van igual: fondo tenue y borde del mismo color, más fuerte */
+    --piscinas: #cffafe;        /* celeste clarito: piscinas termales */
+    --piscinas-borde: #0891b2;  /* borde celeste fuerte */
+    --naturaleza: #dcfce7;      /* verde clarito: naturaleza (camping, sendero) */
     --naturaleza-borde: #16a34a; /* borde verde */
-    --comida: #f59e0b;   /* amarillo atardecer: dónde comer */
-    --compras: #db2777;  /* rosa: compras */
+    --comida: #fef3c7;          /* amarillo clarito: dónde comer */
+    --comida-borde: #d97706;    /* borde amarillo atardecer fuerte */
+    --compras: #fce7f3;         /* rosa clarito: compras */
+    --compras-borde: #db2777;   /* borde rosa fuerte */
     --sombra: 0 6px 20px rgba(15, 40, 100, 0.08);
 }
 
@@ -135,13 +138,13 @@ main .etiqueta {
     font-size: 17px;
     line-height: 1;
 }
-.pin--casa    { background: var(--casa); }
+.pin--casa    { background: var(--casa, #1d4ed8); }
 .pin--casa span { font-size: 21px; }
 
 /* Pin de los alojamientos con el logo adentro */
 .pin--logo {
     border-width: 2px;
-    background: var(--casa);
+    background: var(--casa, #1d4ed8);
     padding: 2px;
 }
 /* Leaflet trae una regla (.leaflet-container .leaflet-marker-pane img { width: auto })
@@ -161,14 +164,14 @@ main .etiqueta {
 .pin--logo span { display: none; }                 /* la casita solo aparece si el logo no carga */
 .pin--logo.sin-logo img { display: none; }
 .pin--logo.sin-logo span { display: block; }
-.pin--piscinas   { background: var(--piscinas); border-color: var(--piscinas-borde); }
-.pin--naturaleza { background: var(--naturaleza); border-color: var(--naturaleza-borde); }
-.pin--comida  { background: var(--comida); }
-.pin--compras { background: var(--compras); }
+.pin--piscinas   { background: var(--piscinas, #cffafe); border-color: var(--piscinas-borde, #0891b2); }
+.pin--naturaleza { background: var(--naturaleza, #dcfce7); border-color: var(--naturaleza-borde, #16a34a); }
+.pin--comida  { background: var(--comida, #fef3c7); border-color: var(--comida-borde, #d97706); }
+.pin--compras { background: var(--compras, #fce7f3); border-color: var(--compras-borde, #db2777); }
 
 /* Nombre fijo arriba de cada casita */
 .leaflet-tooltip.etiqueta-casa {
-    background: var(--casa);
+    background: var(--casa, #1d4ed8);
     color: #ffffff;
     border: 2px solid #ffffff;
     border-radius: 8px;
@@ -192,7 +195,7 @@ main .etiqueta {
 .cartel__tipo {
     display: inline-block;
     background: #e4ecfb;
-    color: var(--casa);
+    color: var(--casa, #1d4ed8);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -259,12 +262,12 @@ main .etiqueta {
     border: 2px solid #ffffff;
     box-shadow: 0 0 0 1px var(--borde);
 }
-.icono-mini--casa    { background: var(--casa); overflow: hidden; }
+.icono-mini--casa    { background: var(--casa, #1d4ed8); overflow: hidden; }
 .icono-mini--casa img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #ffffff; }
-.icono-mini--piscinas   { background: var(--piscinas); box-shadow: 0 0 0 2px var(--piscinas-borde); }
-.icono-mini--naturaleza { background: var(--naturaleza); box-shadow: 0 0 0 2px var(--naturaleza-borde); }
-.icono-mini--comida  { background: var(--comida); }
-.icono-mini--compras { background: var(--compras); }
+.icono-mini--piscinas   { background: var(--piscinas, #cffafe); box-shadow: 0 0 0 2px var(--piscinas-borde, #0891b2); }
+.icono-mini--naturaleza { background: var(--naturaleza, #dcfce7); box-shadow: 0 0 0 2px var(--naturaleza-borde, #16a34a); }
+.icono-mini--comida  { background: var(--comida, #fef3c7); box-shadow: 0 0 0 2px var(--comida-borde, #d97706); }
+.icono-mini--compras { background: var(--compras, #fce7f3); box-shadow: 0 0 0 2px var(--compras-borde, #db2777); }
 
 /* Aviso de alojamientos que todavía no tienen coordenadas */
 .sin-ubicacion {
@@ -278,3 +281,18 @@ main .etiqueta {
     #mapa { height: 62vh; min-height: 380px; }
     .btn-centrar { padding: 10px 12px; }
 }
+
+/* Promedio de reseñas en el cartel de cada alojamiento */
+.cartel__resenas {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0 6px;
+    color: #3b4252;
+    font-size: 13px;
+    text-decoration: none;
+}
+.cartel__resenas:hover .cartel__cantidad { text-decoration: underline; }
+.cartel__estrellas { color: #f6b81f; font-size: 15px; letter-spacing: 1px; }
+.cartel__resenas strong { color: #0b2a7a; }
+.cartel__cantidad { color: #5b6475; }

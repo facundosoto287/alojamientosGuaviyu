@@ -23,7 +23,7 @@ public class PlanillaDiaDAO {
      */
     public Map<Integer, Map<LocalDate, PlanillaDia>> listar(LocalDate desde, LocalDate hasta) throws SQLException {
         String sql = """
-                SELECT alojamiento_id, fecha, precio, color
+                SELECT alojamiento_id, fecha, precio, color, nota
                 FROM planilla_dia
                 WHERE fecha >= ? AND fecha < ?
                 """;
@@ -42,13 +42,40 @@ public class PlanillaDiaDAO {
                             fila.getInt("alojamiento_id"),
                             fila.getDate("fecha").toLocalDate(),
                             fila.getBigDecimal("precio"),
-                            fila.getString("color"));
+                            fila.getString("color"),
+                            fila.getString("nota"));
                     resultado.computeIfAbsent(dia.getAlojamientoId(), id -> new HashMap<>())
                             .put(dia.getFecha(), dia);
                 }
             }
         }
         return resultado;
+    }
+
+    /**
+     * Guarda la nota (observación) de una casa en un día; si el texto queda vacío, la borra.
+     * Para una reserva se usa su casa y su día de ingreso.
+     */
+    public void guardarNota(int alojamientoId, LocalDate fecha, String texto) throws SQLException {
+        String limpio = texto == null || texto.isBlank() ? null : texto.trim();
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            try (PreparedStatement guardar = conexion.prepareStatement("""
+                    INSERT INTO planilla_dia (alojamiento_id, fecha, nota) VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE nota = VALUES(nota)""")) {
+                guardar.setInt(1, alojamientoId);
+                guardar.setDate(2, Date.valueOf(fecha));
+                guardar.setString(3, limpio);
+                guardar.executeUpdate();
+            }
+            // Si el casillero quedó sin precio, sin color y sin nota, se borra
+            try (PreparedStatement limpiar = conexion.prepareStatement("""
+                    DELETE FROM planilla_dia
+                    WHERE alojamiento_id = ? AND fecha = ? AND precio IS NULL AND color IS NULL AND nota IS NULL""")) {
+                limpiar.setInt(1, alojamientoId);
+                limpiar.setDate(2, Date.valueOf(fecha));
+                limpiar.executeUpdate();
+            }
+        }
     }
 
     /**
@@ -72,10 +99,10 @@ public class PlanillaDiaDAO {
                 INSERT INTO planilla_dia (alojamiento_id, fecha, color) VALUES (?, ?, ?)
                 ON DUPLICATE KEY UPDATE color = VALUES(color)
                 """;
-        // Los casilleros que quedaron sin precio y sin color no hace falta guardarlos
+        // Los casilleros que quedaron sin precio, sin color y sin nota no hace falta guardarlos
         String sqlLimpiar = """
                 DELETE FROM planilla_dia
-                WHERE precio IS NULL AND color IS NULL AND fecha BETWEEN ? AND ?
+                WHERE precio IS NULL AND color IS NULL AND nota IS NULL AND fecha BETWEEN ? AND ?
                 """;
 
         int casilleros = 0;

@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=8">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=11">
 </head>
 <body>
 <%@ include file="components/header.jsp" %>
@@ -141,6 +141,23 @@
 
         agregarTexto(cartel, "span", "cartel__tipo", "Alojamiento");
         agregarTexto(cartel, "h3", "", a.nombre);
+
+        // Promedio de reseñas: ★★★★☆ 4,5 · 12 reseñas (lleva a las reseñas del alojamiento)
+        const resenas = document.createElement("a");
+        resenas.className = "cartel__resenas";
+        resenas.href = contexto + RUTA_DETALLE + "?id=" + a.id + "#resenas";
+        if (a.resenas > 0) {
+            const llenas = Math.round(a.promedio);
+            agregarTexto(resenas, "span", "cartel__estrellas", "★".repeat(llenas) + "☆".repeat(5 - llenas));
+            agregarTexto(resenas, "strong", "", a.promedio.toLocaleString("es-UY", { minimumFractionDigits: 1, maximumFractionDigits: 1 }));
+            agregarTexto(resenas, "span", "cartel__cantidad",
+                "· " + a.resenas + (a.resenas === 1 ? " reseña" : " reseñas"));
+            resenas.setAttribute("aria-label", "Promedio " + a.promedio + " de 5, " + a.resenas + " reseñas");
+        } else {
+            agregarTexto(resenas, "span", "cartel__cantidad", "Todavía sin reseñas");
+        }
+        cartel.appendChild(resenas);
+
         if (a.ubicacion) {
             agregarTexto(cartel, "p", "cartel__sub", "📍 " + a.ubicacion);
         }

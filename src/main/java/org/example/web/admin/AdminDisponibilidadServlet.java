@@ -9,6 +9,7 @@ import org.example.AlojamientoDAO;
 import org.example.ClienteDAO;
 import org.example.EstadoReserva;
 import org.example.PlanillaDiaDAO;
+import org.example.SenaDAO;
 import org.example.ReservaDao;
 import org.example.ReservaDetalle;
 import org.example.ReservaPlanilla;
@@ -47,6 +48,7 @@ public class AdminDisponibilidadServlet extends AdminServlet {
     private final ReservaDao reservaDao = new ReservaDao();
     private final ClienteDAO clienteDAO = new ClienteDAO();
     private final PlanillaDiaDAO planillaDiaDAO = new PlanillaDiaDAO();
+    private final SenaDAO senaDAO = new SenaDAO();
 
     /** Máximo de días que se pueden cambiar de una vez (una temporada entera entra de sobra). */
     private static final int MAX_DIAS = 400;
@@ -110,12 +112,21 @@ public class AdminDisponibilidadServlet extends AdminServlet {
                 alojamientoId = null;
                 List<ReservaPlanilla> reservas =
                         reservaDao.listarParaPlanilla(mes.atDay(1), mes.atEndOfMonth().plusDays(1));
+                // Precios, colores y notas: desde el ingreso más temprano de las reservas del mes
+                // (la observación de una reserva está anotada en su día de ingreso)
+                LocalDate desdeAnotados = mes.atDay(1);
+                for (ReservaPlanilla r : reservas) {
+                    if (r.getIngreso().isBefore(desdeAnotados)) {
+                        desdeAnotados = r.getIngreso();
+                    }
+                }
                 PlanillaOcupacion.cargar(request, mes, alojamientos, reservas,
-                        planillaDiaDAO.listar(mes.atDay(1), mes.atEndOfMonth().plusDays(1)));
+                        planillaDiaDAO.listar(desdeAnotados, mes.atEndOfMonth().plusDays(1)));
 
                 // Para el formulario "Nueva reserva" (el mismo de la sección Reservas)
                 request.setAttribute("clientes", clienteDAO.listarClientes());
                 request.setAttribute("procedencias", LoginServlet.PROCEDENCIAS);
+                request.setAttribute("senasPorCliente", senaDAO.vigentePorCliente()); // aviso "tiene seña a favor"
                 request.setAttribute("hoy", LocalDate.now().toString());
             }
         } catch (SQLException e) {
@@ -139,18 +150,41 @@ public class AdminDisponibilidadServlet extends AdminServlet {
 
         YearMonth mes = mes(texto(request, "mes"));
 
-        if ("dias".equals(texto(request, "accion"))) {
+        String accion = texto(request, "accion");
+        if ("dias".equals(accion)) {
             try {
                 guardarDias(request);
             } catch (SQLException | RuntimeException e) {
                 log("Error al guardar precios y colores", e);
                 avisoError(request, "No pudimos guardar los cambios. Intentá de nuevo en unos minutos.");
             }
+        } else if ("nota".equals(accion)) {
+            try {
+                guardarNota(request);
+            } catch (SQLException | RuntimeException e) {
+                log("Error al guardar la observación", e);
+                avisoError(request, "No pudimos guardar la observación. Intentá de nuevo en unos minutos.");
+            }
         } else {
             avisoError(request, "Acción no reconocida.");
         }
 
         redirigir(request, response, "/disponibilidad?mes=" + mes);
+    }
+
+    /** Observación de una reserva: se guarda en la planilla, en su casa y su día de ingreso. Vacía = se borra. */
+    private void guardarNota(HttpServletRequest request) throws SQLException {
+        Integer alojamientoId = entero(request, "alojamientoId");
+        LocalDate fecha = fecha(texto(request, "fecha"));
+        String nota = texto(request, "nota");
+        if (alojamientoId == null || fecha == null) {
+            avisoError(request, "No se pudo identificar la reserva.");
+        } else if (nota.length() > 500) {
+            avisoError(request, "La observación puede tener hasta 500 caracteres.");
+        } else {
+            planillaDiaDAO.guardarNota(alojamientoId, fecha, nota);
+            avisoOk(request, nota.isEmpty() ? "Observación borrada." : "Observación guardada.");
+        }
     }
 
     private void guardarDias(HttpServletRequest request) throws SQLException {

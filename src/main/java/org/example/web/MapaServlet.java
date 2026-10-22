@@ -1,4 +1,4 @@
-package org.example.web.admin;
+package org.example.web;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -7,10 +7,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.Alojamiento;
 import org.example.AlojamientoDAO;
+import org.example.ResenaDAO;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 // Página "Mapa": muestra las Termas de Guaviyú y cada alojamiento en su ubicación.
 @WebServlet("/mapa")
@@ -21,6 +25,7 @@ public class MapaServlet extends HttpServlet {
     private static final double CENTRO_LONGITUD = -57.8880;
 
     private final AlojamientoDAO alojamientoDAO = new AlojamientoDAO();
+    private final ResenaDAO resenaDAO = new ResenaDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -38,7 +43,15 @@ public class MapaServlet extends HttpServlet {
             System.out.println("No se pudieron cargar los alojamientos para el mapa: " + e.getMessage());
         }
 
-        request.setAttribute("datosMapa", armarJson(alojamientos));
+        // Promedio de reseñas de cada alojamiento (si falla, el mapa igual se muestra, sin el promedio)
+        Map<Integer, double[]> promedios = new HashMap<>();
+        try {
+            promedios = resenaDAO.promediosPorAlojamiento();
+        } catch (Exception e) {
+            System.out.println("No se pudieron cargar las reseñas para el mapa: " + e.getMessage());
+        }
+
+        request.setAttribute("datosMapa", armarJson(alojamientos, promedios));
         request.setAttribute("paginaActiva", "mapa");
 
         request.getRequestDispatcher("/WEB-INF/views/mapa.jsp")
@@ -46,7 +59,7 @@ public class MapaServlet extends HttpServlet {
     }
 
     // Arma los datos que usa el JavaScript del mapa, en formato JSON.
-    private String armarJson(List<Alojamiento> alojamientos) {
+    private String armarJson(List<Alojamiento> alojamientos, Map<Integer, double[]> promedios) {
         StringBuilder json = new StringBuilder();
         json.append("{\"centro\":{\"lat\":").append(CENTRO_LATITUD)
                 .append(",\"lng\":").append(CENTRO_LONGITUD).append("},");
@@ -64,6 +77,10 @@ public class MapaServlet extends HttpServlet {
                     .append("\"capacidad\":").append(a.getCapacidad()).append(",")
                     .append("\"precio\":").append(a.getPrecio()).append(",")
                     .append("\"ubicacion\":").append(texto(a.getUbicacion())).append(",")
+                    // Reseñas: promedio con un decimal (0 si no tiene) y cantidad
+                    .append("\"promedio\":").append(String.format(Locale.ROOT, "%.1f",
+                            promedios.containsKey(a.getId()) ? promedios.get(a.getId())[0] : 0)).append(",")
+                    .append("\"resenas\":").append(promedios.containsKey(a.getId()) ? (int) promedios.get(a.getId())[1] : 0).append(",")
                     // Sin coordenadas cargadas va null: ese alojamiento no se dibuja en el mapa
                     .append("\"lat\":").append(a.tieneCoordenadas() ? a.getLatitud() : null).append(",")
                     .append("\"lng\":").append(a.tieneCoordenadas() ? a.getLongitud() : null)

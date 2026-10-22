@@ -92,9 +92,13 @@
                                             data-f-huespedes="${r.cantidadHuespedes}"
                                             data-f-mediodiaextra="${r.medioDiaExtra ? 1 : 0}">Editar</button>
                                 </c:if>
-                                <c:if test="${r.estado != 'CANCELADA'}">
+                                <c:if test="${r.estado == 'CONFIRMADA'}">
+                                    <button type="button" class="btn btn-eliminar" data-modal-abrir="m-cancelar"
+                                            data-f-id="${r.id}" data-cancelar-numero="${r.id}">Cancelar</button>
+                                </c:if>
+                                <c:if test="${r.estado == 'PENDIENTE'}">
                                     <form action="${base}/reservas" method="post"
-                                          data-confirmar="¿Cancelar la reserva #${r.id}?${r.estado == 'CONFIRMADA' ? ' Sus fechas volverán a quedar libres.' : ''}">
+                                          data-confirmar="¿Cancelar la reserva #${r.id}?">
                                         <input type="hidden" name="_csrf" value="${csrf}">
                                         <input type="hidden" name="accion" value="cancelar">
                                         <input type="hidden" name="id" value="${r.id}">
@@ -131,11 +135,17 @@
                     <option value="">Elegí un cliente…</option>
                     <option value="nuevo">+ Agregar cliente nuevo…</option>
                     <c:forEach var="c" items="${clientes}">
-                        <option value="${c.id}"><c:out value="${c.nombre}"/> — <c:out value="${c.documento}"/></option>
+                        <c:set var="senaCli" value="${senasPorCliente[c.id]}"/>
+                        <option value="${c.id}" data-sena-id="${senaCli.id}" data-sena="${senaCli.resumen}"><c:out value="${c.nombre}"/> — <c:out value="${c.documento}"/></option>
                     </c:forEach>
                 </select>
                 <button type="button" class="btn btn-editar boton-cliente-nuevo" data-elegir-cliente-nuevo>+ Agregar cliente nuevo</button>
             </label>
+            <%-- Aviso cuando el cliente elegido tiene una seña a favor (de una reserva confirmada que canceló) --%>
+            <div class="campo ancho aviso-sena" data-aviso-sena hidden>
+                <span>💰 Este cliente tiene <strong data-texto-sena></strong>.</span>
+                <label><input type="checkbox" name="usarSena" value="" data-usar-sena> Usar esta seña en la nueva reserva (queda marcada como usada)</label>
+            </div>
             <%-- Datos del cliente nuevo: aparecen al elegir "+ Agregar cliente nuevo…" --%>
             <fieldset class="campo cliente-nuevo" data-cliente-nuevo hidden>
                 <legend>Cliente nuevo</legend>
@@ -243,6 +253,11 @@
     .cliente-nuevo .campos { margin-top: .4rem; }
     .cliente-nuevo > small { display: block; margin-top: .6rem; color: var(--texto-suave); font-weight: 400; }
     .cliente-nuevo[hidden] { display: none; }
+    .aviso-sena { display: grid; gap: .4rem; padding: .7rem .9rem; border-radius: 10px;
+                  background: var(--verde-fondo); color: var(--verde); font-weight: 600; }
+    .aviso-sena[hidden] { display: none; }
+    .aviso-sena label { display: flex; align-items: center; gap: .5rem; font-weight: 700; color: var(--texto); }
+    .aviso-sena input { width: auto; margin: 0; }
     .boton-cliente-nuevo { margin-top: .5rem; padding: .4rem .8rem; font-size: .88rem; }
     /* Acciones de cada reserva una debajo de la otra, para que siempre se vean Confirmar, Editar y Cancelar */
     .tabla td.acciones { white-space: normal; width: 8.5rem; }
@@ -267,10 +282,26 @@
             });
         }
 
+        // Seña a favor del cliente elegido
+        var avisoSena = ventana.querySelector('[data-aviso-sena]');
+        var usarSena = ventana.querySelector('[data-usar-sena]');
+        function actualizarSena() {
+            var opcion = selector.options[selector.selectedIndex];
+            var texto = opcion && opcion.dataset.sena;
+            avisoSena.hidden = !texto;
+            usarSena.checked = false;
+            usarSena.value = texto ? opcion.dataset.senaId : '';
+            avisoSena.querySelector('[data-texto-sena]').textContent = texto || '';
+        }
+        selector.addEventListener('change', actualizarSena);
+        ventana.addEventListener('close', function () { usarSena.checked = false; });
+        actualizarSena();
+
         // Botón "+ Agregar cliente nuevo": elige esa opción del desplegable y muestra los campos
         ventana.querySelector('[data-elegir-cliente-nuevo]').addEventListener('click', function () {
             selector.value = 'nuevo';
             actualizar();
+            actualizarSena();
             bloque.querySelector('[name=nuevoNombre]').focus();
         });
 
@@ -281,6 +312,46 @@
             }
         });
         actualizar();
+    })();
+</script>
+
+<%-- ============ Cancelar una reserva confirmada: la seña siempre queda a favor del cliente por 6 meses ============ --%>
+<dialog id="m-cancelar" class="modal modal-chico">
+    <form action="${base}/reservas" method="post" class="modal-form">
+        <h2>Cancelar reserva <span data-numero-cancelar></span></h2>
+        <p class="muted">Era una reserva confirmada: el cliente ya había dejado la seña, que queda a su favor por 6 meses
+            (para cualquier casa). Las fechas vuelven a quedar libres.</p>
+        <input type="hidden" name="_csrf" value="${csrf}">
+        <input type="hidden" name="accion" value="cancelar">
+        <input type="hidden" name="id" value="">
+        <input type="hidden" name="fEstado" value="${estadoSel}">
+        <input type="hidden" name="fQ" value="<c:out value='${q}'/>">
+        <input type="hidden" name="fAlojamiento" value="${alojamientoSel}">
+        <input type="hidden" name="guardarSena" value="1">
+        <label class="campo importe-sena">Importe de la seña: $
+            <input type="number" name="importeSena" min="1" step="any" inputmode="decimal" required aria-label="Importe de la seña en pesos"></label>
+        <div class="modal-pie">
+            <button type="button" class="btn btn-secundario" data-modal-cerrar>Volver</button>
+            <button type="submit" class="btn btn-peligro-borde">Cancelar reserva</button>
+        </div>
+    </form>
+</dialog>
+<style>
+    .importe-sena { margin-top: 1rem; }
+    .importe-sena input { width: 9rem; margin: 0 0 0 .3rem; }
+</style>
+<script>
+    // Ventana "Cancelar reserva": poner el número de la reserva y vaciar el importe
+    (function () {
+        'use strict';
+        var ventana = document.getElementById('m-cancelar');
+        document.querySelectorAll('[data-cancelar-numero]').forEach(function (boton) {
+            boton.addEventListener('click', function () {
+                ventana.querySelector('[name=importeSena]').value = '';
+                ventana.querySelector('[name=id]').value = boton.dataset.cancelarNumero;
+                ventana.querySelector('[data-numero-cancelar]').textContent = '#' + boton.dataset.cancelarNumero;
+            });
+        });
     })();
 </script>
 

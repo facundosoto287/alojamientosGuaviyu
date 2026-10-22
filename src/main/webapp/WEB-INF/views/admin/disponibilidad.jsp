@@ -402,12 +402,16 @@
                                                 data-huespedes="${r.cantidadHuespedes}"
                                                 data-precio="${r.cuenta} = ${r.precioTexto}"
                                                 data-procedencia="<c:out value='${r.clienteProcedencia}'/>"
+                                                data-nota="<c:out value='${celda.nota}'/>"
                                                 data-superpuesta="${celda.superpuesta}">
                                             <span class="bloque-estado" aria-hidden="true">${r.confirmada ? '✓' : '⏳'}${celda.superpuesta ? ' ⚠' : ''}</span>
                                             <strong><c:out value="${r.nombreMostrar}"/></strong>
                                             <span class="info">Tel. <c:out value="${empty r.clienteTelefono ? '—' : r.clienteTelefono}"/></span>
                                             <span class="info precio" title="${r.nochesTexto} × precio por noche">${r.cuenta}</span>
                                             <span class="info">${r.cantidadHuespedes} ${r.cantidadHuespedes == 1 ? 'persona' : 'personas'}</span>
+                                            <c:if test="${not empty celda.nota}">
+                                                <span class="info obs">📝 <c:out value="${celda.nota}"/></span>
+                                            </c:if>
                                         </button>
                                     </td>
                                 </c:otherwise>
@@ -446,6 +450,19 @@
             <dt>Precio</dt><dd id="dr-precio"></dd>
         </dl>
 
+        <%-- Observación de la reserva (ej. "llega 22 hs", "trae mascota"): se guarda en la planilla, en su casa y día de ingreso --%>
+        <form id="dr-nota" action="${base}/disponibilidad" method="post" class="observacion-form">
+            <input type="hidden" name="_csrf" value="${csrf}">
+            <input type="hidden" name="accion" value="nota">
+            <input type="hidden" name="mes" value="${mesValor}">
+            <input type="hidden" name="alojamientoId" value="">
+            <input type="hidden" name="fecha" value="">
+            <label for="dr-nota-texto">📝 Observación</label>
+            <textarea id="dr-nota-texto" name="nota" rows="2" maxlength="500"
+                      placeholder="Ej. llega a las 22 hs, trae mascota…"></textarea>
+            <button type="submit" class="btn btn-editar">Guardar observación</button>
+        </form>
+
         <div class="detalle-botones">
             <a id="dr-whatsapp" class="btn btn-primario" href="#" target="_blank" rel="noopener">💬 Escribir por WhatsApp</a>
 
@@ -467,6 +484,13 @@
                 <input type="hidden" name="accion" value="cancelar">
                 <input type="hidden" name="id" value="">
                 <input type="hidden" name="volver" value="/disponibilidad?mes=${mesValor}">
+                <%-- Solo para reservas confirmadas: la seña ya estaba pagada y siempre queda a favor del cliente por 6 meses --%>
+                <fieldset class="opciones sena-cancelar" id="dr-sena" hidden>
+                    <legend>Si se cancela, la seña queda a favor del cliente por 6 meses</legend>
+                    <input type="hidden" name="guardarSena" value="1">
+                    <label class="importe-sena">Importe de la seña: $
+                        <input type="number" name="importeSena" min="1" step="any" inputmode="decimal" aria-label="Importe de la seña en pesos"></label>
+                </fieldset>
                 <button type="submit" class="btn btn-peligro-borde">Cancelar reserva</button>
             </form>
 
@@ -613,11 +637,17 @@
                     <option value="">Elegí un cliente…</option>
                     <option value="nuevo">+ Agregar cliente nuevo…</option>
                     <c:forEach var="cli" items="${clientes}">
-                        <option value="${cli.id}"><c:out value="${cli.nombre}"/> — <c:out value="${cli.documento}"/></option>
+                        <c:set var="senaCli" value="${senasPorCliente[cli.id]}"/>
+                        <option value="${cli.id}" data-sena-id="${senaCli.id}" data-sena="${senaCli.resumen}"><c:out value="${cli.nombre}"/> — <c:out value="${cli.documento}"/></option>
                     </c:forEach>
                 </select>
                 <button type="button" class="btn btn-editar boton-cliente-nuevo" data-elegir-cliente-nuevo>+ Agregar cliente nuevo</button>
             </label>
+            <%-- Aviso cuando el cliente elegido tiene una seña a favor (de una reserva confirmada que canceló) --%>
+            <div class="campo ancho aviso-sena" data-aviso-sena hidden>
+                <span>💰 Este cliente tiene <strong data-texto-sena></strong>.</span>
+                <label><input type="checkbox" name="usarSena" value="" data-usar-sena> Usar esta seña en la nueva reserva (queda marcada como usada)</label>
+            </div>
             <%-- Datos del cliente nuevo: aparecen al elegir "+ Agregar cliente nuevo…" --%>
             <fieldset class="campo cliente-nuevo" data-cliente-nuevo hidden>
                 <legend>Cliente nuevo</legend>
@@ -698,6 +728,10 @@
                 poner('dr-telefono', d.telefono || '—');
                 poner('dr-documento', d.documento || '—');
                 poner('dr-procedencia', d.procedencia || '—');
+                var formNota = document.getElementById('dr-nota');
+                formNota.querySelector('[name=alojamientoId]').value = d.casaId;
+                formNota.querySelector('[name=fecha]').value = d.ingresoIso;
+                formNota.querySelector('[name=nota]').value = d.nota || '';
                 poner('dr-precio', d.precio);
                 document.getElementById('dr-superpuesta').hidden = d.superpuesta !== 'true';
 
@@ -710,7 +744,15 @@
                 var confirmar = document.getElementById('dr-confirmar');
                 confirmar.hidden = confirmada;
                 confirmar.querySelector('[name=id]').value = d.id;
-                document.getElementById('dr-cancelar').querySelector('[name=id]').value = d.id;
+                var cancelar = document.getElementById('dr-cancelar');
+                cancelar.querySelector('[name=id]').value = d.id;
+                // Si está confirmada, preguntar por la seña; si está pendiente, se cancela directo
+                var sena = document.getElementById('dr-sena');
+                sena.hidden = !confirmada;
+                sena.disabled = !confirmada;   // un fieldset deshabilitado no envía sus campos
+                var importeSena = cancelar.querySelector('[name=importeSena]');
+                importeSena.value = '';
+                importeSena.required = confirmada;
 
                 reservaActual = d;
                 ventana.showModal();
@@ -835,6 +877,20 @@
     .cliente-nuevo .campos { margin-top: .4rem; }
     .cliente-nuevo > small { display: block; margin-top: .6rem; color: var(--texto-suave); font-weight: 400; }
     .cliente-nuevo[hidden] { display: none; }
+    .aviso-sena { display: grid; gap: .4rem; padding: .7rem .9rem; border-radius: 10px;
+                  background: var(--verde-fondo); color: var(--verde); font-weight: 600; }
+    .aviso-sena[hidden] { display: none; }
+    .aviso-sena label { display: flex; align-items: center; gap: .5rem; font-weight: 700; color: var(--texto); }
+    .aviso-sena input { width: auto; margin: 0; }
+    .sena-cancelar { margin: 0 0 .6rem; text-align: left; }
+    .sena-cancelar[hidden] { display: none; }
+    .importe-sena input { width: 9rem; margin: 0 0 0 .3rem; }
+    /* Observación de la reserva */
+    .reserva-bloque .info.obs { font-style: italic; white-space: normal; }   /* puede ocupar varios renglones */
+    .observacion-form { display: grid; gap: .4rem; margin: 0 0 1.1rem; }
+    .observacion-form label { font-weight: 700; }
+    .observacion-form textarea { width: 100%; font: inherit; resize: vertical; }
+    .observacion-form .btn { justify-self: start; padding: .45rem .9rem; }
     .boton-cliente-nuevo { margin-top: .5rem; padding: .4rem .8rem; font-size: .88rem; }
 </style>
 
@@ -855,10 +911,26 @@
             });
         }
 
+        // Seña a favor del cliente elegido
+        var avisoSena = ventana.querySelector('[data-aviso-sena]');
+        var usarSena = ventana.querySelector('[data-usar-sena]');
+        function actualizarSena() {
+            var opcion = selector.options[selector.selectedIndex];
+            var texto = opcion && opcion.dataset.sena;
+            avisoSena.hidden = !texto;
+            usarSena.checked = false;
+            usarSena.value = texto ? opcion.dataset.senaId : '';
+            avisoSena.querySelector('[data-texto-sena]').textContent = texto || '';
+        }
+        selector.addEventListener('change', actualizarSena);
+        ventana.addEventListener('close', function () { usarSena.checked = false; });
+        actualizarSena();
+
         // Botón "+ Agregar cliente nuevo": elige esa opción del desplegable y muestra los campos
         ventana.querySelector('[data-elegir-cliente-nuevo]').addEventListener('click', function () {
             selector.value = 'nuevo';
             actualizar();
+            actualizarSena();
             bloque.querySelector('[name=nuevoNombre]').focus();
         });
 

@@ -69,6 +69,7 @@ public final class PlanillaOcupacion {
         private final ReservaPlanilla reserva;
         private final boolean superpuesta;   // hay otra solicitud para alguna de esas noches
         private PlanillaDia anotado;         // precio y color que cargó la administradora (puede ser null)
+        private String nota = "";            // observación de la reserva (se guarda en su día de ingreso)
 
         Celda(String tipo, Casa casa, String fecha, String descripcion, boolean pasado,
               int filas, ReservaPlanilla reserva, boolean superpuesta) {
@@ -112,6 +113,11 @@ public final class PlanillaOcupacion {
         public String getFondo() {
             String propio = getColorPropio();
             return propio.isEmpty() ? casa.getColor() + "80" : propio;
+        }
+
+        /** Observación de la reserva, por ejemplo "llega 22 hs, trae mascota" ("" si no hay). */
+        public String getNota() {
+            return nota;
         }
 
         /** Fecha para leer: "jueves 1 de octubre". */
@@ -279,6 +285,14 @@ public final class PlanillaOcupacion {
                 Map<LocalDate, PlanillaDia> deLaCasa = anotados.get(celda.getCasa().getId());
                 if (deLaCasa != null) {
                     celda.anotado = deLaCasa.get(LocalDate.parse(celda.getFecha()));
+                    // La observación de una reserva está anotada en su día de ingreso
+                    // (puede ser del mes anterior si la reserva empezó antes)
+                    if (celda.getReserva() != null) {
+                        PlanillaDia ingreso = deLaCasa.get(celda.getReserva().getIngreso());
+                        if (ingreso != null && ingreso.getNota() != null) {
+                            celda.nota = ingreso.getNota();
+                        }
+                    }
                 }
             }
         }
