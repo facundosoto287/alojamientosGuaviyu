@@ -9,10 +9,14 @@ import org.example.ClienteDAO;
 import org.example.EstadoReserva;
 import org.example.Reserva;
 import org.example.ReservaDao;
+import org.example.ReservaDetalle;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Casos de uso: ver todas / pendientes / confirmadas / canceladas, buscar por cliente, ver reservas de un
@@ -36,7 +40,11 @@ public class AdminReservasServlet extends AdminServlet {
         Integer alojamientoId = entero(request, "alojamiento");
 
         try {
-            request.setAttribute("reservas", reservaDao.listarDetalle(estado, alojamientoId, null, q));
+            // La lista se muestra por fecha de ingreso ascendente (la más próxima primero);
+            // a igual fecha, por número de reserva.
+            List<ReservaDetalle> reservas = new ArrayList<>(reservaDao.listarDetalle(estado, alojamientoId, null, q));
+            reservas.sort(Comparator.comparing(ReservaDetalle::getFechaIngreso).thenComparingInt(ReservaDetalle::getId));
+            request.setAttribute("reservas", reservas);
             request.setAttribute("alojamientos", alojamientoDAO.listarAlojamientos());
             request.setAttribute("clientes", clienteDAO.listarClientes());
         } catch (SQLException e) {

@@ -234,6 +234,26 @@ td.acciones > * { display: inline-block; vertical-align: middle; margin: 0 0 0 .
 .opciones input { width: auto; margin: 0; }
 .modal-pie { display: flex; justify-content: flex-end; gap: .7rem; margin-top: 1.4rem; }
 
+/* ===================== VENTANA DE CONFIRMACIÓN ===================== */
+
+.modal-confirmar[open] { animation: aparecer-confirmar .16s ease-out; }
+@keyframes aparecer-confirmar { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+.modal-confirmar .modal-form { text-align: center; padding: 1.9rem 1.6rem 1.5rem; }
+.modal-confirmar h2 { font-size: 1.3rem; }
+.confirmar-icono {
+    display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto .9rem; border-radius: 50%;
+    background: var(--rojo-fondo); color: var(--rojo); font: 800 1.8rem var(--fuente-titulos);
+}
+.modal-confirmar[data-tono="exito"] .confirmar-icono { background: var(--verde-fondo); color: var(--verde); }
+.modal-confirmar[data-tono="normal"] .confirmar-icono { background: var(--azul-100); color: var(--azul-700); }
+.confirmar-texto { margin: .6rem 0 0; color: var(--texto-suave); line-height: 1.45; }
+.modal-confirmar .modal-pie { justify-content: center; margin-top: 1.5rem; }
+.modal-confirmar .btn { min-width: 120px; padding: .7rem 1.2rem; font-size: 1rem; }
+.btn-peligro { background: var(--rojo); color: #fff; box-shadow: 0 6px 16px rgba(198, 45, 45, .28); }
+.btn-peligro:hover { background: #a82424; }
+.btn-exito { background: var(--verde); color: #fff; box-shadow: 0 6px 16px rgba(22, 121, 74, .28); }
+.btn-exito:hover { background: #0f6038; }
+
 /* ===================== FOTOS DE ALOJAMIENTOS ===================== */
 
 .modal-fotos { width: min(780px, calc(100vw - 2rem)); }

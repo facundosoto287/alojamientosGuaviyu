@@ -37,12 +37,75 @@
         });
     });
 
-    // Pedir confirmación antes de enviar formularios marcados con data-confirmar.
+    // Confirmaciones: los formularios marcados con data-confirmar piden confirmar en una ventana propia
+    // (con el estilo del panel) antes de enviarse, en lugar del aviso gris del navegador.
+    var ventanaConfirmar = null;
+    var formularioPendiente = null;
+
+    function crearVentanaConfirmar() {
+        var ventana = document.createElement('dialog');
+        ventana.className = 'modal modal-chico modal-confirmar';
+        ventana.setAttribute('aria-labelledby', 'confirmar-titulo');
+        ventana.innerHTML =
+            '<div class="modal-form">' +
+            '<span class="confirmar-icono" aria-hidden="true">!</span>' +
+            '<h2 id="confirmar-titulo"></h2>' +
+            '<p class="confirmar-texto"></p>' +
+            '<div class="modal-pie">' +
+            '<button type="button" class="btn btn-secundario" data-confirmar-no>Volver</button>' +
+            '<button type="button" class="btn" data-confirmar-si>Aceptar</button>' +
+            '</div></div>';
+        document.body.appendChild(ventana);
+
+        ventana.addEventListener('click', function (evento) {
+            if (evento.target === ventana) ventana.close();
+        });
+        ventana.querySelector('[data-confirmar-no]').addEventListener('click', function () {
+            ventana.close();
+        });
+        ventana.querySelector('[data-confirmar-si]').addEventListener('click', function () {
+            var formulario = formularioPendiente;
+            formularioPendiente = null;
+            ventana.close();
+            if (formulario) formulario.submit(); // submit() no vuelve a disparar el evento "submit"
+        });
+        ventana.addEventListener('close', function () {
+            formularioPendiente = null;
+        });
+        return ventana;
+    }
+
+    // Título, botón y color según de qué se trate (eliminar y cancelar en rojo, confirmar en verde).
+    function describirConfirmacion(mensaje) {
+        var texto = mensaje.replace(/^\u00bf/, '');
+        if (/^eliminar/i.test(texto)) return { titulo: 'Eliminar', boton: 'Eliminar', tono: 'peligro' };
+        if (/^(seguro que quer[e\u00e9]s )?cancelar/i.test(texto)) return { titulo: 'Cancelar reserva', boton: 'S\u00ed, cancelar', tono: 'peligro' };
+        if (/^confirmar/i.test(texto)) return { titulo: 'Confirmar reserva', boton: 'Confirmar', tono: 'exito' };
+        return { titulo: '\u00bfEst\u00e1s seguro?', boton: 'Aceptar', tono: 'normal' };
+    }
+
+    function pedirConfirmacion(formulario) {
+        if (!ventanaConfirmar) ventanaConfirmar = crearVentanaConfirmar();
+
+        var mensaje = formulario.dataset.confirmar;
+        var datos = describirConfirmacion(mensaje);
+        var boton = ventanaConfirmar.querySelector('[data-confirmar-si]');
+
+        ventanaConfirmar.dataset.tono = datos.tono;
+        ventanaConfirmar.querySelector('h2').textContent = datos.titulo;
+        ventanaConfirmar.querySelector('.confirmar-texto').textContent = mensaje; // textContent: nunca interpreta HTML
+        boton.textContent = datos.boton;
+        boton.className = 'btn ' + (datos.tono === 'peligro' ? 'btn-peligro' : datos.tono === 'exito' ? 'btn-exito' : 'btn-primario');
+
+        formularioPendiente = formulario;
+        ventanaConfirmar.showModal();
+        ventanaConfirmar.querySelector('[data-confirmar-no]').focus(); // por defecto queda marcado "Volver"
+    }
+
     document.querySelectorAll('form[data-confirmar]').forEach(function (formulario) {
         formulario.addEventListener('submit', function (evento) {
-            if (!window.confirm(formulario.dataset.confirmar)) {
-                evento.preventDefault();
-            }
+            evento.preventDefault();
+            pedirConfirmacion(formulario);
         });
     });
 
