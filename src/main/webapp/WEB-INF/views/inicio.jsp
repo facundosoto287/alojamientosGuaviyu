@@ -21,6 +21,8 @@
 
     <title>Inicio | Alojamientos Guaviyú</title>
 
+    <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -78,7 +80,7 @@
                     <path d="M16 14c2.8 0 5 1.6 5 4"/>
                 </svg>
 
-                <span>Alojamientos para familias y parejas </span>
+                <span>Para disfrutar juntos</span>
             </div>
 
         </div>

@@ -25,6 +25,7 @@
         Mis reservas | Alojamientos Guaviyú
     </title>
 
+    <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
 
     <link rel="preconnect"
           href="https://fonts.googleapis.com">

@@ -45,7 +45,7 @@
                 <span>Inicio</span>
             </a>
 
-            <a href="#"
+            <a href="${pageContext.request.contextPath}/mapa"
                class="footer-item footer-red">
 
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -97,7 +97,7 @@
         <div class="footer-columna">
             <h4>Contacto</h4>
 
-            <a href="#"
+            <a href="https://www.instagram.com/alojamientosguaviyu/"
                class="footer-item footer-red"
                target="_blank"
                rel="noopener">

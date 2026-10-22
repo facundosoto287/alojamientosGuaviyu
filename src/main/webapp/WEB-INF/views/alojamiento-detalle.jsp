@@ -13,6 +13,8 @@
 
     <title>${alojamiento.nombre} | Alojamientos Guaviyú</title>
 
+    <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
+
     <!-- Librerias -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -756,6 +758,16 @@
 
                 </div>
 
+                <div class="aviso-reserva-corta">
+                    <strong>
+                        ¿Querés reservar por 1 noche y 1 día (1 día y medio)?
+                    </strong>
+                    <p>
+                        Podés consultarnos por WhatsApp el día anterior al ingreso,
+                        después de las 20:00 hs. En ese momento podremos confirmar
+                        si quedó algún alojamiento disponible.
+                    </p>
+                </div>
 
                 <button type="submit" class="boton-solicitar">
 
