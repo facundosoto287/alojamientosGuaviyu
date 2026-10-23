@@ -385,6 +385,8 @@ body {
 .precio-card strong {       /* Precio del alojamiento */
     font-size: 23px;
     color: #123b73;
+
+    white-space: nowrap;
 }
 
 .precio-card span {     /* Texto "por noche" */
@@ -691,6 +693,214 @@ body {
 .faq-item summary:hover {
     background-color: #f6f9fd;
 }
+
+
+/* =========================================
+   MEJORAS CARDS ALOJAMIENTOS
+   ========================================= */
+
+
+/* Hover suave de toda la card */
+
+.alojamiento-card {
+    transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+}
+
+.alojamiento-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+            0 14px 35px rgba(11, 61, 145, 0.13);
+
+    border-color: #d5e5f7;
+}
+
+
+/* No hacemos zoom en la imagen */
+
+.alojamiento-card-imagen {
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* =========================================
+   BADGES
+   ========================================= */
+
+.card-badges {
+    position: absolute;
+
+    top: 12px;
+    left: 12px;
+    right: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    pointer-events: none;
+}
+
+
+.card-badge {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 10px;
+
+    border-radius: 20px;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+
+/* Capacidad */
+
+.badge-capacidad {
+    background: rgba(13, 110, 253, .95);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, .35);
+    box-shadow: 0 4px 14px rgba(13, 110, 253, .25);
+}
+
+.badge-capacidad svg {
+    width: 16px;
+    height: 16px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* Mascotas permitidas */
+
+.badge-mascotas.permite {
+    background: rgba(230, 248, 239, .95);
+    color: #16794b;
+}
+
+
+/* Mascotas no permitidas */
+
+.badge-mascotas.no-permite {
+    background: rgba(255, 245, 245, .95);
+    color: #b84141;
+}
+
+
+/* =========================================
+   DISTANCIA A LA PISCINA
+   ========================================= */
+
+.servicio-distancia {
+    width: fit-content;
+
+    padding: 6px 10px;
+
+    background: #edf6ff;
+
+    border: 1px solid #d7eaff;
+    border-radius: 20px;
+
+    color: #0b5eb7;
+
+    font-weight: 700;
+}
+
+.servicio-distancia svg {
+    stroke: #0d6efd;
+}
+
+
+/*BOTON VER DETALLE*/
+.boton-detalle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 15px;
+
+    background: #0d6efd;
+    color: white;
+
+    border: 1px solid #0d6efd;
+    border-radius: 9px;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    box-shadow: 0 5px 14px rgba(13, 110, 253, .18);
+
+    transition:
+            background-color .2s ease,
+            box-shadow .2s ease,
+            transform .2s ease;
+}
+
+
+.boton-detalle svg {
+    width: 17px;
+    height: 17px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    transition: transform .2s ease;
+}
+
+
+.boton-detalle:hover {
+    background: #0b5ed7;
+
+    box-shadow: 0 7px 18px rgba(13, 110, 253, .25);
+
+    transform: translateY(-1px);
+}
+
+
+/* La flecha se desplaza suavemente */
+.boton-detalle:hover svg {
+    transform: translateX(3px);
+}
+
+.badge-mascotas svg {
+    width: 16px;
+    height: 16px;
+
+    fill: currentColor;
+    stroke: none;
+
+    flex-shrink: 0;
+}
+
 
 /*DISEÑO RESPONSIVE*/
 @media (max-width: 600px) {

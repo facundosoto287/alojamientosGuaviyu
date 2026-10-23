@@ -355,4 +355,18 @@
     })();
 </script>
 
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const parametros = new URLSearchParams(window.location.search);
+
+        if (parametros.get('abrir') === 'nueva') {
+            const modalNuevaReserva = document.getElementById('m-crear');
+
+            if (modalNuevaReserva && !modalNuevaReserva.open) {
+                modalNuevaReserva.showModal();
+            }
+        }
+    });
+</script>
+
 <%@ include file="layout-bottom.jspf" %>

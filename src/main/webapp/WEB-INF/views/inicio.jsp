@@ -275,6 +275,72 @@
                              alt="Imagen de <c:out value='${alojamiento.nombre}'/>">
                     </c:otherwise>
                 </c:choose>
+
+                <div class="card-badges">
+
+                    <span class="card-badge badge-capacidad">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="9" cy="8" r="3"/>
+                            <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/>
+                            <path d="M16 11a2.5 2.5 0 1 0 0-5"/>
+                            <path d="M16 14c2.8 0 5 1.6 5 4"/>
+                        </svg>
+
+                        <c:out value="${alojamiento.capacidad}"/> personas
+                    </span>
+
+                    <c:choose>
+
+                        <c:when test="${alojamiento.permiteMascotas}">
+                            <span class="card-badge badge-mascotas permite">
+
+                                <svg viewBox="0 0 100 100" aria-hidden="true">
+                                    <ellipse cx="35" cy="22" rx="12" ry="17"/>
+                                    <ellipse cx="65" cy="22" rx="12" ry="17"/>
+                                    <ellipse cx="15" cy="47" rx="11" ry="15" transform="rotate(-20 15 47)"/>
+                                    <ellipse cx="85" cy="47" rx="11" ry="15" transform="rotate(20 85 47)"/>
+
+                                    <path d="M50 47
+                                             C36 47 26 59 20 70
+                                             C14 81 20 91 33 92
+                                             C40 92 45 87 50 85
+                                             C55 87 60 92 67 92
+                                             C80 91 86 81 80 70
+                                             C74 59 64 47 50 47Z"/>
+                                </svg>
+
+                                Mascotas
+
+                            </span>
+                        </c:when>
+
+                        <c:otherwise>
+                            <span class="card-badge badge-mascotas no-permite">
+
+                                <svg viewBox="0 0 100 100" aria-hidden="true">
+                                    <ellipse cx="35" cy="22" rx="12" ry="17"/>
+                                    <ellipse cx="65" cy="22" rx="12" ry="17"/>
+                                    <ellipse cx="15" cy="47" rx="11" ry="15" transform="rotate(-20 15 47)"/>
+                                    <ellipse cx="85" cy="47" rx="11" ry="15" transform="rotate(20 85 47)"/>
+
+                                    <path d="M50 47
+                                             C36 47 26 59 20 70
+                                             C14 81 20 91 33 92
+                                             C40 92 45 87 50 85
+                                             C55 87 60 92 67 92
+                                             C80 91 86 81 80 70
+                                             C74 59 64 47 50 47Z"/>
+                                </svg>
+
+                                Sin mascotas
+
+                            </span>
+                        </c:otherwise>
+
+                    </c:choose>
+
+                </div>
+
             </div>
 
                 <div class="alojamiento-card-contenido">
@@ -297,15 +363,6 @@
 
                     <%--logos de los servicios--%>
                     <div class="servicios-card">
-
-                        <%-- Capacidad --%>
-                        <span class="servicio-item">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14c2.8 0 5 1.6 5 4"/>
-                            </svg>
-
-                            <c:out value="${alojamiento.capacidad}"/> personas
-                        </span>
 
                         <%-- Servicios asociados al alojamiento --%>
                         <c:set var="servicios"
@@ -406,7 +463,7 @@
                         </c:forEach>
 
                         <%-- Distancia a la piscina --%>
-                        <span class="servicio-item">
+                        <span class="servicio-item servicio-distancia">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M3 16c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>
                                 <path d="M3 20c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>
@@ -426,7 +483,13 @@
                         </div>
                         <a class="boton-detalle"
                            href="${pageContext.request.contextPath}/alojamiento-detalle?id=${alojamiento.id}">
-                            Ver detalle
+
+                            <span>Ver detalle</span>
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5 12h14"/>
+                                <path d="M14 7l5 5-5 5"/>
+                            </svg>
                         </a>
 
                     </div>

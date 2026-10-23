@@ -138,4 +138,19 @@
     </form>
 </dialog>
 
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const parametros = new URLSearchParams(window.location.search);
+
+        if (parametros.get('abrir') === 'nuevo') {
+            const modalRegistrarCliente =
+                document.getElementById('m-registrar');
+
+            if (modalRegistrarCliente && !modalRegistrarCliente.open) {
+                modalRegistrarCliente.showModal();
+            }
+        }
+    });
+</script>
+
 <%@ include file="layout-bottom.jspf" %>
