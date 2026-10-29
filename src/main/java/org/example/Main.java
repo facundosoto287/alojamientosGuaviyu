@@ -834,6 +834,7 @@ public class Main {
                     datosCliente.getTelefono(),
                     datosCliente.getEmail(),
                     datosCliente.getProcedencia(),
+                    datosCliente.getLocalidad(),
                     datosCliente.getContrasena()
             );
             System.out.println("Cliente registrado correctamente: " + nuevoCliente.getNombre());
@@ -1360,15 +1361,25 @@ public class Main {
             return;
         }
 
-        System.out.print("Procedencia [" + clienteActual.getProcedencia() + "]: ");
+        System.out.print("Procedencia (departamento, provincia o país) [" + clienteActual.getProcedencia() + "]: ");
         String procedencia = sc.nextLine().trim();
         if (procedencia.isEmpty()) procedencia = clienteActual.getProcedencia();
 
+        System.out.print("Localidad (ciudad o pueblo) [" + clienteActual.getLocalidad() + "]: ");
+        String localidad = sc.nextLine().trim();
+        if (localidad.isEmpty()) localidad = clienteActual.getLocalidad();
+        String errorLocalidad = ClienteDAO.errorDeLocalidad(ClienteDAO.normalizarLocalidad(localidad));
+        if (errorLocalidad != null) {
+            System.out.println(errorLocalidad);
+            return;
+        }
+
         try {
-            if (clienteDAO.actualizarPerfil(clienteActual.getId(), telefono, email, procedencia)) {
+            if (clienteDAO.actualizarPerfil(clienteActual.getId(), telefono, email, procedencia, localidad)) {
                 clienteActual.setTelefono(telefono);
                 clienteActual.setEmail(email);
                 clienteActual.setProcedencia(procedencia);
+                clienteActual.setLocalidad(ClienteDAO.normalizarLocalidad(localidad));
                 System.out.println("Perfil actualizado correctamente.");
             } else {
                 System.out.println("No se encontró el perfil para actualizar.");

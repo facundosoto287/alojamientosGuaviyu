@@ -56,6 +56,7 @@ public class AdminReservasServlet extends AdminServlet {
             request.setAttribute("alojamientos", alojamientoDAO.listarAlojamientos());
             request.setAttribute("clientes", clienteDAO.listarClientes());
             request.setAttribute("procedencias", LoginServlet.PROCEDENCIAS);
+            request.setAttribute("localidades", LoginServlet.sugerenciasDeLocalidad());
             request.setAttribute("senasPorCliente", senaDAO.vigentePorCliente()); // aviso "tiene seña a favor"
         } catch (SQLException e) {
             log("Error al listar reservas", e);
@@ -184,6 +185,7 @@ public class AdminReservasServlet extends AdminServlet {
         valores.put("telefono", texto(request, "nuevoTelefono"));
         valores.put("email", texto(request, "nuevoEmail"));
         valores.put("procedencia", texto(request, "nuevoProcedencia"));
+        valores.put("localidad", texto(request, "nuevoLocalidad"));
 
         Map<String, String> errores = ValidacionCliente.validarDatos(valores, clienteDAO);
         if (!errores.isEmpty()) {
@@ -194,7 +196,7 @@ public class AdminReservasServlet extends AdminServlet {
         try {
             Cliente cliente = clienteDAO.registrarClienteDesdeAdmin(
                     valores.get("nombre"), valores.get("documento"), valores.get("telefono"),
-                    valores.get("email"), valores.get("procedencia"));
+                    valores.get("email"), valores.get("procedencia"), valores.get("localidad"));
             return cliente.getId();
         } catch (IllegalArgumentException e) {
             avisoError(request, "Cliente nuevo: " + e.getMessage()); // correo o documento repetido

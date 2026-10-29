@@ -9,6 +9,9 @@ public class Cliente {
     private String email;
     private String procedencia;
 
+    // Ciudad o pueblo donde vive el cliente (la procedencia es el departamento, provincia o país)
+    private String localidad;
+
     // Guarda el HASH BCrypt de la contraseña (ej: "$2a$12$..."), nunca la contraseña en texto.
     // Al guardar el cliente en la sesión web se pone en null para no tenerlo en memoria sin necesidad.
     private String contrasena;
@@ -72,6 +75,14 @@ public class Cliente {
 
     public void setProcedencia(String procedencia) {
         this.procedencia = procedencia;
+    }
+
+    public String getLocalidad() {
+        return localidad;
+    }
+
+    public void setLocalidad(String localidad) {
+        this.localidad = localidad;
     }
 
     public String getContrasena() {

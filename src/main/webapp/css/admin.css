@@ -234,6 +234,33 @@ td.acciones > * { display: inline-block; vertical-align: middle; margin: 0 0 0 .
 .opciones input { width: auto; margin: 0; }
 .modal-pie { display: flex; justify-content: flex-end; gap: .7rem; margin-top: 1.4rem; }
 
+/* ===================== GRÁFICA DE LOCALIDADES ===================== */
+
+.grafica-loc-cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem 1.5rem; flex-wrap: wrap; }
+.grafica-loc-cabecera h2 { font-size: 1.2rem; }
+.grafica-loc-cabecera .muted { max-width: 520px; }
+.grafica-loc-filtros { display: flex; gap: .7rem; align-items: flex-end; flex-wrap: wrap; }
+.grafica-loc-filtros label { display: flex; flex-direction: column; gap: .25rem; font-weight: 700; font-size: .85rem; }
+.grafica-loc-filtros select { width: auto; min-width: 130px; }
+.grafica-loc-resumen { margin: 1rem 0 .7rem; color: var(--texto-suave); }
+.grafica-loc-resumen strong { color: var(--azul-900); }
+.grafica-loc-nota { margin: .9rem 0 0; font-size: .85rem; }
+
+.barras-loc { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+.barras-loc li { display: grid; grid-template-columns: minmax(110px, 210px) 1fr minmax(96px, auto); align-items: center; gap: .8rem; }
+.barras-loc-nombre { font-weight: 700; color: var(--azul-900); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barras-loc-pista { background: var(--azul-50); border: 1px solid var(--linea); border-radius: 999px; height: 22px; overflow: hidden; }
+.barras-loc-barra { display: block; height: 100%; min-width: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--azul-700), var(--azul-600)); transition: width .35s ease, filter .15s; }
+.barras-loc-barra.sin-dato { background: #b8c2d6; }
+.barras-loc li:hover .barras-loc-barra { filter: brightness(1.12); }
+.barras-loc-valor { text-align: right; color: var(--texto-suave); font-size: .92rem; white-space: nowrap; }
+.barras-loc-valor strong { color: var(--azul-900); }
+
+@media (max-width: 640px) {
+    .barras-loc li { grid-template-columns: 1fr auto; }
+    .barras-loc-pista { grid-column: 1 / -1; order: 3; }
+}
+
 /* ===================== VENTANA DE CONFIRMACIÓN ===================== */
 
 .modal-confirmar[open] { animation: aparecer-confirmar .16s ease-out; }

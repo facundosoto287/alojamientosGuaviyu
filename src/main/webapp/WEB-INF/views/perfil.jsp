@@ -230,6 +230,7 @@
                             <label for="procedencia">
                                 Procedencia
                             </label>
+                            <p class="ayuda-campo">Departamento, provincia o país donde vivís.</p>
 
                             <select id="procedencia"
                                     name="procedencia"
@@ -247,6 +248,33 @@
                                 </c:forEach>
 
                             </select>
+
+                        </div>
+
+                        <div class="perfil-campo perfil-campo-completo">
+
+                            <label for="localidad">
+                                Localidad
+                            </label>
+                            <p class="ayuda-campo">Ciudad o pueblo donde vivís (por ejemplo: Paysandú, Salto o Guichón).</p>
+                            <c:if test="${empty cliente.localidad}">
+                                <p class="ayuda-campo ayuda-falta">Todavía no cargaste tu localidad: completala, es un dato obligatorio.</p>
+                            </c:if>
+
+                            <input type="text"
+                                   id="localidad"
+                                   name="localidad"
+                                   list="lista-localidades"
+                                   maxlength="100"
+                                   placeholder="Tu ciudad o pueblo"
+                                   value="<c:out value='${cliente.localidad}'/>"
+                                   required>
+
+                            <datalist id="lista-localidades">
+                                <c:forEach var="sugerida" items="${localidades}">
+                                    <option value="<c:out value='${sugerida}'/>"></option>
+                                </c:forEach>
+                            </datalist>
 
                         </div>
                     </div>

@@ -12,7 +12,7 @@ public final class ValidacionCliente {
     }
 
     /**
-     * Valida nombre, documento (cédula), teléfono, correo y procedencia.
+     * Valida nombre, documento (cédula), teléfono, correo, procedencia y localidad.
      * Devuelve un mapa campo → mensaje; vacío si todo está bien.
      */
     public static Map<String, String> validarDatos(Map<String, String> v, ClienteDAO clienteDAO) {
@@ -49,8 +49,16 @@ public final class ValidacionCliente {
         }
 
         String procedencia = v.get("procedencia");
-        if (!procedencia.isEmpty() && !LoginServlet.PROCEDENCIAS.contains(procedencia)) {
+        if (procedencia.isEmpty()) {
+            errores.put("procedencia", "Elegí la procedencia (departamento, provincia o país donde vivís).");
+        } else if (!LoginServlet.PROCEDENCIAS.contains(procedencia)) {
             errores.put("procedencia", "Elegí una opción de la lista.");
+        }
+
+        // La localidad es la ciudad o el pueblo; se compara ya normalizada (sin espacios de más)
+        String errorLocalidad = ClienteDAO.errorDeLocalidad(ClienteDAO.normalizarLocalidad(v.getOrDefault("localidad", "")));
+        if (errorLocalidad != null) {
+            errores.put("localidad", errorLocalidad);
         }
 
         return errores;

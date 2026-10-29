@@ -9,8 +9,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -64,7 +69,7 @@ public class ClienteDAO {
 
     public Cliente buscarPorEmail(String email) throws SQLException {
         String sql = """
-            SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena
+            SELECT id, nombre, documento, telefono, email, procedencia, localidad, contrasena, debe_cambiar_contrasena
             FROM cliente
             WHERE email = ?
             """;
@@ -87,20 +92,22 @@ public class ClienteDAO {
      * Recibe la contraseña en texto (lo que escribió el usuario) y la hashea acá adentro.
      * Lanza IllegalArgumentException con un mensaje para mostrar si faltan datos o el email/documento ya existe.
      */
-    public Cliente registrarCliente(String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
-        return registrar(nombre, documento, telefono, email, procedencia, contrasena, false);
+    public Cliente registrarCliente(String nombre, String documento, String telefono, String email, String procedencia,
+                                    String localidad, String contrasena) {
+        return registrar(nombre, documento, telefono, email, procedencia, localidad, contrasena, false);
     }
 
     /**
      * Registro hecho por el administrador: la cuenta queda con la contraseña por defecto
      * y marcada para que el cliente la cambie en su primer ingreso.
      */
-    public Cliente registrarClienteDesdeAdmin(String nombre, String documento, String telefono, String email, String procedencia) {
-        return registrar(nombre, documento, telefono, email, procedencia, CONTRASENA_POR_DEFECTO, true);
+    public Cliente registrarClienteDesdeAdmin(String nombre, String documento, String telefono, String email,
+                                              String procedencia, String localidad) {
+        return registrar(nombre, documento, telefono, email, procedencia, localidad, CONTRASENA_POR_DEFECTO, true);
     }
 
     private Cliente registrar(String nombre, String documento, String telefono, String email, String procedencia,
-                              String contrasena, boolean debeCambiarContrasena) {
+                              String localidad, String contrasena, boolean debeCambiarContrasena) {
 
         if (esVacio(nombre) || esVacio(documento) || esVacio(email) || contrasena == null || contrasena.isEmpty()) {
             throw new IllegalArgumentException("Faltan datos obligatorios.");
@@ -111,6 +118,16 @@ public class ClienteDAO {
         email = normalizarEmail(email);
         telefono = esVacio(telefono) ? null : telefono.trim();
         procedencia = esVacio(procedencia) ? null : procedencia.trim();
+
+        // La procedencia (departamento, provincia o país) y la localidad (ciudad o pueblo) son obligatorias
+        if (procedencia == null) {
+            throw new IllegalArgumentException("Indicá la procedencia (departamento, provincia o país donde vivís).");
+        }
+        localidad = normalizarLocalidad(localidad);
+        String errorLocalidad = errorDeLocalidad(localidad);
+        if (errorLocalidad != null) {
+            throw new IllegalArgumentException(errorLocalidad);
+        }
 
         // Validar cédula y celular antes de tocar la base de datos
         if (!cedulaValida(documento)) {
@@ -145,7 +162,7 @@ public class ClienteDAO {
         }
 
         String hash = hashear(contrasena);
-        String sqlInsertar = "INSERT INTO cliente (nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena) VALUES (?,?,?,?,?,?,?)";
+        String sqlInsertar = "INSERT INTO cliente (nombre, documento, telefono, email, procedencia, localidad, contrasena, debe_cambiar_contrasena) VALUES (?,?,?,?,?,?,?,?)";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sqlInsertar, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -155,8 +172,9 @@ public class ClienteDAO {
             sentencia.setString(3, telefono);
             sentencia.setString(4, email);
             sentencia.setString(5, procedencia);
-            sentencia.setString(6, hash);
-            sentencia.setBoolean(7, debeCambiarContrasena);
+            sentencia.setString(6, localidad);
+            sentencia.setString(7, hash);
+            sentencia.setBoolean(8, debeCambiarContrasena);
 
             sentencia.executeUpdate();
 
@@ -168,6 +186,7 @@ public class ClienteDAO {
             }
 
             Cliente nuevo = new Cliente(id, nombre, documento, telefono, email, procedencia, hash);
+            nuevo.setLocalidad(localidad);
             nuevo.setDebeCambiarContrasena(debeCambiarContrasena);
             return nuevo;
 
@@ -220,7 +239,7 @@ public class ClienteDAO {
 
     public List<Cliente> listarClientes() throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena FROM cliente ORDER BY nombre";
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, localidad, contrasena, debe_cambiar_contrasena FROM cliente ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql);
@@ -266,18 +285,23 @@ public class ClienteDAO {
         System.out.println("Ingrese el email:");
         String email = sc.nextLine();
 
-        System.out.println("Ingrese la procedencia:");
+        System.out.println("Ingrese la procedencia (departamento, provincia o país):");
         String procedencia = sc.nextLine();
+
+        System.out.println("Ingrese la localidad (ciudad o pueblo donde vive):");
+        String localidad = sc.nextLine();
 
         System.out.println("Ingrese la contraseña:");
         String contrasena = sc.nextLine();
 
         // Acá va en texto: registrarCliente() la convierte en hash antes de guardarla
-        return new Cliente(0, nombre, documento, telefono, email, procedencia, contrasena);
+        Cliente cliente = new Cliente(0, nombre, documento, telefono, email, procedencia, contrasena);
+        cliente.setLocalidad(localidad);
+        return cliente;
     }
 
     public Cliente buscarPorId(int id) throws SQLException {
-        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena FROM cliente WHERE id = ?";
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, localidad, contrasena, debe_cambiar_contrasena FROM cliente WHERE id = ?";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -296,7 +320,7 @@ public class ClienteDAO {
 
     public List<Cliente> buscarPorNombreODocumento(String textoBusqueda) throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, contrasena, debe_cambiar_contrasena FROM cliente " +
+        String sql = "SELECT id, nombre, documento, telefono, email, procedencia, localidad, contrasena, debe_cambiar_contrasena FROM cliente " +
                 "WHERE nombre LIKE ? OR documento LIKE ? ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -348,17 +372,219 @@ public class ClienteDAO {
         }
     }
 
-    public boolean actualizarPerfil(int id, String telefono, String email, String procedencia)
+    public boolean actualizarPerfil(int id, String telefono, String email, String procedencia, String localidad)
             throws SQLException {
-        String sql = "UPDATE cliente SET telefono = ?, email = ?, procedencia = ? WHERE id = ?";
+        String sql = "UPDATE cliente SET telefono = ?, email = ?, procedencia = ?, localidad = ? WHERE id = ?";
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
             sentencia.setString(1, telefono);
             sentencia.setString(2, normalizarEmail(email));
             sentencia.setString(3, procedencia);
-            sentencia.setInt(4, id);
+            sentencia.setString(4, normalizarLocalidad(localidad));
+            sentencia.setInt(5, id);
             return sentencia.executeUpdate() == 1;
         }
+    }
+
+    // ===================== LOCALIDADES =====================
+
+    /** Nombre con el que la gráfica agrupa a los clientes que todavía no cargaron su localidad. */
+    public static final String SIN_LOCALIDAD = "Sin especificar";
+
+    /** Palabras que van en minúscula dentro del nombre de una localidad ("Colonia del Sacramento"). */
+    private static final Set<String> PALABRAS_MENORES = Set.of("de", "del", "la", "las", "los", "el", "y", "e");
+
+    /**
+     * Deja la localidad con un formato único, escriba como escriba el cliente:
+     * sin espacios de más y con mayúscula inicial en cada palabra ("  paysandú " → "Paysandú",
+     * "COLONIA DEL SACRAMENTO" → "Colonia del Sacramento"). Devuelve null si queda vacía.
+     */
+    public static String normalizarLocalidad(String texto) {
+        if (texto == null) {
+            return null;
+        }
+        String limpio = texto.trim().replaceAll("\\s+", " ");
+        if (limpio.isEmpty()) {
+            return null;
+        }
+
+        String[] palabras = limpio.split(" ");
+        StringBuilder resultado = new StringBuilder();
+        for (int i = 0; i < palabras.length; i++) {
+            String palabra = palabras[i].toLowerCase(Locale.forLanguageTag("es-UY"));
+            resultado.append(i > 0 && PALABRAS_MENORES.contains(palabra) ? palabra : conMayusculaInicial(palabra));
+            if (i < palabras.length - 1) {
+                resultado.append(' ');
+            }
+        }
+        return resultado.toString();
+    }
+
+    /** "villa-soriano" → "Villa-Soriano" */
+    private static String conMayusculaInicial(String palabra) {
+        StringBuilder resultado = new StringBuilder();
+        boolean inicio = true;
+        for (char letra : palabra.toCharArray()) {
+            if (inicio && Character.isLetter(letra)) {
+                resultado.append(Character.toUpperCase(letra));
+                inicio = false;
+            } else {
+                resultado.append(letra);
+            }
+            if (letra == '-') {
+                inicio = true;
+            }
+        }
+        return resultado.toString();
+    }
+
+    /**
+     * Mensaje de error si la localidad (ya normalizada) no sirve, o null si está bien.
+     * Es obligatoria, de 2 a 100 caracteres y sin números.
+     */
+    public static String errorDeLocalidad(String normalizada) {
+        if (normalizada == null) {
+            return "Ingresá tu localidad (la ciudad o el pueblo donde vivís).";
+        }
+        if (normalizada.length() < 2 || normalizada.length() > 100) {
+            return "La localidad debe tener entre 2 y 100 caracteres.";
+        }
+        if (!normalizada.matches("\\p{L}[\\p{L}\\p{M} .'\\-]*")) {
+            return "La localidad solo puede tener letras, espacios, puntos o guiones (sin números).";
+        }
+        return null;
+    }
+
+    /** Clave para comparar localidades: sin tildes ni mayúsculas ("Paysandú" y "paysandu" son la misma). */
+    private static String claveLocalidad(String texto) {
+        return Normalizer.normalize(texto, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT);
+    }
+
+    /** Localidades ya cargadas (para sugerirlas al escribir), las más usadas primero y sin repetir variantes. */
+    public List<String> listarLocalidades() throws SQLException {
+        String sql = """
+                SELECT localidad, COUNT(*) AS cantidad
+                FROM cliente
+                WHERE localidad IS NOT NULL AND TRIM(localidad) <> ''
+                GROUP BY localidad
+                ORDER BY cantidad DESC, localidad
+                """;
+
+        Map<String, String> porClave = new LinkedHashMap<>();
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql);
+             ResultSet filas = sentencia.executeQuery()) {
+
+            while (filas.next()) {
+                String localidad = normalizarLocalidad(filas.getString("localidad"));
+                if (localidad != null) {
+                    porClave.putIfAbsent(claveLocalidad(localidad), localidad);
+                }
+            }
+        }
+
+        return new ArrayList<>(porClave.values());
+    }
+
+    /**
+     * Cuántos clientes hay por localidad entre los que ya hicieron una estadía: tienen al menos una reserva
+     * CONFIRMADA cuya fecha de salida ya llegó. Cada cliente se cuenta una sola vez, sin importar cuántas
+     * estadías tuvo. El período se toma por la fecha de ingreso de la reserva: anio y mes son opcionales
+     * (null = todos). Los clientes sin localidad se agrupan como "Sin especificar", que va al final.
+     * Mayor a menor; las variantes de una misma localidad ("Paysandú" / "paysandu") se suman.
+     */
+    public Map<String, Integer> contarPorLocalidad(Integer anio, Integer mes) throws SQLException {
+        StringBuilder sql = new StringBuilder("""
+                SELECT DISTINCT c.id, c.localidad
+                FROM cliente c
+                JOIN cliente_reserva cr ON cr.idCliente = c.id
+                JOIN reserva r ON r.id = cr.idReserva
+                WHERE r.estado = 'CONFIRMADA' AND r.fechaSalida <= CURDATE()""");
+        List<Integer> filtros = new ArrayList<>();
+        if (anio != null) {
+            sql.append(" AND YEAR(r.fechaIngreso) = ?");
+            filtros.add(anio);
+        }
+        if (mes != null) {
+            sql.append(" AND MONTH(r.fechaIngreso) = ?");
+            filtros.add(mes);
+        }
+
+        // clave sin tildes → (cómo está escrita → cantidad de clientes que la escribieron así)
+        Map<String, Map<String, Integer>> variantes = new HashMap<>();
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < filtros.size(); i++) {
+                sentencia.setInt(i + 1, filtros.get(i));
+            }
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                while (filas.next()) {
+                    String localidad = normalizarLocalidad(filas.getString("localidad"));
+                    String texto = localidad == null ? SIN_LOCALIDAD : localidad;
+                    variantes.computeIfAbsent(claveLocalidad(texto), k -> new HashMap<>()).merge(texto, 1, Integer::sum);
+                }
+            }
+        }
+
+        // Una fila por localidad: se muestra la variante más usada (a igual cantidad, la que lleva tildes)
+        List<Map.Entry<String, Integer>> filas = new ArrayList<>();
+        for (Map<String, Integer> escritas : variantes.values()) {
+            String mostrar = escritas.entrySet().stream()
+                    .max((a, b) -> {
+                        int porCantidad = Integer.compare(a.getValue(), b.getValue());
+                        if (porCantidad != 0) {
+                            return porCantidad;
+                        }
+                        return Long.compare(tildes(a.getKey()), tildes(b.getKey()));
+                    })
+                    .get().getKey();
+            int clientes = escritas.values().stream().mapToInt(Integer::intValue).sum();
+            filas.add(Map.entry(mostrar, clientes));
+        }
+
+        filas.sort((a, b) -> {
+            boolean aSin = a.getKey().equals(SIN_LOCALIDAD);
+            boolean bSin = b.getKey().equals(SIN_LOCALIDAD);
+            if (aSin != bSin) {
+                return aSin ? 1 : -1; // "Sin especificar" siempre al final
+            }
+            int porCantidad = Integer.compare(b.getValue(), a.getValue());
+            return porCantidad != 0 ? porCantidad : a.getKey().compareToIgnoreCase(b.getKey());
+        });
+
+        Map<String, Integer> resultado = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> fila : filas) {
+            resultado.put(fila.getKey(), fila.getValue());
+        }
+        return resultado;
+    }
+
+    private static long tildes(String texto) {
+        return texto.chars().filter(letra -> letra > 127).count();
+    }
+
+    /** Años en los que hubo estadías terminadas (confirmadas con salida ya cumplida), del más reciente al más antiguo. */
+    public List<Integer> aniosConEstadias() throws SQLException {
+        String sql = """
+                SELECT DISTINCT YEAR(fechaIngreso) AS anio
+                FROM reserva
+                WHERE estado = 'CONFIRMADA' AND fechaSalida <= CURDATE()
+                ORDER BY anio DESC
+                """;
+
+        List<Integer> anios = new ArrayList<>();
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql);
+             ResultSet filas = sentencia.executeQuery()) {
+            while (filas.next()) {
+                anios.add(filas.getInt("anio"));
+            }
+        }
+        return anios;
     }
 
     // ===================== VALIDACIONES =====================
@@ -424,6 +650,7 @@ public class ClienteDAO {
                 fila.getString("procedencia"),
                 fila.getString("contrasena")
         );
+        cliente.setLocalidad(fila.getString("localidad"));
         cliente.setDebeCambiarContrasena(fila.getBoolean("debe_cambiar_contrasena"));
         return cliente;
     }
