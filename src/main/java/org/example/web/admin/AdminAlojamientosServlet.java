@@ -92,7 +92,11 @@ public class AdminAlojamientosServlet extends AdminServlet {
         String ubicacion = texto(request, "ubicacion");
         Integer capacidad = entero(request, "capacidad");
         Double precio = decimal(texto(request, "precio"));
+        Double precioHasta2 = texto(request, "precioHasta2").isEmpty() ? null : decimal(texto(request, "precioHasta2"));
+        Double precioHasta4 = texto(request, "precioHasta4").isEmpty() ? null : decimal(texto(request, "precioHasta4"));
+        Double precioHasta6 = texto(request, "precioHasta6").isEmpty() ? null : decimal(texto(request, "precioHasta6"));
         Double distancia = texto(request, "distanciaApiscina").isEmpty() ? Double.valueOf(0) : decimal(texto(request, "distanciaApiscina"));
+
         boolean permiteMascotas = request.getParameter("permiteMascotas") != null;
 
         String error = null;
@@ -115,9 +119,18 @@ public class AdminAlojamientosServlet extends AdminServlet {
             return;
         }
 
-        Alojamiento alojamiento = new Alojamiento(editando ? id : 0, nombre, descripcion, capacidad, precio,
-                ubicacion, distancia.floatValue());
+        Alojamiento alojamiento = new Alojamiento(editando ? id : 0, nombre, descripcion, capacidad, precio, ubicacion, distancia.floatValue());
         alojamiento.setPermiteMascotas(permiteMascotas);
+
+        if (nombre.equalsIgnoreCase("Pampita")) {
+            alojamiento.setPrecioHasta2(precioHasta2);
+            alojamiento.setPrecioHasta4(precioHasta4);
+            alojamiento.setPrecioHasta6(precioHasta6);
+        } else {
+            alojamiento.setPrecioHasta2(null);
+            alojamiento.setPrecioHasta4(null);
+            alojamiento.setPrecioHasta6(null);
+        }
 
         if (editando) {
             if (alojamientoDAO.modificarAlojamiento(alojamiento)) {

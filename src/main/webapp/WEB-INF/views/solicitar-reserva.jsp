@@ -275,7 +275,7 @@
                             </label>
 
                             <input type="text"
-                                   value="${fechaIngreso}"
+                                   value="${fechaIngreso.dayOfMonth < 10 ? '0' : ''}${fechaIngreso.dayOfMonth}/${fechaIngreso.monthValue < 10 ? '0' : ''}${fechaIngreso.monthValue}/${fechaIngreso.year}"
                                    readonly>
 
                         </div>
@@ -288,7 +288,7 @@
                             </label>
 
                             <input type="text"
-                                   value="${fechaSalida}"
+                                   value="${fechaSalida.dayOfMonth < 10 ? '0' : ''}${fechaSalida.dayOfMonth}/${fechaSalida.monthValue < 10 ? '0' : ''}${fechaSalida.monthValue}/${fechaSalida.year}"
                                    readonly>
 
                         </div>
@@ -532,7 +532,7 @@
                     </span>
 
                     <strong>
-                        <c:out value="${fechaIngreso}"/>
+                        <c:out value="${fechaIngreso.dayOfMonth < 10 ? '0' : ''}${fechaIngreso.dayOfMonth}/${fechaIngreso.monthValue < 10 ? '0' : ''}${fechaIngreso.monthValue}/${fechaIngreso.year}"/>
                     </strong>
 
                     <small class="resumen-horario">
@@ -548,7 +548,7 @@
                     </span>
 
                     <strong>
-                        <c:out value="${fechaSalida}"/>
+                        <c:out value="${fechaSalida.dayOfMonth < 10 ? '0' : ''}${fechaSalida.dayOfMonth}/${fechaSalida.monthValue < 10 ? '0' : ''}${fechaSalida.monthValue}/${fechaSalida.year}"/>
                     </strong>
 
                     <small class="resumen-horario">

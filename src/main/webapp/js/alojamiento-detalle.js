@@ -219,13 +219,9 @@ function convertirFecha(fecha) {
 
     const anio = fecha.getFullYear();
 
-    const mes = String(
-        fecha.getMonth() + 1
-    ).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
 
-    const dia = String(
-        fecha.getDate()
-    ).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
 
     return `${anio}-${mes}-${dia}`;
 }
@@ -247,7 +243,6 @@ botonSolicitar.addEventListener("click", () => {
     const cantidadHuespedes = document.getElementById("cantidadHuespedes").value;
 
     const alojamientoId = document.getElementById("alojamientoId").value;
-
     window.location.href =
         `${contextPath}/solicitar-reserva` +
         `?alojamientoId=${alojamientoId}` +
@@ -261,4 +256,52 @@ function formatearFechaVisible(fecha) {
     const mes = String(fecha.getMonth() + 1).padStart(2, "0");
     const anio = fecha.getFullYear();
     return `${dia}/${mes}/${anio}`;
+}
+
+const inputHuespedes = document.getElementById("cantidadHuespedes");
+const precioReserva = document.getElementById("precioReserva");
+
+if (inputHuespedes && precioReserva) {
+    const convertirPrecio = function (valor) {
+        if (valor === undefined || valor === null || valor.trim() === "") {
+            return null;
+        }
+        const numero = parseFloat(valor.replace(",", "."));
+
+        return Number.isNaN(numero) ? null : numero;
+    };
+
+    const precioNormal = convertirPrecio(precioReserva.dataset.precioNormal);
+
+    const precio2 = convertirPrecio(precioReserva.dataset.precio2);
+
+    const precio4 = convertirPrecio(precioReserva.dataset.precio4);
+
+    const precio6 = convertirPrecio(precioReserva.dataset.precio6);
+
+    const tienePreciosEspeciales = precio2 !== null && precio4 !== null && precio6 !== null;
+
+    function actualizarPrecio() {
+
+        const huespedes = parseInt(inputHuespedes.value, 10) || 1;
+
+        let precio = precioNormal;
+
+        if (tienePreciosEspeciales) {
+            if (huespedes <= 2) {
+                precio = precio2;
+            } else if (huespedes <= 4) {
+                precio = precio4;
+            } else {
+                precio = precio6;
+            }
+        }
+        // Si no llego el precio, no reemplaza el precio que ya imprimio el JSP
+        if (precio === null) {
+            return;
+        }
+        precioReserva.textContent = "$" + precio.toLocaleString("es-UY") + " UY";
+    }
+    inputHuespedes.addEventListener("input", actualizarPrecio);
+    actualizarPrecio();
 }
