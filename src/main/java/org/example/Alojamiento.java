@@ -17,6 +17,9 @@ public class Alojamiento {
     // Coordenadas para el mapa (null si todavía no se cargaron)
     private Double latitud;
     private Double longitud;
+    private Double precioHasta2;
+    private Double precioHasta4;
+    private Double precioHasta6;
 
     // Fotos en Cloudinary: identificadores (public_id) separados por "|". La primera es la portada.
     private String imagenes;
@@ -107,6 +110,18 @@ public class Alojamiento {
 
     public void setPermiteMascotas(boolean permiteMascotas) {this.permiteMascotas = permiteMascotas;}
 
+    public Double getPrecioHasta2() { return precioHasta2;}
+
+    public void setPrecioHasta2(Double precioHasta2) { this.precioHasta2 = precioHasta2;}
+
+    public Double getPrecioHasta4() { return precioHasta4;}
+
+    public void setPrecioHasta4(Double precioHasta4) { this.precioHasta4 = precioHasta4;}
+
+    public Double getPrecioHasta6() { return precioHasta6;}
+
+    public void setPrecioHasta6(Double precioHasta6) { this.precioHasta6 = precioHasta6;}
+
     /** Texto tal como se guarda en la columna "imagenes" (null si no hay fotos). */
     public String getImagenes() {
         return imagenes;
@@ -155,5 +170,18 @@ public class Alojamiento {
         return "Alojamiento{id=" + id + ", nombre='" + nombre + "', descripcion='" + descripcion +
                 "', capacidad=" + capacidad + ", precio=" + precio + ", ubicacion='" + ubicacion +
                 "', distanciaApiscina=" + distanciaApiscina + "}";
+    }
+
+    public double getPrecioParaHuespedes(int huespedes) {
+        if (precioHasta2 == null || precioHasta4 == null || precioHasta6 == null) {
+            return precio;
+        }
+        if (huespedes <= 2) {
+            return precioHasta2;
+        }
+        if (huespedes <= 4) {
+            return precioHasta4;
+        }
+        return precioHasta6;
     }
 }

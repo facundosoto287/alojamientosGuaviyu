@@ -17,7 +17,24 @@
                     }
                 });
             });
+            // En la edición de Pampita muestra los precios según cantidad de huéspedes.
+            if (boton.dataset.modalAbrir === 'm-editar') {
+                var preciosPampita = ventana.querySelector('#preciosPampita');
+                var nombre = boton.getAttribute('data-f-nombre') || '';
 
+                if (preciosPampita) {
+                    var esPampita = nombre.trim().toLowerCase() === 'pampita';
+
+                    preciosPampita.hidden = !esPampita;
+
+                    Array.prototype.forEach.call(
+                        preciosPampita.querySelectorAll('input'),
+                        function (input) {
+                            input.required = esPampita;
+                        }
+                    );
+                }
+            }
             ventana.showModal();
             var primero = ventana.querySelector('input:not([type=hidden]), textarea, select');
             if (primero) primero.focus();

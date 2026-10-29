@@ -59,6 +59,9 @@
                                         data-f-descripcion="<c:out value='${a.descripcion}'/>"
                                         data-f-capacidad="${a.capacidad}"
                                         data-f-precio="${a.precio}"
+                                        data-f-preciohasta2="${a.precioHasta2}"
+                                        data-f-preciohasta4="${a.precioHasta4}"
+                                        data-f-preciohasta6="${a.precioHasta6}"
                                         data-f-ubicacion="<c:out value='${a.ubicacion}'/>"
                                         data-f-distanciaApiscina="${a.distanciaApiscina}"
                                         data-f-permiteMascotas="${a.permiteMascotas}">Editar</button>
@@ -94,6 +97,7 @@
                 <input type="number" name="capacidad" min="1" max="100" required></label>
             <label class="campo">Precio por noche ($)
                 <input type="number" name="precio" min="0" step="0.01" required></label>
+
             <label class="campo">Ubicación
                 <input type="text" name="ubicacion" maxlength="150" required></label>
             <label class="campo">Distancia a la piscina (m)
@@ -133,6 +137,35 @@
                 <input type="number" name="capacidad" min="1" max="100" required></label>
             <label class="campo">Precio por noche ($)
                 <input type="number" name="precio" min="0" step="0.01" required></label>
+            <div class="campo ancho precios-pampita" id="preciosPampita" hidden>
+
+                <strong>Precios según cantidad de huéspedes</strong>
+                <div class="campos">
+                    <label class="campo">
+                        Hasta 2 personas ($)
+                        <input type="number"
+                               name="precioHasta2"
+                               min="0"
+                               step="0.01">
+                    </label>
+
+                    <label class="campo">
+                        Hasta 4 personas ($)
+                        <input type="number"
+                               name="precioHasta4"
+                               min="0"
+                               step="0.01">
+                    </label>
+                    <label class="campo">
+                        Hasta 6 personas ($)
+                        <input type="number"
+                               name="precioHasta6"
+                               min="0"
+                               step="0.01">
+                    </label>
+                </div>
+            </div>
+
             <label class="campo">Ubicación
                 <input type="text" name="ubicacion" maxlength="150" required></label>
             <label class="campo">Distancia a la piscina (m)
@@ -220,5 +253,6 @@
         </div>
     </dialog>
 </c:forEach>
+
 
 <%@ include file="layout-bottom.jspf" %>

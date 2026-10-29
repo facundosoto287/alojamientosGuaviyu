@@ -150,7 +150,7 @@ public class SolicitarReservaServlet extends HttpServlet {
 
             /*Calcular precio.*/
 
-            double precioPorNoche = alojamiento.getPrecio();
+            double precioPorNoche = alojamiento.getPrecioParaHuespedes(cantidadHuespedes);
 
             double precioTotal = precioPorNoche * cantidadNoches;
 
@@ -337,7 +337,7 @@ public class SolicitarReservaServlet extends HttpServlet {
 
             long cantidadNoches = ChronoUnit.DAYS.between(fechaIngreso, fechaSalida);
 
-            double precioPorNoche = alojamiento.getPrecio();
+            double precioPorNoche = alojamiento.getPrecioParaHuespedes(cantidadHuespedes);
 
             double precioTotal = precioPorNoche * cantidadNoches;
 

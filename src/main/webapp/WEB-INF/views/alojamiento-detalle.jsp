@@ -648,17 +648,27 @@
 
             <!-- Precio -->
             <div class="reserva-precio">
-
-                <strong>
+                <strong id="precioReserva"
+                        data-precio-normal="${alojamiento.precio}"
+                        data-precio-2="${alojamiento.precioHasta2}"
+                        data-precio-4="${alojamiento.precioHasta4}"
+                        data-precio-6="${alojamiento.precioHasta6}">
                     $<fmt:formatNumber
                         value="${alojamiento.precio}"
                         pattern="#,##0"/> UY
                 </strong>
-
                 <span>por noche</span>
-
             </div>
 
+            <p class="precio-aclaracion">
+                Los precios son estándar y pueden variar dependiendo de la temporada
+            </p>
+
+            <c:if test="${alojamiento.nombre eq 'Pampita'}">
+                <p class="precio-aclaracion">
+                    En Pampita, el precio por noche también varía según la cantidad de huéspedes
+                </p>
+            </c:if>
 
             <!-- Disponibilidad -->
             <div class="disponibilidad" id="bloqueDisponibilidad">
