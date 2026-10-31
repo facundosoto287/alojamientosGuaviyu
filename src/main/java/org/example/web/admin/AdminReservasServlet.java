@@ -14,6 +14,9 @@ import org.example.ReservaDetalle;
 import org.example.SenaDAO;
 import org.example.web.LoginServlet;
 import org.example.web.ValidacionCliente;
+import org.example.CorreoServicio;
+import java.time.format.DateTimeFormatter;
+import org.example.CorreoPlantillas;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -240,18 +243,75 @@ public class AdminReservasServlet extends AdminServlet {
         }
     }
 
-    private void confirmar(HttpServletRequest request) {
+    private void confirmar(HttpServletRequest request) throws SQLException {
+
         Integer id = entero(request, "id");
+
         if (id == null) {
             avisoError(request, "La reserva no existe.");
             return;
         }
 
         switch (reservaDao.confirmarReservaConResultado(id)) {
-            case CONFIRMADA -> avisoOk(request, "Reserva #" + id + " confirmada. Las fechas quedaron ocupadas.");
+
+            case CONFIRMADA -> {
+
+                // La reserva ya quedó confirmada.
+                avisoOk(request, "Reserva #" + id + " confirmada. Las fechas quedaron ocupadas.");
+
+                try {
+
+                    // Buscar los datos completos de la reserva confirmada.
+                    ReservaDetalle detalle = reservaDao.listarDetalle(
+                                    null,
+                                    null,
+                                    null,
+                                    null
+                            )
+                            .stream()
+                            .filter(r -> r.getId() == id)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (detalle == null || detalle.getClienteId() == null) {
+                        log("La reserva #" + id + " se confirmó, pero no se encontró el cliente.");
+                        return;
+                    }
+
+                    Cliente cliente = clienteDAO.buscarPorId(detalle.getClienteId());
+
+                    if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+
+                        log("La reserva #" + id + " se confirmó, pero el cliente no tiene correo.");
+                        return;
+                    }
+
+                    DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                    String fechaIngreso = detalle.getFechaIngreso().toLocalDate().format(formatoFecha);
+
+                    String fechaSalida = detalle.getFechaSalida().toLocalDate().format(formatoFecha);
+
+                    String contenido = CorreoPlantillas.reservaConfirmada(cliente, detalle);
+
+                    CorreoServicio correoServicio = new CorreoServicio();
+
+                    correoServicio.enviar(cliente.getEmail(), "Reserva confirmada - Alojamientos Guaviyú", contenido);
+
+                    log("Correo de confirmación enviado a " + cliente.getEmail() + " para la reserva #" + id);
+
+                } catch (Exception e) {
+
+                    // La reserva sigue confirmada aunque falle el correo.
+                    log("La reserva #" + id + " se confirmó, pero no se pudo enviar el correo.", e);
+                    e.printStackTrace();
+                }
+            }
+
             case NO_PENDIENTE -> avisoError(request, "La reserva #" + id + " ya no está pendiente.");
-            case FECHAS_OCUPADAS -> avisoError(request, "No se puede confirmar la reserva #" + id
-                    + ": las fechas se superponen con otra reserva confirmada.");
+
+            case FECHAS_OCUPADAS -> avisoError(request, "No se puede confirmar la reserva #" + id + ": las fechas se superponen con otra reserva confirmada.");
+
             default -> avisoError(request, "No se pudo confirmar la reserva #" + id + ".");
         }
     }
@@ -268,6 +328,8 @@ public class AdminReservasServlet extends AdminServlet {
             }
             try {
                 senaDAO.cancelarGuardandoSena(id, importe);
+
+                enviarCorreoReservaCancelada(id);
                 avisoOk(request, "Reserva #" + id + " cancelada. La seña quedó a favor del cliente por 6 meses (ver Señas).");
             } catch (IllegalArgumentException e) {
                 avisoError(request, e.getMessage());
@@ -276,9 +338,8 @@ public class AdminReservasServlet extends AdminServlet {
         }
 
         if (id != null && reservaDao.cancelarReserva(id)) {
+            enviarCorreoReservaCancelada(id);
             avisoOk(request, "Reserva #" + id + " cancelada. Si estaba confirmada, las fechas quedaron libres.");
-        } else {
-            avisoError(request, "No se pudo cancelar la reserva (¿ya estaba cancelada?).");
         }
     }
 
@@ -290,6 +351,47 @@ public class AdminReservasServlet extends AdminServlet {
         agregar(consulta, "alojamiento", texto(request, "fAlojamiento"));
         return consulta.toString();
     }
+
+
+    private void enviarCorreoReservaCancelada(int idReserva) {
+        try {
+            ReservaDetalle detalle = reservaDao.listarDetalle(
+                                    null,
+                                    null,
+                                    null,
+                                    null
+                            )
+                            .stream()
+                            .filter(r -> r.getId() == idReserva)
+                            .findFirst()
+                            .orElse(null);
+
+            if (detalle == null || detalle.getClienteId() == null) {
+                log("No se pudo enviar el correo de cancelación " + "de la reserva #" + idReserva + ": no se encontró el cliente.");
+                return;
+            }
+
+            Cliente cliente = clienteDAO.buscarPorId(detalle.getClienteId());
+
+            if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+
+                log("No se pudo enviar el correo de cancelación " + "de la reserva #" + idReserva + ": el cliente no tiene correo.");
+
+                return;
+            }
+
+            String contenido = CorreoPlantillas.reservaCancelada(cliente, detalle);
+
+            CorreoServicio correoServicio = new CorreoServicio();
+
+            correoServicio.enviar(cliente.getEmail(), "Reserva cancelada - Alojamientos Guaviyú", contenido);
+            log("Correo de cancelación enviado a " + cliente.getEmail() + " para la reserva #" + idReserva);
+
+        } catch (Exception e) {
+            log("La reserva #" + idReserva + " fue cancelada, pero no se pudo enviar el correo.", e);
+        }
+    }
+
 
     private static void agregar(StringBuilder consulta, String nombre, String valor) {
         if (!valor.isEmpty()) {

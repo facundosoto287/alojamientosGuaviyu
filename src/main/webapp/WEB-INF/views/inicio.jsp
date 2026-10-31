@@ -526,11 +526,24 @@
                    ¿Cómo hago una reserva?
                </summary>
                <p>
-                   Elegí el alojamiento que más te guste, consultá su disponibilidad
-                   y completá la solicitud de reserva.
+                   Debes iniciar sesión o registrate para poder reservar. Después, elegí el alojamiento que más te guste,
+                   consultá su disponibilidad y completá la solicitud de reserva.
                </p>
 
            </details>
+
+
+            <details class="faq-item">
+
+                <summary>
+                   ¿Dónde puedo ver mis reservas?
+                </summary>
+                <p>
+                   Una vez iniciada la sesión, podés consultar tus solicitudes y reservas
+                   desde la sección [Mis reservas] de tu cuenta.
+                </p>
+            </details>
+
 
 
            <details class="faq-item">
