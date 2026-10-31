@@ -21,6 +21,8 @@ import org.example.Reserva;
 import org.example.ReservaDao;
 import org.example.EstadoReserva;
 import java.time.format.DateTimeFormatter;
+import org.example.CorreoPlantillas;
+import org.example.CorreoServicio;
 
 import java.sql.Date;
 
@@ -330,6 +332,16 @@ public class SolicitarReservaServlet extends HttpServlet {
             if (idReserva == -1) {
                 response.sendRedirect(request.getContextPath() + "/alojamiento-detalle?id=" + alojamientoId);
                 return;
+            }
+
+            try {
+                String contenido = CorreoPlantillas.solicitudRecibida(cliente, alojamiento, idReserva, fechaIngreso, fechaSalida, cantidadHuespedes);
+
+                CorreoServicio correoServicio = new CorreoServicio();
+
+                correoServicio.enviar(cliente.getEmail(), "Solicitud de reserva recibida - Alojamientos Guaviyú", contenido);
+            } catch (Exception e) {
+                getServletContext().log("La solicitud #" + idReserva + " se creó, pero no se pudo enviar el correo.", e);
             }
 
 
