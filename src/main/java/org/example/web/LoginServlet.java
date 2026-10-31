@@ -118,9 +118,19 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("pestana", pestana);
         request.setAttribute("procedencias", PROCEDENCIAS);
+        request.setAttribute("localidades", sugerenciasDeLocalidad());
         request.setAttribute("paginaActiva", "login");
         request.setAttribute("destino", destinoSeguro(request.getParameter("destino")));
         request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
+    }
+
+    /** Localidades ya cargadas, para sugerirlas en el campo "Localidad". Si falla la base, simplemente no hay sugerencias. */
+    public static List<String> sugerenciasDeLocalidad() {
+        try {
+            return new ClienteDAO().listarLocalidades();
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
     /** Solo acepta rutas internas ("/mis-reservas"), nunca otro sitio ("https://..." o "//sitio.com"). */

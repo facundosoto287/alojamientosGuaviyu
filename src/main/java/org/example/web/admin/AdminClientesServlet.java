@@ -52,6 +52,7 @@ public class AdminClientesServlet extends AdminServlet {
 
         request.setAttribute("q", q);
         request.setAttribute("procedencias", LoginServlet.PROCEDENCIAS);
+        request.setAttribute("localidades", LoginServlet.sugerenciasDeLocalidad());
         mostrar(request, response, "clientes", "clientes", "Clientes");
     }
 
@@ -82,6 +83,7 @@ public class AdminClientesServlet extends AdminServlet {
         valores.put("telefono", texto(request, "telefono"));
         valores.put("email", texto(request, "email"));
         valores.put("procedencia", texto(request, "procedencia"));
+        valores.put("localidad", texto(request, "localidad"));
 
         Map<String, String> errores = ValidacionCliente.validarDatos(valores, clienteDAO);
         if (!errores.isEmpty()) {
@@ -92,7 +94,7 @@ public class AdminClientesServlet extends AdminServlet {
         try {
             clienteDAO.registrarClienteDesdeAdmin(
                     valores.get("nombre"), valores.get("documento"), valores.get("telefono"),
-                    valores.get("email"), valores.get("procedencia"));
+                    valores.get("email"), valores.get("procedencia"), valores.get("localidad"));
             avisoOk(request, "Cliente registrado con la contraseña por defecto. Deberá cambiarla en su primer ingreso.");
         } catch (IllegalArgumentException e) {
             avisoError(request, e.getMessage()); // correo o documento repetido

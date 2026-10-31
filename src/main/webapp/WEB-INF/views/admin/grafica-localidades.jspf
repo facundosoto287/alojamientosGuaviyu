@@ -1,0 +1,59 @@
+<%-- ============ Gráfica: de dónde son los clientes (por localidad) ============ --%>
+<%-- Se incluye debajo de la planilla (vista "Todas las casas"). Los datos los arma AdminDisponibilidadServlet. --%>
+<section class="tarjeta grafica-loc" id="grafica-localidades" aria-labelledby="titulo-grafica-loc">
+
+    <div class="grafica-loc-cabecera">
+        <div>
+            <h2 id="titulo-grafica-loc">De dónde son nuestros clientes</h2>
+            <p class="muted">Clientes que ya hicieron una estadía, agrupados por la localidad donde viven.
+                Cada cliente se cuenta una sola vez y el período se toma según la fecha de ingreso.</p>
+        </div>
+
+        <form action="${base}/disponibilidad#grafica-localidades" method="get" class="grafica-loc-filtros">
+            <input type="hidden" name="mes" value="${mesValor}">
+            <label>Año
+                <select name="locAnio">
+                    <option value="">Todos</option>
+                    <c:forEach var="anio" items="${locAnios}">
+                        <option value="${anio}" ${locAnioSel == anio ? 'selected' : ''}>${anio}</option>
+                    </c:forEach>
+                </select>
+            </label>
+            <label>Mes
+                <select name="locMes">
+                    <option value="">Todos</option>
+                    <c:forEach var="nombreMes" items="${locMeses}" varStatus="posicion">
+                        <option value="${posicion.count}" ${locMesSel == posicion.count ? 'selected' : ''}><c:out value="${nombreMes}"/></option>
+                    </c:forEach>
+                </select>
+            </label>
+            <button type="submit" class="btn btn-secundario">Ver</button>
+        </form>
+    </div>
+
+    <p class="grafica-loc-resumen">
+        <strong><c:out value="${locPeriodo}"/></strong> · ${locTotal} ${locTotal == 1 ? 'cliente' : 'clientes'}
+    </p>
+
+    <c:choose>
+        <c:when test="${empty locBarras}">
+            <p class="vacio">Todavía no hay clientes con estadías terminadas en este período.</p>
+        </c:when>
+        <c:otherwise>
+            <ol class="barras-loc">
+                <c:forEach var="fila" items="${locBarras}">
+                    <li title="<c:out value='${fila.nombre}'/>: ${fila.cantidad} ${fila.cantidad == 1 ? 'cliente' : 'clientes'} (${fila.porcentajeTexto}%)">
+                        <span class="barras-loc-nombre"><c:out value="${fila.nombre}"/></span>
+                        <span class="barras-loc-pista" aria-hidden="true">
+                            <span class="barras-loc-barra ${fila.sinDato ? 'sin-dato' : ''}" style="width:${fila.ancho}%"></span>
+                        </span>
+                        <span class="barras-loc-valor"><strong>${fila.cantidad}</strong> · ${fila.porcentajeTexto}%</span>
+                    </li>
+                </c:forEach>
+            </ol>
+            <c:if test="${locBarras[locBarras.size() - 1].sinDato}">
+                <p class="muted grafica-loc-nota">"Sin especificar" son clientes que todavía no cargaron su localidad (se completa desde su perfil).</p>
+            </c:if>
+        </c:otherwise>
+    </c:choose>
+</section>

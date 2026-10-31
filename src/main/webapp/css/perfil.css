@@ -497,3 +497,7 @@
         gap: .2rem;
     }
 }
+
+/* Aclaración debajo de la etiqueta de un campo (por ejemplo "Procedencia" y "Localidad") */
+.ayuda-campo { margin: -.2rem 0 .45rem; font-size: .82rem; line-height: 1.35; color: #5b6880; font-weight: 400; }
+.ayuda-falta { color: #a85f00; font-weight: 700; }

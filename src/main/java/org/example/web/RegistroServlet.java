@@ -51,6 +51,7 @@ public class RegistroServlet extends HttpServlet {
         valores.put("telefono", limpiar(request.getParameter("telefono")));
         valores.put("email", limpiar(request.getParameter("email")));
         valores.put("procedencia", limpiar(request.getParameter("procedencia")));
+        valores.put("localidad", limpiar(request.getParameter("localidad")));
 
         String contrasena = request.getParameter("contrasena");
         String confirmacion = request.getParameter("confirmacion");
@@ -65,6 +66,7 @@ public class RegistroServlet extends HttpServlet {
                         valores.get("telefono"),
                         valores.get("email"),
                         valores.get("procedencia"),
+                        valores.get("localidad"),
                         contrasena
                 );
 

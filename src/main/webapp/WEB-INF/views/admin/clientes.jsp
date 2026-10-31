@@ -73,7 +73,7 @@
                     <thead>
                     <tr>
                         <th>ID</th><th>Nombre</th><th>Documento</th><th>Teléfono</th>
-                        <th>Correo</th><th>Procedencia</th><th class="acciones-col">Acciones</th>
+                        <th>Correo</th><th>Procedencia</th><th>Localidad</th><th class="acciones-col">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -88,6 +88,7 @@
                             <td><c:out value="${empty cl.telefono ? '—' : cl.telefono}"/></td>
                             <td><c:out value="${cl.email}"/></td>
                             <td><c:out value="${empty cl.procedencia ? '—' : cl.procedencia}"/></td>
+                            <td><c:out value="${empty cl.localidad ? '—' : cl.localidad}"/></td>
                             <td class="acciones">
                                 <a href="${base}/clientes?historial=${cl.id}" class="btn btn-editar">Historial</a>
                                 <form action="${base}/clientes" method="post"
@@ -124,12 +125,19 @@
             <label class="campo ancho">Correo electrónico
                 <input type="email" name="email" maxlength="100" required></label>
             <label class="campo ancho">Procedencia
-                <select name="procedencia">
-                    <option value="">Sin especificar</option>
+                <small>Departamento, provincia o país donde vive.</small>
+                <select name="procedencia" required>
+                    <option value="">Elegí una opción…</option>
                     <c:forEach var="p" items="${procedencias}">
                         <option value="${fn:escapeXml(p)}"><c:out value="${p}"/></option>
                     </c:forEach>
                 </select></label>
+            <label class="campo ancho">Localidad
+                <small>Ciudad o pueblo donde vive (por ejemplo: Paysandú, Salto o Guichón).</small>
+                <input type="text" name="localidad" list="lista-localidades" maxlength="100" placeholder="Ciudad o pueblo" required></label>
+            <datalist id="lista-localidades">
+                <c:forEach var="sugerida" items="${localidades}"><option value="${fn:escapeXml(sugerida)}"></option></c:forEach>
+            </datalist>
         </div>
         <div class="modal-pie">
             <button type="button" class="btn btn-secundario" data-modal-cerrar>Cancelar</button>

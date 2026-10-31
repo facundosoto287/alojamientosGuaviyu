@@ -136,9 +136,10 @@
                     <c:if test="${not empty registroErrores.email}"><p class="error-campo"><c:out value="${registroErrores.email}"/></p></c:if>
 
                     <label for="reg-procedencia">Procedencia</label>
+                    <p class="ayuda-campo">Departamento, provincia o país donde vivís.</p>
                     <div class="input-icon ${not empty registroErrores.procedencia ? 'con-error' : ''}">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-                        <select id="reg-procedencia" name="procedencia">
+                        <select id="reg-procedencia" name="procedencia" required>
                             <option value="">Seleccioná tu procedencia</option>
                             <c:forEach var="opcion" items="${procedencias}">
                                 <option value="${fn:escapeXml(opcion)}" ${registro.procedencia == opcion ? 'selected' : ''}><c:out value="${opcion}"/></option>
@@ -146,6 +147,18 @@
                         </select>
                     </div>
                     <c:if test="${not empty registroErrores.procedencia}"><p class="error-campo"><c:out value="${registroErrores.procedencia}"/></p></c:if>
+
+                    <label for="reg-localidad">Localidad</label>
+                    <p class="ayuda-campo">Ciudad o pueblo donde vivís (por ejemplo: Paysandú, Salto o Guichón).</p>
+                    <div class="input-icon ${not empty registroErrores.localidad ? 'con-error' : ''}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10"/></svg>
+                        <input type="text" id="reg-localidad" name="localidad" list="lista-localidades" placeholder="Tu ciudad o pueblo"
+                               autocomplete="address-level2" maxlength="100" required value="${fn:escapeXml(registro.localidad)}">
+                    </div>
+                    <datalist id="lista-localidades">
+                        <c:forEach var="sugerida" items="${localidades}"><option value="${fn:escapeXml(sugerida)}"></option></c:forEach>
+                    </datalist>
+                    <c:if test="${not empty registroErrores.localidad}"><p class="error-campo"><c:out value="${registroErrores.localidad}"/></p></c:if>
 
                     <label for="reg-pass">Contraseña</label>
                     <div class="input-icon ${not empty registroErrores.contrasena ? 'con-error' : ''}">

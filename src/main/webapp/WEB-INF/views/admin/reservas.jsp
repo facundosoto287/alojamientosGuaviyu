@@ -159,12 +159,19 @@
                     <label class="campo">Correo electrónico
                         <input type="email" name="nuevoEmail" maxlength="100" data-requerido></label>
                     <label class="campo">Procedencia
-                        <select name="nuevoProcedencia">
-                            <option value="">Sin especificar</option>
+                        <small>Departamento, provincia o país</small>
+                        <select name="nuevoProcedencia" data-requerido>
+                            <option value="">Elegí una opción…</option>
                             <c:forEach var="p" items="${procedencias}">
                                 <option value="<c:out value='${p}'/>"><c:out value="${p}"/></option>
                             </c:forEach>
                         </select></label>
+                    <label class="campo">Localidad
+                        <small>Ciudad o pueblo donde vive</small>
+                        <input type="text" name="nuevoLocalidad" list="lista-localidades" maxlength="100" placeholder="Ciudad o pueblo" data-requerido></label>
+                    <datalist id="lista-localidades">
+                        <c:forEach var="sugerida" items="${localidades}"><option value="<c:out value='${sugerida}'/>"></option></c:forEach>
+                    </datalist>
                 </div>
                 <small>Se registra junto con la reserva, con la contraseña por defecto (la cambia en su primer ingreso).</small>
             </fieldset>
