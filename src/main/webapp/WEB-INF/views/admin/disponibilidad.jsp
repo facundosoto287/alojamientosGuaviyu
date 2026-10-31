@@ -36,12 +36,12 @@
 .planilla-mes { font-size: 1.3rem; margin: .2rem 0 .8rem; text-transform: capitalize; }
 
 /* Resumen de hoy */
-.resumen-hoy { display: flex; flex-wrap: wrap; gap: .8rem; margin-bottom: 1rem; }
+.resumen-hoy { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .8rem; }
 .resumen-hoy div {
-    display: flex; align-items: center; gap: .6rem; padding: .7rem 1rem;
-    background: #fff; border: 1px solid var(--linea); border-radius: 12px; font-size: 1rem;
+    display: flex; align-items: center; gap: .4rem; padding: .3rem .65rem;
+    background: #fff; border: 1px solid var(--linea); border-radius: 9px; font-size: .8rem;
 }
-.resumen-hoy strong { font: 800 1.6rem var(--fuente-titulos); }
+.resumen-hoy strong { font: 800 1.1rem var(--fuente-titulos); }
 .resumen-hoy .libres strong { color: var(--verde); }
 .resumen-hoy .ocupadas strong { color: var(--azul-700); }
 .resumen-hoy .pendientes strong { color: var(--amarillo); }
@@ -56,12 +56,12 @@
 .planilla-muestra.feriado { background: #ffcc99; }
 
 /* La grilla */
-.planilla-caja { overflow: auto; max-height: 72vh; border: 1px solid var(--linea); border-radius: 14px; background: #fff; }
-.planilla-controles {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: .55rem;
-}
+.planilla-caja { overflow-x: auto; border: 1px solid var(--linea); border-radius: 14px; background: #fff; }
+.planilla-controles { display: flex; justify-content: flex-end; align-items: center; gap: .6rem; margin-bottom: .55rem; }
+.planilla-zoom { display: inline-flex; border: 1px solid var(--linea); border-radius: 9px; overflow: hidden; background: #fff; }
+.planilla-zoom button { height: 38px; min-width: 38px; padding: 0 .6rem; border: 0; background: #fff; color: var(--azul-700); font: 700 1rem var(--fuente-texto); cursor: pointer; }
+.planilla-zoom button + button { border-left: 1px solid var(--linea); }
+.planilla-zoom button:hover { background: var(--azul-50); }
 
 .boton-ampliar-planilla {
     width: 38px;
@@ -137,14 +137,10 @@
     border-radius: 14px;
 }
 
-.planilla-ampliada .planilla {
-    min-width: 1650px;
-}
-
 body.planilla-abierta {
     overflow: hidden;
 }
-.planilla { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1650px; table-layout: fixed; }
+.planilla { border-collapse: separate; border-spacing: 0; width: 100%; min-width: calc(100% * var(--zoom-planilla, 1)); table-layout: fixed; }
 .planilla th, .planilla td { border-right: 1px solid #e3e8f0; border-bottom: 1px solid #e3e8f0; padding: 0; vertical-align: top; }
 
 /* Encabezado fijo con el nombre de cada casa */
@@ -264,19 +260,11 @@ body.planilla-abierta {
 <div class="pagina-titulo">
     <div>
         <h1>Disponibilidad</h1>
-        <p class="muted">
-            <c:choose>
-                <c:when test="${empty alojamiento}">Todas las casas, día por día. Tocá un lugar libre para reservar o anotarle precio y color, o una reserva para ver sus datos.</c:when>
-                <c:otherwise>Consultá qué fechas están libres y cuáles ocupadas en cada alojamiento.</c:otherwise>
-            </c:choose>
-        </p>
+
     </div>
     <c:if test="${empty alojamiento}">
         <div class="planilla-acciones">
-            <a class="btn btn-secundario" href="${base}/disponibilidad?mes=${mesActual}">Ir a hoy</a>
-            <button type="button" class="btn btn-secundario" data-imprimir>🖨 Imprimir mes</button>
-            <button type="button" class="btn btn-secundario" data-abrir-dias>🎨 Precios y colores</button>
-            <button type="button" class="btn btn-primario" data-modal-abrir="m-crear"
+             <button type="button" class="btn btn-primario" data-modal-abrir="m-crear"
                     data-f-alojamientoid="" data-f-fechaingreso="" data-f-fechasalida="">+ Nueva reserva</button>
         </div>
     </c:if>
@@ -401,8 +389,15 @@ body.planilla-abierta {
         <section class="tarjeta"><p class="muted">Todavía no hay alojamientos cargados.</p></section>
     </c:when>
     <c:otherwise>
-
-        <div class="planilla-controles">
+              <div class="planilla-controles">
+                  <button type="button" class="btn btn-secundario" id="botonIrHoy"
+                          data-mes-actual="${base}/disponibilidad?mes=${mesActual}">Ir a hoy</button>
+                  <button type="button" class="btn btn-secundario" data-abrir-dias>🎨 Precios y colores</button>
+                  <div class="planilla-zoom" role="group" aria-label="Zoom de la planilla">
+                      <button type="button" id="zoomMenos" aria-label="Alejar" title="Alejar">−</button>
+                      <button type="button" id="zoomRestablecer" title="Tamaño normal">100%</button>
+                      <button type="button" id="zoomMas" aria-label="Acercar" title="Acercar">+</button>
+                  </div>
             <button type="button"
                     class="boton-ampliar-planilla"
                     id="botonAmpliarPlanilla"
@@ -971,18 +966,37 @@ body.planilla-abierta {
             }
         });
 
-        // Imprimir el mes
-        document.querySelectorAll('[data-imprimir]').forEach(function (boton) {
-            boton.addEventListener('click', function () { window.print(); });
-        });
+        // Zoom de la planilla
+        var tablaZoom = document.querySelector('.planilla');
+        var textoZoom = document.getElementById('zoomRestablecer');
+        if (tablaZoom && textoZoom) {
+            var aplicarZoom = function (valor) {
+                valor = Math.min(2, Math.max(1, Math.round(valor * 10) / 10));   // de 100% a 200%
+                tablaZoom.style.width = (valor * 100) + '%';
+                textoZoom.textContent = Math.round(valor * 100) + '%';
+                try { localStorage.setItem('planillaZoom', valor); } catch (e) {}
+                return valor;
+            };
+            var zoomActual = 1;
+            try { zoomActual = parseFloat(localStorage.getItem('planillaZoom')) || 1; } catch (e) {}
+            zoomActual = aplicarZoom(zoomActual);
 
-        // Al abrir la página del mes actual, bajar hasta "hoy"
-        var hoy = document.querySelector('.planilla tr.hoy');
-        if (hoy && document.querySelector('.planilla-caja')) {
-            var caja = document.querySelector('.planilla-caja');
-            caja.scrollTop = Math.max(0, hoy.offsetTop - 140);
+            document.getElementById('zoomMenos').addEventListener('click', function () { zoomActual = aplicarZoom(zoomActual - 0.1); });
+            document.getElementById('zoomMas').addEventListener('click', function () { zoomActual = aplicarZoom(zoomActual + 0.1); });
+            textoZoom.addEventListener('click', function () { zoomActual = aplicarZoom(1); });
         }
-
+        // "Ir a hoy": baja hasta la fila de hoy; si el mes mostrado no es el actual, abre el mes actual
+        var botonIrHoy = document.getElementById('botonIrHoy');
+        if (botonIrHoy) {
+            botonIrHoy.addEventListener('click', function () {
+                var filaHoy = document.querySelector('.planilla tr.hoy');
+                if (filaHoy) {
+                    filaHoy.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    window.location.href = botonIrHoy.getAttribute('data-mes-actual');
+                }
+            });
+        }
         // Ampliar / restaurar la planilla de disponibilidad
         var botonAmpliar = document.getElementById('botonAmpliarPlanilla');
 
@@ -1068,7 +1082,7 @@ body.planilla-abierta {
                     cajaPlanilla.style.minWidth = '';
 
                     if (tablaPlanilla) {
-                        tablaPlanilla.style.removeProperty('width');
+
                         tablaPlanilla.style.removeProperty('min-width');
                         tablaPlanilla.style.removeProperty('max-width');
                         tablaPlanilla.style.removeProperty('table-layout');
