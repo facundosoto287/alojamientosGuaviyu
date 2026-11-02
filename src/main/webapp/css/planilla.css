@@ -50,7 +50,7 @@
 .planilla-muestra.feriado { background: #ffcc99; }
 
 /* La grilla */
-.planilla-caja { overflow: auto; max-height: 72vh; border: 1px solid var(--linea); border-radius: 14px; background: #fff; }
+.planilla-caja { overflow: auto; max-height: none ; border: 1px solid var(--linea); border-radius: 14px; background: #fff; }
 .planilla { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1400px; table-layout: fixed; }
 .planilla th, .planilla td { border-right: 1px solid #e3e8f0; border-bottom: 1px solid #e3e8f0; padding: 0; vertical-align: top; }
 
@@ -60,7 +60,6 @@
     font: 800 .72rem var(--fuente-titulos); color: var(--azul-950);
     text-align: center; text-transform: uppercase; border-bottom: 2px solid #b9c4d6;
 }
-
 /* Columna de días fija a la izquierda */
 .planilla .dia {
     position: sticky; left: 0; z-index: 2; width: 74px; padding: .45rem .5rem;
@@ -163,7 +162,7 @@
 
     border-radius: 14px;
 }
-
+.planilla tr.hoy { scroll-margin-top: 80px; }
 
 /* Tabla completa dentro de la pantalla */
 .planilla-ampliada .planilla {
@@ -271,17 +270,6 @@ body.planilla-abierta {
 
 .planilla-ampliada .planilla .dia {
     width: 55px !important;
-}
-
-/* Imprimir: solo la planilla, sin menú ni botones */
-@media print {
-    .adm-header, .adm-lateral, .planilla-acciones, .planilla-barra, .resumen-hoy, .migas, .aviso { display: none !important; }
-    body.admin, .adm-panel { background: #fff !important; padding: 0 !important; }
-    .adm-contenido { padding: 0 !important; }
-    .planilla-caja { max-height: none; overflow: visible; border: 0; }
-    .planilla { min-width: 0; font-size: .7rem; }
-    .planilla th, .planilla td, .reserva-bloque, .planilla-muestra { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .celda-libre span { display: none; }
 }
 
 /* Disponibilidad · Todas las casas: el nombre de cada casa lleva a su calendario */
