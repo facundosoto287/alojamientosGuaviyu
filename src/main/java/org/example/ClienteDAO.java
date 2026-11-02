@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class ClienteDAO {
 
@@ -231,6 +232,91 @@ public class ClienteDAO {
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
             sentencia.setString(1, hash);
             sentencia.setInt(2, id);
+            return sentencia.executeUpdate() == 1;
+        }
+    }
+
+    public String generarTokenRecuperacion(String email) throws SQLException {
+        Cliente cliente = buscarPorEmail(normalizarEmail(email));
+
+        if (cliente == null) {
+            return null;
+        }
+
+        String token = UUID.randomUUID().toString();
+
+        String sql = """
+            UPDATE cliente
+            SET token_recuperacion = ?,
+                token_expira = DATE_ADD(NOW(), INTERVAL 30 MINUTE)
+            WHERE id = ?
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, token);
+            sentencia.setInt(2, cliente.getId());
+
+            sentencia.executeUpdate();
+        }
+
+        return token;
+    }
+
+    public Cliente buscarPorTokenRecuperacion(String token)
+            throws SQLException {
+
+        if (token == null || token.isBlank()) {
+            return null;
+        }
+
+        String sql = """
+            SELECT id, nombre, documento, telefono, email,
+                   procedencia, localidad, contrasena,
+                   debe_cambiar_contrasena
+            FROM cliente
+            WHERE token_recuperacion = ?
+              AND token_expira IS NOT NULL
+              AND token_expira > NOW()
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, token);
+
+            try (ResultSet fila = sentencia.executeQuery()) {
+
+                if (fila.next()) {
+                    return mapearCliente(fila);
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean restablecerContrasena(String token, String nuevaContrasena) throws SQLException {
+        Cliente cliente = buscarPorTokenRecuperacion(token);
+
+        if (cliente == null) {
+            return false;
+        }
+
+        String sql = """
+            UPDATE cliente
+            SET contrasena = ?,
+                debe_cambiar_contrasena = 0,
+                token_recuperacion = NULL,
+                token_expira = NULL
+            WHERE id = ?
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, hashear(nuevaContrasena));
+            sentencia.setInt(2, cliente.getId());
             return sentencia.executeUpdate() == 1;
         }
     }

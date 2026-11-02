@@ -295,6 +295,17 @@ label {
 }
 .banner-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--azul-700); stroke-width: 1.8; stroke-linecap: round; }
 
+
+.alerta-exito {
+    background: #eaf7ee;
+    border: 1px solid #b7dfc1;
+    color: #256b37;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 14px;
+}
+
 /* ===================== PANTALLAS CHICAS ===================== */
 
 @media (max-width: 1100px) {

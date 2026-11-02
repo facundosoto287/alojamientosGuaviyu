@@ -23,8 +23,6 @@
 
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -37,6 +35,8 @@
           href="${pageContext.request.contextPath}/css/footer.css">
       <link rel="stylesheet"
            href="${pageContext.request.contextPath}/css/inicio.css?v=5">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 
 <body>

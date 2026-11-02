@@ -74,28 +74,36 @@ public class CorreoServicio {
 
 
         // Logo incrustado
-        MimeBodyPart parteLogo = new MimeBodyPart();
-
-        try (InputStream logo = CorreoServicio.class.getResourceAsStream("/logoAlojamientosGuaviyu.png")) {
-
-            if (logo == null) {
-                throw new IllegalStateException("No se encontró logoAlojamientosGuaviyu.png");
-            }
-
-            byte[] bytesLogo = logo.readAllBytes();
-
-            DataSource dataSource = new ByteArrayDataSource(bytesLogo, "image/png");
-
-            parteLogo.setDataHandler(new DataHandler(dataSource));
-            parteLogo.setHeader("Content-ID", "<logoGuaviyu>");
-            parteLogo.setDisposition(MimeBodyPart.INLINE);
-
-            contenidoCompleto.addBodyPart(parteLogo);
-        }
-
+        agregarImagenInline(contenidoCompleto, "/logoAlojamientosGuaviyu.png", "logoGuaviyu");
 
         mensaje.setContent(contenidoCompleto);
-
         Transport.send(mensaje);
+    }
+
+
+    private void agregarImagenInline(MimeMultipart contenidoCompleto, String recurso, String cid) throws Exception {
+        MimeBodyPart parteImagen = new MimeBodyPart();
+
+        try (InputStream imagen = CorreoServicio.class.getResourceAsStream(recurso)) {
+
+            if (imagen == null) {throw new IllegalStateException("No se encontró el recurso: " + recurso);}
+
+            byte[] bytesImagen = imagen.readAllBytes();
+
+            DataSource dataSource = new ByteArrayDataSource(bytesImagen, "image/png");
+
+            parteImagen.setDataHandler(new DataHandler(dataSource));
+
+            // Identificador usado desde el HTML: cid:iconoReserva.
+            parteImagen.setContentID("<" + cid + ">");
+
+            // Indica que forma parte visual del correo
+            parteImagen.setDisposition(MimeBodyPart.INLINE);
+
+            // Nombre de archivo para mejorar compatibilidad
+            parteImagen.setFileName(cid + ".png");
+
+            contenidoCompleto.addBodyPart(parteImagen);
+        }
     }
 }

@@ -20,7 +20,6 @@
 
     <title>Solicitar reserva | Alojamientos Guaviyú</title>
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +30,8 @@
     <link rel="stylesheet" href="${ctx}/css/header.css">
     <link rel="stylesheet" href="${ctx}/css/solicitar-reserva.css?v=2">
     <link rel="stylesheet" href="${ctx}/css/footer.css">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 
 <body>

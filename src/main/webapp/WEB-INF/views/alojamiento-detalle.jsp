@@ -14,7 +14,6 @@
     <title>${alojamiento.nombre} | Alojamientos Guaviyú</title>
 
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 
     <!-- Librerias -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -36,6 +35,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 
 </head>
 

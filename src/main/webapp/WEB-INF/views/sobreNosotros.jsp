@@ -15,7 +15,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre nosotros | Alojamientos Guaviyú</title>
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Las mismas fuentes que el inicio (Cormorant Garamond, Poppins y Nunito Sans) + Caveat para el sello -->
@@ -24,6 +23,8 @@
     <link rel="stylesheet" href="${ctx}/css/footer.css">
     <!-- ?v=2 obliga al navegador a bajar el CSS nuevo (subilo cuando lo cambies) -->
     <link rel="stylesheet" href="${ctx}/css/sobreNosotros.css?v=5">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 <body>
 <%@ include file="components/header.jsp" %>

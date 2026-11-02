@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.example.CorreoPlantillas;
+import org.example.CorreoServicio;
 
 /**
  * GET  /registro → misma página que /login, con la pestaña "Registrarse" activa.
@@ -69,6 +71,18 @@ public class RegistroServlet extends HttpServlet {
                         valores.get("localidad"),
                         contrasena
                 );
+
+                try {
+                    String contenido = CorreoPlantillas.bienvenidaCliente(nuevo);
+
+                    CorreoServicio correoServicio = new CorreoServicio();
+
+                    correoServicio.enviar(nuevo.getEmail(), "Bienvenido a Alojamientos Guaviyú", contenido);
+
+                } catch (Exception e) {
+                    log("El cliente se registró correctamente, pero no se pudo enviar el correo de bienvenida.", e);
+                    e.printStackTrace();
+                }
 
                 LoginServlet.abrirSesion(request, nuevo); // queda logueado al registrarse
                 response.sendRedirect(request.getContextPath()
