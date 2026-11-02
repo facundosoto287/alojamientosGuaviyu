@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mapa | Alojamientos Guaviyú</title>
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 
     <!-- Leaflet: librería gratuita de mapas (no necesita clave) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -20,6 +19,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=11">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 <body>
 <%@ include file="components/header.jsp" %>

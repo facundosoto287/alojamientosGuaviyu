@@ -8,13 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cambiar contraseña | Alojamientos Guaviyú</title>
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${ctx}/css/header.css">
     <link rel="stylesheet" href="${ctx}/css/login.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
     <style>
         .cambio-wrap { min-height: calc(100vh - 100px); display: grid; place-items: center; padding: 2rem 1.25rem; }
         .cambio-card { width: 100%; max-width: 460px; }

@@ -17,6 +17,8 @@ public class Reserva {
     private int cantidadNoches;
     private double precioTotal;
     private boolean medioDiaExtra;
+    private boolean correoRecordatorioEnviado;
+    private boolean correoResenaEnviado;
 
     public Reserva(int id, Date fechaIngreso, Date fechaSalida, int cantidadHuespedes,
                    EstadoReserva estado, Date fechaSolicitud, int alojamientoId) {
@@ -139,5 +141,14 @@ public class Reserva {
     public void setMedioDiaExtra(boolean medioDiaExtra) {
         this.medioDiaExtra = medioDiaExtra;
     }
+
+    public boolean isCorreoRecordatorioEnviado() {return correoRecordatorioEnviado;}
+
+    public void setCorreoRecordatorioEnviado(boolean correoRecordatorioEnviado) {this.correoRecordatorioEnviado = correoRecordatorioEnviado;}
+
+    public boolean isCorreoResenaEnviado() {return correoResenaEnviado;}
+
+    public void setCorreoResenaEnviado(boolean correoResenaEnviado) {this.correoResenaEnviado = correoResenaEnviado;}
+
 }
 
