@@ -536,9 +536,6 @@ body.planilla-abierta {
 </c:choose>
 
 
-
-<%@ include file="grafica-localidades.jspf" %>
-
 <%-- ============ Detalle de una reserva (se llena con los datos del bloque tocado) ============ --%>
 <dialog id="m-reserva" class="modal modal-chico">
     <div class="modal-form">

@@ -1,5 +1,5 @@
 <%-- ============ Gráfica: de dónde son los clientes (por localidad) ============ --%>
-<%-- Se incluye debajo de la planilla (vista "Todas las casas"). Los datos los arma AdminDisponibilidadServlet. --%>
+<%-- Se incluye en el Inicio del panel. Los datos los arma AdminInicioServlet. --%>
 <section class="tarjeta grafica-loc" id="grafica-localidades" aria-labelledby="titulo-grafica-loc">
 
     <div class="grafica-loc-cabecera">
@@ -9,8 +9,7 @@
                 Cada cliente se cuenta una sola vez y el período se toma según la fecha de ingreso.</p>
         </div>
 
-        <form action="${base}/disponibilidad#grafica-localidades" method="get" class="grafica-loc-filtros">
-            <input type="hidden" name="mes" value="${mesValor}">
+        <form action="${base}/inicio#grafica-localidades" method="get" class="grafica-loc-filtros">
             <label>Año
                 <select name="locAnio">
                     <option value="">Todos</option>

@@ -19,16 +19,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeParseException;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -130,7 +127,6 @@ public class AdminDisponibilidadServlet extends AdminServlet {
                 request.setAttribute("clientes", clienteDAO.listarClientes());
                 request.setAttribute("procedencias", LoginServlet.PROCEDENCIAS);
                 request.setAttribute("localidades", LoginServlet.sugerenciasDeLocalidad());
-                cargarGraficaLocalidades(request); // gráfica debajo de la planilla
                 request.setAttribute("senasPorCliente", senaDAO.vigentePorCliente()); // aviso "tiene seña a favor"
                 request.setAttribute("hoy", LocalDate.now().toString());
             }
@@ -145,64 +141,6 @@ public class AdminDisponibilidadServlet extends AdminServlet {
         request.setAttribute("mesAnterior", mes.minusMonths(1).toString());
         request.setAttribute("mesSiguiente", mes.plusMonths(1).toString());
         mostrar(request, response, "disponibilidad", "disponibilidad", "Disponibilidad");
-    }
-
-    /* ===================== Gráfica de localidades ===================== */
-
-    /**
-     * Prepara la gráfica "De dónde son nuestros clientes": cuántos clientes que ya hicieron una estadía
-     * hay por localidad. Filtros opcionales por año (locAnio) y por mes (locMes); sin filtro, todo el historial.
-     * Cada cliente cuenta una sola vez (ver ClienteDAO.contarPorLocalidad).
-     */
-    private void cargarGraficaLocalidades(HttpServletRequest request) throws SQLException {
-        Integer anio = entero(request, "locAnio");
-        Integer mesFiltro = entero(request, "locMes");
-        if (anio != null && (anio < 2000 || anio > 2100)) {
-            anio = null;
-        }
-        if (mesFiltro != null && (mesFiltro < 1 || mesFiltro > 12)) {
-            mesFiltro = null;
-        }
-
-        Map<String, Integer> conteo = clienteDAO.contarPorLocalidad(anio, mesFiltro);
-        int total = conteo.values().stream().mapToInt(Integer::intValue).sum();
-        int maximo = conteo.values().stream().mapToInt(Integer::intValue).max().orElse(0);
-
-        List<Map<String, Object>> barras = new ArrayList<>();
-        for (Map.Entry<String, Integer> fila : conteo.entrySet()) {
-            Map<String, Object> barra = new LinkedHashMap<>();
-            barra.put("nombre", fila.getKey());
-            barra.put("cantidad", fila.getValue());
-            barra.put("porcentajeTexto", String.format(ES, "%.1f", fila.getValue() * 100.0 / total));
-            barra.put("ancho", String.format(Locale.ROOT, "%.1f", fila.getValue() * 100.0 / maximo)); // la más larga ocupa todo el ancho
-            barra.put("sinDato", fila.getKey().equals(ClienteDAO.SIN_LOCALIDAD));
-            barras.add(barra);
-        }
-
-        List<String> meses = new ArrayList<>();
-        for (int m = 1; m <= 12; m++) {
-            String nombre = Month.of(m).getDisplayName(TextStyle.FULL, ES);
-            meses.add(Character.toUpperCase(nombre.charAt(0)) + nombre.substring(1));
-        }
-
-        String periodo;
-        if (anio == null && mesFiltro == null) {
-            periodo = "Todo el historial";
-        } else if (mesFiltro == null) {
-            periodo = "Año " + anio;
-        } else if (anio == null) {
-            periodo = meses.get(mesFiltro - 1) + " (todos los años)";
-        } else {
-            periodo = meses.get(mesFiltro - 1) + " " + anio;
-        }
-
-        request.setAttribute("locBarras", barras);
-        request.setAttribute("locTotal", total);
-        request.setAttribute("locAnioSel", anio);
-        request.setAttribute("locMesSel", mesFiltro);
-        request.setAttribute("locAnios", clienteDAO.aniosConEstadias());
-        request.setAttribute("locMeses", meses);
-        request.setAttribute("locPeriodo", periodo);
     }
 
     /* ===================== Precios y colores (POST) ===================== */
