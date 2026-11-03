@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=11">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=12">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 <body>
@@ -112,7 +112,18 @@
             popupAnchor: [0, -38],
             tooltipAnchor: [0, -40]
         }),
-
+        // Recepción: el mismo logo, pero naranja y más grande para distinguirla de las casas
+        recepcion: L.divIcon({
+            className: "",
+            html: '<div class="pin pin--logo pin--recepcion">' +
+                  '<img src="' + RUTA_LOGO + '" alt="" onerror="this.parentNode.classList.add(\'sin-logo\')">' +
+                  '<span>🛎️</span>' +
+                  '</div>',
+            iconSize: [46, 46],
+            iconAnchor: [23, 46],
+            popupAnchor: [0, -46],
+            tooltipAnchor: [0, -48]
+        }),
         piscinas:     crearIcono("♨️", "pin--piscinas", 34),
         naturaleza:   crearIcono("🌳", "pin--naturaleza", 34),
         comida:       crearIcono("🍴", "pin--comida", 34),
@@ -122,6 +133,7 @@
     // Un grupo por tipo, para poder mostrarlos u ocultarlos desde la leyenda
     const grupos = {
         alojamientos: L.layerGroup().addTo(mapa),
+        recepcion: L.layerGroup().addTo(mapa),
         piscinas: L.layerGroup().addTo(mapa),
         naturaleza: L.layerGroup().addTo(mapa),
         comida: L.layerGroup().addTo(mapa),
@@ -219,6 +231,21 @@
         { tipo: "comida",  nombre: "Dalian Coffee & Market", info: "Cafetería, mercado y restaurante",         lat: -31.83612, lng: -57.89069 },
         { tipo: "compras", nombre: "Minimarket",    info: "Almacén",                       lat: -31.84182208100488, lng: -57.88642653526774 }
     ];
+    // ===== Recepción =====
+    const recepcion = { lat: -31.841800186020905, lng: -57.88631545979275 };   // ⚠️ poné las coordenadas reales
+
+    const cartelRecepcion = document.createElement("div");
+    cartelRecepcion.className = "cartel";
+    agregarTexto(cartelRecepcion, "span", "cartel__tipo", "Recepción");
+    agregarTexto(cartelRecepcion, "h3", "", "Recepción Alojamientos Guaviyú");
+    agregarTexto(cartelRecepcion, "p", "cartel__desc", "Acá realizas el check-in.");
+
+    L.marker([recepcion.lat, recepcion.lng], { icon: iconos.recepcion, zIndexOffset: 1100 })
+        .bindPopup(cartelRecepcion, { maxWidth: 290 })
+        .bindTooltip("Recepción", { permanent: true, direction: "top", className: "etiqueta-casa" })
+        .addTo(grupos.recepcion);
+    puntosTodos.push([recepcion.lat, recepcion.lng
+    ]);   // para que "Ver todo" la incluya
 
     lugares.forEach(function (lugar) {
         const cartel = document.createElement("div");
