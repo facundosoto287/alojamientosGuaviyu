@@ -169,4 +169,94 @@
             if (aviso) aviso.remove();
         });
     });
+
+
+    const admMenuToggle = document.getElementById("admMenuToggle");
+    const admLateral = document.querySelector(".adm-lateral");
+    const admMenuFondo = document.getElementById("admMenuFondo");
+
+    function abrirCerrarMenuAdmin() {
+
+        if (!admLateral || !admMenuToggle) {
+            return;
+        }
+
+        admLateral.classList.toggle("abierto");
+
+        const abierto = admLateral.classList.contains("abierto");
+
+        admMenuToggle.setAttribute("aria-expanded", abierto);
+
+        admMenuToggle.classList.toggle("abierto", abierto);
+
+        if (admMenuFondo) {
+            admMenuFondo.classList.toggle("activo", abierto);
+        }
+    }
+
+    function cerrarMenuAdmin() {
+
+        if (!admLateral || !admMenuToggle) {
+            return;
+        }
+
+        admLateral.classList.remove("abierto");
+
+        admMenuToggle.classList.remove("abierto");
+
+        admMenuToggle.setAttribute("aria-expanded", "false");
+
+        if (admMenuFondo) {
+            admMenuFondo.classList.remove("activo");
+        }
+    }
+
+
+    if (admMenuToggle) {
+        admMenuToggle.addEventListener("click", abrirCerrarMenuAdmin);
+    }
+
+
+    if (admMenuFondo) {
+        admMenuFondo.addEventListener("click", cerrarMenuAdmin);
+    }
+
+
+    document.querySelectorAll(".adm-lateral a").forEach(enlace => {
+
+        enlace.addEventListener("click", () => {
+
+            if (window.innerWidth <= 820) {
+                cerrarMenuAdmin();
+            }
+
+        });
+    });
+
+    const clientesSubmenuBoton =
+        document.getElementById("clientesSubmenuBoton");
+
+    if (clientesSubmenuBoton) {
+
+        clientesSubmenuBoton.addEventListener("click", function () {
+
+            const submenu =
+                clientesSubmenuBoton.closest(".adm-submenu");
+
+            if (!submenu) {
+                return;
+            }
+
+            submenu.classList.toggle("abierto");
+
+            const abierto =
+                submenu.classList.contains("abierto");
+
+            clientesSubmenuBoton.setAttribute(
+                "aria-expanded",
+                abierto ? "true" : "false"
+            );
+        });
+    }
+
 })();

@@ -306,7 +306,59 @@ label {
     font-size: 14px;
 }
 
-/* ===================== PANTALLAS CHICAS ===================== */
+.login-opciones {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-top: 12px;
+    margin-bottom: 18px;
+}
+
+.recordarme-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    margin: 0;
+
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    line-height: 1;
+}
+
+.recordarme-login input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+
+    accent-color: #1f5fae;
+    cursor: pointer;
+}
+
+.recordarme-login span {
+    transform: translateY(-1px);
+}
+
+.olvide-contrasena {
+    color: #1f5fae;
+    font-size: 13px;
+    font-weight: 500;
+
+    line-height: 1;
+
+    text-decoration: none;
+}
+
+.olvide-contrasena:hover {
+    text-decoration: underline;
+}
+
+/* =====================RESPONSIVE===================== */
 
 @media (max-width: 1100px) {
     .auth-hero { grid-template-columns: 1fr; }

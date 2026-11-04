@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${ctx}/css/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 <body class="admin admin-ingreso">
 
@@ -37,6 +38,7 @@
         <button type="submit" class="btn btn-primario btn-ancho">Ingresar</button>
     </form>
 </main>
-
+<%@ include file="/WEB-INF/views/components/loading.jsp" %>
+<script src="${pageContext.request.contextPath}/js/loading.js"></script>
 </body>
 </html>

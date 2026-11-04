@@ -92,18 +92,17 @@
                         </button>
                     </div>
 
-                    <div style="
-                        text-align:right;
-                        margin-top:8px;
-                        margin-bottom:14px;
-                    ">
+                    <div class="login-opciones">
+
+                        <label class="recordarme-login">
+                            <input type="checkbox"
+                                   name="recordarme"
+                                   value="true">
+                            <span>Recordarme</span>
+                        </label>
 
                         <a href="${ctx}/olvide-contrasena"
-                           style="
-                               font-size:14px;
-                               color:#1f5fae;
-                               text-decoration:none;
-                           ">
+                           class="olvide-contrasena">
                             ¿Olvidaste tu contraseña?
                         </a>
 

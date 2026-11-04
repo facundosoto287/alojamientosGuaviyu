@@ -221,22 +221,27 @@ main .tarjeta__lugar { color: var(--texto-suave); font-size: 15px; }
     .nosotros { grid-template-columns: 1fr; }
     .nosotros__texto { padding-right: 0; border-right: none; }
     /* En celular el sello va debajo del título, sin taparlo */
-    .portada { flex-direction: column; align-items: flex-start; justify-content: flex-end; }
-    .portada__interno { padding-bottom: 8px; }
+    .portada {flex-direction: column;align-items: center;justify-content: center;}
     .sello {
         position: relative;      /* sigue en el flujo: no se superpone con el título */
         right: auto; bottom: auto;
         display: inline-block;
-        margin: 22px 0 36px 24px;
+        margin: 22px auto 36px;
         transform: rotate(-6deg);
         font-size: 30px;
         padding: 14px 58px 14px 26px;
     }
     .sello__sol { width: 32px; right: 14px; top: 14px; }
+    .portada__interno {
+        width: 100%;
+        text-align: center;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 }
 
 @media (max-width: 700px) {
-    .portada { min-height: 440px; padding-top: 95px; }   /* el header del celular es más bajo */
+    .portada { min-height: 340px; padding-top: 95px; }   /* el header del celular es más bajo */
 }
 
 @media (max-width: 600px) {

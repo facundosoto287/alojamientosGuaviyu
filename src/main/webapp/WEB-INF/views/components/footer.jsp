@@ -170,6 +170,9 @@
 
     <div class="footer-inferior">
         <p>© 2026 Alojamientos Guaviyú. Todos los derechos reservados.</p>
-        <p>Sitio web desarrollado por Brandon Machuca - Sofía Melnik - Facundo Soto</p>
+        <p>Proyecto académico - Sitio web desarrollado por</p>
+        <p class="footer-autores">
+                Brandon Machuca - Sofía Melnik - Facundo Soto
+        </p>
     </div>
 </footer>

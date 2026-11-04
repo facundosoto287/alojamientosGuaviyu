@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="${ctx}/css/admin.css">
+    <link rel="stylesheet" href="${ctx}/css/admin.css?v=4">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 <body class="admin">
@@ -25,6 +25,17 @@
             <small>Panel de administración</small>
         </span>
     </a>
+
+    <button type="button"
+                class="adm-menu-toggle"
+                id="admMenuToggle"
+                aria-label="Abrir menú"
+                aria-expanded="false">
+
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
 
     <div class="adm-usuario">
         <span class="adm-avatar" aria-hidden="true">
@@ -41,8 +52,16 @@
     </div>
 </header>
 
+<div class="adm-menu-fondo" id="admMenuFondo"></div>
+
 <div class="adm-shell">
     <aside class="adm-lateral">
+        <div class="adm-menu-logo">
+                <img src="${ctx}/img/logoAlojamientosGuaviyu.png"
+                     alt="Alojamientos Guaviyú">
+
+                <span>Alojamientos<br>Guaviyú</span>
+        </div>
         <nav aria-label="Secciones del panel">
             <a href="${base}/inicio" class="${seccion == 'inicio' ? 'activo' : ''}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10"/></svg>Inicio</a>
@@ -54,8 +73,33 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></svg>Reservas</a>
             <a href="${base}/senas" class="${seccion == 'senas' ? 'activo' : ''}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10H3zM12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4M6 10v4M18 10v4"/></svg>Señas</a>
-            <a href="${base}/clientes" class="${seccion == 'clientes' ? 'activo' : ''}">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14c2.8 0 5 1.6 5 4"/></svg>Clientes</a>
+            <div class="adm-submenu ${seccion == 'clientes' ? 'abierto' : ''}">
+            <button type="button"
+                        class="adm-submenu-boton ${seccion == 'clientes' ? 'activo' : ''}"
+                        id="clientesSubmenuBoton"
+                        aria-expanded="${seccion == 'clientes' ? 'true' : 'false'}">
+                    <span class="adm-submenu-titulo">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14c2.8 0 5 1.6 5 4"/>
+                        </svg>
+                        Clientes
+                    </span>
+                    <svg class="adm-submenu-flecha"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </button>
+                <div class="adm-submenu-contenido"
+                     id="clientesSubmenu">
+                    <a href="${base}/clientes">
+                        Gestionar clientes
+                    </a>
+                    <a href="${base}/clientes/observaciones">
+                        Observaciones
+                    </a>
+                </div>
+            </div>
             <a href="${base}/disponibilidad" class="${seccion == 'disponibilidad' ? 'activo' : ''}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v14H4zM4 10h16M9 15l2 2 4-4"/></svg>Disponibilidad</a>
         </nav>
