@@ -130,18 +130,6 @@ label {
 .input-icon input[type="password"],
 .input-icon input[data-pass] { padding-right: 2.8rem; }
 
-.recordarme {
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    margin: 1.1rem 0 0;
-    font-weight: 600;
-    color: var(--texto-suave);
-    cursor: pointer;
-}
-.recordarme input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: var(--azul-700); cursor: pointer; }
-.recordarme input:focus-visible { outline: 3px solid var(--naranja); outline-offset: 2px; }
-
 .error-campo { margin: .3rem 0 0; color: var(--rojo); font-size: .85rem; }
 
 .alerta {
@@ -307,7 +295,70 @@ label {
 }
 .banner-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--azul-700); stroke-width: 1.8; stroke-linecap: round; }
 
-/* ===================== PANTALLAS CHICAS ===================== */
+
+.alerta-exito {
+    background: #eaf7ee;
+    border: 1px solid #b7dfc1;
+    color: #256b37;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 14px;
+}
+
+.login-opciones {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-top: 12px;
+    margin-bottom: 18px;
+}
+
+.recordarme-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    margin: 0;
+
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    line-height: 1;
+}
+
+.recordarme-login input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+
+    accent-color: #1f5fae;
+    cursor: pointer;
+}
+
+.recordarme-login span {
+    transform: translateY(-1px);
+}
+
+.olvide-contrasena {
+    color: #1f5fae;
+    font-size: 13px;
+    font-weight: 500;
+
+    line-height: 1;
+
+    text-decoration: none;
+}
+
+.olvide-contrasena:hover {
+    text-decoration: underline;
+}
+
+/* =====================RESPONSIVE===================== */
 
 @media (max-width: 1100px) {
     .auth-hero { grid-template-columns: 1fr; }

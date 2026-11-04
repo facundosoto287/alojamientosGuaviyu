@@ -9,13 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Iniciar sesión | Alojamientos Guaviyú</title>
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 <body class="pagina-login">
 
@@ -60,6 +60,12 @@
                     <p class="alerta" role="alert"><c:out value="${loginError}"/></p>
                 </c:if>
 
+                <c:if test="${param.contrasenaRestablecida eq '1'}">
+                    <p class="alerta-exito" role="status">
+                        Tu contraseña fue restablecida correctamente. Ya podés iniciar sesión.
+                    </p>
+                </c:if>
+
                 <c:if test="${not empty loginInfo}">
                     <p class="alerta-info">
                         <c:out value="${loginInfo}"/>
@@ -86,11 +92,21 @@
                         </button>
                     </div>
 
-                    <label class="recordarme" for="login-recordarme">
-                        <input type="checkbox" id="login-recordarme" name="recordarme" value="on"
-                               ${not empty param.recordarme ? 'checked' : ''}>
-                        <span>Recordarme en este dispositivo</span>
-                    </label>
+                    <div class="login-opciones">
+
+                        <label class="recordarme-login">
+                            <input type="checkbox"
+                                   name="recordarme"
+                                   value="true">
+                            <span>Recordarme</span>
+                        </label>
+
+                        <a href="${ctx}/olvide-contrasena"
+                           class="olvide-contrasena">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+
+                    </div>
 
                     <button type="submit" class="btn-primario">Ingresar <span aria-hidden="true">→</span></button>
                 </form>

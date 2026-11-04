@@ -2,8 +2,7 @@
     </main>
 </div>
 
-<script src="${ctx}/js/admin.js"></script>
-<%@ include file="/WEB-INF/views/components/loading.jsp" %>
+<script src="${ctx}/js/admin.js?v=4"></script>
 
 <!-- ACCIONES RÁPIDAS FLOTANTES -->
 <div class="acciones-flotantes-admin">
@@ -96,6 +95,7 @@
     }
 </script>
 
+<%@ include file="/WEB-INF/views/components/loading.jsp" %>
 <script src="${pageContext.request.contextPath}/js/loading.js"></script>
 </body>
 </html>

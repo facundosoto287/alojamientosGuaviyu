@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.Cliente;
@@ -15,8 +16,8 @@ import java.io.IOException;
  * Mientras un cliente tenga la contraseña por defecto (cuenta creada por el administrador),
  * cualquier página lo lleva a /cambiar-contrasena. Solo quedan libres esa pantalla, cerrar sesión
  * y los archivos estáticos que la pantalla necesita.
- * Se declara en web.xml (no con @WebFilter) para que corra después de RecordarmeFilter.
  */
+@WebFilter("/*")
 public class CambioContrasenaFilter implements Filter {
 
     @Override

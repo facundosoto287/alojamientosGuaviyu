@@ -8,6 +8,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.example.Cliente;
 import org.example.ClienteDAO;
+import jakarta.servlet.http.Cookie;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.HexFormat;
+
+import org.example.TokenRecordarmeDAO;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +25,6 @@ import java.util.List;
 /**
  * GET  /login  → muestra la página con "Iniciar sesión" y "Registrarse".
  * POST /login  → valida correo y contraseña; si están bien guarda el cliente en la sesión.
- *                Con la casilla "Recordarme" marcada además deja una cookie de 30 días (ver RecordarmeFilter).
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -35,6 +44,12 @@ public class LoginServlet extends HttpServlet {
     );
 
     private final ClienteDAO clienteDAO = new ClienteDAO();
+
+    private final TokenRecordarmeDAO tokenRecordarmeDAO = new TokenRecordarmeDAO();
+
+    private static final String COOKIE_RECORDAR = "recordarme";
+
+    private static final int DURACION_RECORDAR_SEGUNDOS = 30 * 24 * 60 * 60; // 30 días
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -62,6 +77,7 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String contrasena = request.getParameter("contrasena");
         String destino = destinoSeguro(request.getParameter("destino"));
+        boolean recordarme = "true".equals(request.getParameter("recordarme"));
 
         request.setAttribute("loginEmail", email);
 
@@ -91,10 +107,15 @@ public class LoginServlet extends HttpServlet {
         }
 
         abrirSesion(request, cliente);
-        RecordarmeFilter.olvidar(request, response); // si este navegador ya tenía una cookie, se reemplaza
-        if (request.getParameter("recordarme") != null) {
-            RecordarmeFilter.activar(request, response, cliente.getId());
+
+        if (recordarme) {
+            try {
+                crearRecordatorio(request, response, cliente);
+            } catch (Exception e) {
+                log("No se pudo crear la cookie Recordarme", e);
+            }
         }
+
         response.sendRedirect(request.getContextPath() + destino);
     }
 
@@ -147,4 +168,43 @@ public class LoginServlet extends HttpServlet {
         }
         return destino;
     }
+
+    private void crearRecordatorio(HttpServletRequest request, HttpServletResponse response, Cliente cliente) throws Exception {
+
+        String token = generarTokenSeguro();
+        String tokenHash = hashToken(token);
+
+        LocalDateTime expiracion = LocalDateTime.now().plusDays(30);
+
+        tokenRecordarmeDAO.guardar(cliente.getId(), tokenHash, expiracion);
+
+        Cookie cookie = new Cookie(COOKIE_RECORDAR, token);
+
+        cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
+        cookie.setPath(request.getContextPath().isEmpty() ? "/" : request.getContextPath());
+
+        cookie.setMaxAge(DURACION_RECORDAR_SEGUNDOS);
+
+        response.addCookie(cookie);
+    }
+
+    private static String generarTokenSeguro() {
+
+        byte[] bytes = new byte[32];
+
+        new SecureRandom().nextBytes(bytes);
+
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    static String hashToken(String token) throws Exception {
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+        byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
+
+        return HexFormat.of().formatHex(hash);
+    }
+
 }

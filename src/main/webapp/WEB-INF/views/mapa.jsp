@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mapa | Alojamientos Guaviyú</title>
     <%@ include file="/WEB-INF/views/components/favicon.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 
     <!-- Leaflet: librería gratuita de mapas (no necesita clave) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -19,7 +18,8 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=11">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mapa.css?v=12">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loading.css">
 </head>
 <body>
 <%@ include file="components/header.jsp" %>
@@ -42,6 +42,8 @@
         <legend>Mostrar en el mapa</legend>
         <label><input type="checkbox" data-capa="alojamientos" checked>
             <span class="icono-mini icono-mini--casa"><img src="${pageContext.request.contextPath}/img/logoAlojamientosGuaviyu.png" alt=""></span> Nuestros alojamientos</label>
+        <label><input type="checkbox" data-capa="recepcion" checked>
+             <span class="icono-mini icono-mini--recepcion"><img src="${pageContext.request.contextPath}/img/logoAlojamientosGuaviyu.png" alt=""></span> Recepción</label>
         <label><input type="checkbox" data-capa="piscinas" checked>
             <span class="icono-mini icono-mini--piscinas">♨️</span> Piscinas termales</label>
         <label><input type="checkbox" data-capa="naturaleza" checked>
@@ -110,6 +112,18 @@
             popupAnchor: [0, -38],
             tooltipAnchor: [0, -40]
         }),
+        // Recepción: el mismo logo, pero naranja y más grande para distinguirla de las casas
+        recepcion: L.divIcon({
+            className: "",
+            html: '<div class="pin pin--logo pin--recepcion">' +
+                  '<img src="' + RUTA_LOGO + '" alt="" onerror="this.parentNode.classList.add(\'sin-logo\')">' +
+                  '<span>🛎️</span>' +
+                  '</div>',
+            iconSize: [46, 46],
+            iconAnchor: [23, 46],
+            popupAnchor: [0, -46],
+            tooltipAnchor: [0, -48]
+        }),
         piscinas:     crearIcono("♨️", "pin--piscinas", 34),
         naturaleza:   crearIcono("🌳", "pin--naturaleza", 34),
         comida:       crearIcono("🍴", "pin--comida", 34),
@@ -119,6 +133,7 @@
     // Un grupo por tipo, para poder mostrarlos u ocultarlos desde la leyenda
     const grupos = {
         alojamientos: L.layerGroup().addTo(mapa),
+        recepcion: L.layerGroup().addTo(mapa),
         piscinas: L.layerGroup().addTo(mapa),
         naturaleza: L.layerGroup().addTo(mapa),
         comida: L.layerGroup().addTo(mapa),
@@ -207,13 +222,30 @@
     const lugares = [
         { tipo: "piscinas",   nombre: "Piscinas Los Chorritos ", info: "Piscinas al aire libre del complejo termal", lat: -31.841539904199543, lng:-57.88662137625397 },
         { tipo: "piscinas",   nombre: "Piscinas cerradas", info: "Piscinas termales techadas",                 lat: -31.83906, lng: -57.88844 },
-        { tipo: "naturaleza", nombre: "Camping",           info: "Zona de camping con parrilleros",            lat: -31.84261, lng: -57.88586 },
+        { tipo: "piscinas",   nombre: "Piscinas abiertas", info: "Piscinas termales ",                 lat: -31.841199543319817, lng:  -57.887213035865 },
+        { tipo: "piscinas",   nombre: "Piscina semitechada", info: "Piscinas termales semitechada",                 lat: -31.84088250844765, lng: -57.8875383854623 },
+        { tipo: "naturaleza", nombre: "Arroyo Guaviyú", info: "Calzada",            lat: -31.84256812579321, lng:  -57.884753356009725 },
         { tipo: "naturaleza", nombre: "Sendero Guaviyú",   info: "Sendero junto al arroyo",                    lat: -31.84408, lng: -57.88912 },
         { tipo: "comida",  nombre: "Parador UTU",          info: "Restaurante dentro del predio termal",       lat: -31.84142, lng: -57.88769 },
-        { tipo: "comida",  nombre: "Parrilla Mi Familia",  info: "Restaurante y parrilla",                     lat: -31.84193, lng: -57.88628 },
+        { tipo: "comida",  nombre: "Parrilla Mi Familia",  info: "Restaurante y parrilla",                     lat: -31.84177952366019, lng: -57.886271711040116 },
         { tipo: "comida",  nombre: "Dalian Coffee & Market", info: "Cafetería, mercado y restaurante",         lat: -31.83612, lng: -57.89069 },
-        { tipo: "compras", nombre: "Minimercado Dumbo",    info: "Almacén y carnicería",                       lat: -31.84175, lng: -57.88618 }
+        { tipo: "compras", nombre: "Minimarket",    info: "Almacén",                       lat: -31.84182208100488, lng: -57.88642653526774 }
     ];
+    // ===== Recepción =====
+    const recepcion = { lat: -31.841800186020905, lng: -57.88631545979275 };   // ⚠️ poné las coordenadas reales
+
+    const cartelRecepcion = document.createElement("div");
+    cartelRecepcion.className = "cartel";
+    agregarTexto(cartelRecepcion, "span", "cartel__tipo", "Recepción");
+    agregarTexto(cartelRecepcion, "h3", "", "Recepción Alojamientos Guaviyú");
+    agregarTexto(cartelRecepcion, "p", "cartel__desc", "Acá realizas el check-in.");
+
+    L.marker([recepcion.lat, recepcion.lng], { icon: iconos.recepcion, zIndexOffset: 1100 })
+        .bindPopup(cartelRecepcion, { maxWidth: 290 })
+        .bindTooltip("Recepción", { permanent: true, direction: "top", className: "etiqueta-casa" })
+        .addTo(grupos.recepcion);
+    puntosTodos.push([recepcion.lat, recepcion.lng
+    ]);   // para que "Ver todo" la incluya
 
     lugares.forEach(function (lugar) {
         const cartel = document.createElement("div");

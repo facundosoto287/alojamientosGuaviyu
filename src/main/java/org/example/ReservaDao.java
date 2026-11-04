@@ -1159,4 +1159,198 @@ public class ReservaDao {
 
         return lista;
     }
+
+
+    public List<Reserva> listarParaRecordatorio() {
+        List<Reserva> reservas = new ArrayList<>();
+
+        String sql = """
+        SELECT id, fechaIngreso, fechaSalida, cantidadHuespedes,
+               estado, fechaSolicitud, alojamiento_id,
+               correo_recordatorio_enviado,
+               correo_resena_enviado
+        FROM reserva
+        WHERE estado = 'CONFIRMADA'
+          AND correo_recordatorio_enviado = FALSE
+          AND fechaIngreso > CURDATE()
+          AND fechaIngreso <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql);
+             ResultSet resultado = sentencia.executeQuery()) {
+
+            while (resultado.next()) {
+
+                Reserva reserva = mapearReserva(resultado);
+
+                reserva.setCorreoRecordatorioEnviado(resultado.getBoolean("correo_recordatorio_enviado"));
+
+                reserva.setCorreoResenaEnviado(resultado.getBoolean("correo_resena_enviado"));
+
+                reservas.add(reserva);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservas;
+    }
+
+    public List<Reserva> listarParaSolicitarResena() {
+        List<Reserva> reservas = new ArrayList<>();
+
+        String sql = """
+        SELECT id, fechaIngreso, fechaSalida, cantidadHuespedes,
+               estado, fechaSolicitud, alojamiento_id,
+               correo_recordatorio_enviado,
+               correo_resena_enviado
+        FROM reserva
+        WHERE estado = 'CONFIRMADA'
+          AND correo_resena_enviado = FALSE
+          AND fechaSalida < CURDATE()
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql);
+             ResultSet resultado = sentencia.executeQuery()) {
+
+            while (resultado.next()) {
+
+                Reserva reserva = mapearReserva(resultado);
+
+                reserva.setCorreoRecordatorioEnviado(resultado.getBoolean("correo_recordatorio_enviado"));
+
+                reserva.setCorreoResenaEnviado(resultado.getBoolean("correo_resena_enviado"));
+
+                reservas.add(reserva);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reservas;
+    }
+
+    public boolean marcarRecordatorioEnviado(int idReserva) {
+        String sql = """
+        UPDATE reserva
+        SET correo_recordatorio_enviado = TRUE
+        WHERE id = ?
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idReserva);
+
+            return sentencia.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean marcarCorreoResenaEnviado(int idReserva) {
+        String sql = """
+        UPDATE reserva
+        SET correo_resena_enviado = TRUE
+        WHERE id = ?
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idReserva);
+
+            return sentencia.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Integer buscarClienteIdPorReserva(int idReserva) {
+
+        String sql = """
+        SELECT idCliente
+        FROM cliente_reserva
+        WHERE idReserva = ?
+        LIMIT 1
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idReserva);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+
+                if (resultado.next()) {
+                    return resultado.getInt("idCliente");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public ReservaDetalle obtenerDetallePorId(int idReserva) {
+
+        String sql = """
+        SELECT r.id,
+               r.fechaIngreso,
+               r.fechaSalida,
+               r.cantidadHuespedes,
+               r.estado,
+               r.fechaSolicitud,
+               r.alojamiento_id,
+               r.medioDiaExtra,
+               a.nombre AS alojamiento,
+               c.id AS cliente_id,
+               c.nombre AS cliente,
+               c.documento
+        FROM reserva r
+        LEFT JOIN alojamiento a
+            ON a.id = r.alojamiento_id
+        LEFT JOIN cliente_reserva cr
+            ON cr.idReserva = r.id
+        LEFT JOIN cliente c
+            ON c.id = cr.idCliente
+        WHERE r.id = ?
+        """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idReserva);
+
+            try (ResultSet fila = sentencia.executeQuery()) {
+
+                if (fila.next()) {
+
+                    int idCliente = fila.getInt("cliente_id");
+                    boolean sinCliente = fila.wasNull();
+
+                    Reserva reserva = mapearReserva(fila);
+
+                    reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
+
+                    return new ReservaDetalle(reserva, fila.getString("alojamiento"), sinCliente ? null : idCliente, fila.getString("cliente"), fila.getString("documento"));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 } //fin dao

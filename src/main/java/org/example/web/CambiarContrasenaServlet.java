@@ -59,7 +59,6 @@ public class CambiarContrasenaServlet extends HttpServlet {
         if (error == null) {
             try {
                 clienteDAO.cambiarContrasena(cliente.getId(), actual, nueva);
-                RecordarmeFilter.olvidarTodos(request, response, cliente.getId()); // los demás dispositivos vuelven a pedir la contraseña
 
                 cliente.setDebeCambiarContrasena(false);
 

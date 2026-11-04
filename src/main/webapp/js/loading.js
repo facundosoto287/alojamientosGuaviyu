@@ -16,67 +16,64 @@ function ocultarLoading() {
 
 /*FORMULARIOS*/
 
-document.querySelectorAll("form").forEach(formulario => {
+document.addEventListener("submit", function (evento) {
 
-    formulario.addEventListener("submit", function () {
+    const formulario = evento.target;
 
-        setTimeout(() => {
+    if (!(formulario instanceof HTMLFormElement)) {
+        return;
+    }
 
-            if (document.visibilityState === "visible") {
-                ocultarLoading();
-            }
+    mostrarLoading();
 
-        }, 1500);
-
-        mostrarLoading();
-    });
-
+    setTimeout(() => {
+        if (document.visibilityState === "visible") {
+            ocultarLoading();
+        }
+    }, 1500);
 });
 
 
 /*NAVEGACION ENTRE PAGINAS*/
 
-document.querySelectorAll("a[href]").forEach(enlace => {
+document.addEventListener("click", function (evento) {
 
-    enlace.addEventListener("click", function (evento) {
+    const enlace = evento.target.closest("a[href]");
 
-        const href = this.getAttribute("href");
+    if (!enlace) {
+        return;
+    }
 
-        /* No mostrar loading en enlaces especiales */
-        if (
-            !href ||
-            href.startsWith("#") ||
-            href.startsWith("javascript:") ||
-            href.startsWith("mailto:") ||
-            href.startsWith("tel:") ||
-            this.hasAttribute("download") ||
-            this.target === "_blank"
-        ) {
-            return;
-        }
+    const href = enlace.getAttribute("href");
 
-        /* Mantener Ctrl + click / abrir en nueva pestaña */
-        if (
-            evento.ctrlKey ||
-            evento.metaKey ||
-            evento.shiftKey ||
-            evento.altKey
-        ) {
-            return;
-        }
+    if (
+        !href ||
+        href.startsWith("#") ||
+        href.startsWith("javascript:") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        enlace.hasAttribute("download") ||
+        enlace.target === "_blank"
+    ) {
+        return;
+    }
 
-        evento.preventDefault();
+    if (
+        evento.ctrlKey ||
+        evento.metaKey ||
+        evento.shiftKey ||
+        evento.altKey
+    ) {
+        return;
+    }
 
-        mostrarLoading();
+    evento.preventDefault();
 
-        setTimeout(() => {
+    mostrarLoading();
 
-            window.location.href = this.href;
-
-        }, 100);
-
-    });
-
+    setTimeout(() => {
+        window.location.href = enlace.href;
+    }, 100);
 });
 
 document.querySelectorAll("select").forEach(select => {

@@ -17,10 +17,12 @@ import org.example.web.ValidacionCliente;
 import org.example.CorreoServicio;
 import java.time.format.DateTimeFormatter;
 import org.example.CorreoPlantillas;
+import org.example.Alojamiento;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.temporal.ChronoUnit;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -239,7 +241,11 @@ public class AdminReservasServlet extends AdminServlet {
 
         try {
             reservaDao.editarReservaAdmin(id, clienteId, alojamientoId, ingreso, salida, huespedes, medioDiaExtra);
+
+            enviarCorreoReservaModificada(id);
+
             avisoOk(request, "Reserva #" + id + " actualizada.");
+
         } catch (IllegalArgumentException e) {
             avisoError(request, e.getMessage());
         }
@@ -391,6 +397,58 @@ public class AdminReservasServlet extends AdminServlet {
 
         } catch (Exception e) {
             log("La reserva #" + idReserva + " fue cancelada, pero no se pudo enviar el correo.", e);
+        }
+    }
+
+    private void enviarCorreoReservaModificada(int idReserva) {
+        try {
+            ReservaDetalle detalle = reservaDao.listarDetalle(
+                                    null,
+                                    null,
+                                    null,
+                                    null
+                            )
+                            .stream()
+                            .filter(r -> r.getId() == idReserva)
+                            .findFirst()
+                            .orElse(null);
+
+            if (detalle == null || detalle.getClienteId() == null) {
+                log("No se pudo enviar el correo de modificación " + "de la reserva #" + idReserva);
+
+                return;
+            }
+            Cliente cliente = clienteDAO.buscarPorId(detalle.getClienteId());
+
+            if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+                log("La reserva #" + idReserva + " se modificó, pero el cliente no tiene correo.");
+
+                return;
+            }
+
+            Alojamiento alojamiento = alojamientoDAO.buscarPorIdALO(detalle.getAlojamientoId());
+
+            long cantidadNoches = ChronoUnit.DAYS.between(detalle.getFechaIngreso().toLocalDate(), detalle.getFechaSalida().toLocalDate());
+
+            double precioPorNoche = alojamiento.getPrecioParaHuespedes(detalle.getCantidadHuespedes());
+
+            double precioTotal = precioPorNoche * cantidadNoches;
+
+            if (detalle.isMedioDiaExtra()) {
+                precioTotal += precioPorNoche / 2;
+            }
+
+            String contenido = CorreoPlantillas.reservaModificada(cliente, detalle, precioTotal);
+
+            CorreoServicio correoServicio = new CorreoServicio();
+
+            correoServicio.enviar(cliente.getEmail(), "Reserva modificada - Alojamientos Guaviyú", contenido);
+
+            log("Correo de modificación enviado a " + cliente.getEmail() + " para la reserva #" + idReserva);
+
+        } catch (Exception e) {
+            log("La reserva #" + idReserva + " se modificó, pero no se pudo enviar el correo.", e);
+            e.printStackTrace();
         }
     }
 

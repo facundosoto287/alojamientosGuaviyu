@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class ClienteDAO {
 
@@ -235,89 +236,88 @@ public class ClienteDAO {
         }
     }
 
-    // ===================== SESIÓN RECORDADA ("Recordarme") =====================
+    public String generarTokenRecuperacion(String email) throws SQLException {
+        Cliente cliente = buscarPorEmail(normalizarEmail(email));
 
-    /*
-     * Tabla (se crea una sola vez a mano):
-     *
-     *   CREATE TABLE sesion_recordada (
-     *       id             INT AUTO_INCREMENT PRIMARY KEY,
-     *       cliente_id     INT NOT NULL,
-     *       selector       CHAR(16) NOT NULL UNIQUE,
-     *       validador_hash CHAR(64) NOT NULL,
-     *       expira         DATETIME NOT NULL,
-     *       CONSTRAINT fk_sesion_recordada_cliente FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE
-     *   );
-     *
-     * El validador nunca se guarda: solo su hash SHA-256. La fecha se calcula con el reloj de la base (NOW()).
-     */
-
-    /** Guarda un token nuevo que vence en {@code dias} días y aprovecha para limpiar los vencidos. */
-    public void guardarSesionRecordada(int clienteId, String selector, String validadorHash, int dias) throws SQLException {
-        try (Connection conexion = ConexionBD.obtenerConexion()) {
-            try (PreparedStatement limpiar = conexion.prepareStatement("DELETE FROM sesion_recordada WHERE expira < NOW()")) {
-                limpiar.executeUpdate();
-            }
-
-            String sql = "INSERT INTO sesion_recordada (cliente_id, selector, validador_hash, expira) "
-                    + "VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL ? DAY))";
-            try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
-                sentencia.setInt(1, clienteId);
-                sentencia.setString(2, selector);
-                sentencia.setString(3, validadorHash);
-                sentencia.setInt(4, dias);
-                sentencia.executeUpdate();
-            }
+        if (cliente == null) {
+            return null;
         }
-    }
 
-    /**
-     * Devuelve el cliente dueño del token si el selector existe, no venció y el hash del validador coincide.
-     * Si el selector existe pero el validador no coincide, el token se borra (alguien lo adivinó o es una cookie vieja).
-     */
-    public Cliente buscarPorSesionRecordada(String selector, String validadorHash) throws SQLException {
+        String token = UUID.randomUUID().toString();
+
         String sql = """
-            SELECT c.id, c.nombre, c.documento, c.telefono, c.email, c.procedencia, c.localidad,
-                   c.contrasena, c.debe_cambiar_contrasena, s.validador_hash
-            FROM sesion_recordada s
-            JOIN cliente c ON c.id = s.cliente_id
-            WHERE s.selector = ? AND s.expira > NOW()
+            UPDATE cliente
+            SET token_recuperacion = ?,
+                token_expira = DATE_ADD(NOW(), INTERVAL 30 MINUTE)
+            WHERE id = ?
             """;
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-            sentencia.setString(1, selector);
+            sentencia.setString(1, token);
+            sentencia.setInt(2, cliente.getId());
+
+            sentencia.executeUpdate();
+        }
+
+        return token;
+    }
+
+    public Cliente buscarPorTokenRecuperacion(String token)
+            throws SQLException {
+
+        if (token == null || token.isBlank()) {
+            return null;
+        }
+
+        String sql = """
+            SELECT id, nombre, documento, telefono, email,
+                   procedencia, localidad, contrasena,
+                   debe_cambiar_contrasena
+            FROM cliente
+            WHERE token_recuperacion = ?
+              AND token_expira IS NOT NULL
+              AND token_expira > NOW()
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, token);
 
             try (ResultSet fila = sentencia.executeQuery()) {
-                if (!fila.next()) {
-                    return null;
-                }
-                byte[] guardado = fila.getString("validador_hash").getBytes(StandardCharsets.UTF_8);
-                if (MessageDigest.isEqual(guardado, validadorHash.getBytes(StandardCharsets.UTF_8))) {
+
+                if (fila.next()) {
                     return mapearCliente(fila);
                 }
             }
         }
-
-        borrarSesionRecordada(selector);
         return null;
     }
 
-    public void borrarSesionRecordada(String selector) throws SQLException {
-        try (Connection conexion = ConexionBD.obtenerConexion();
-             PreparedStatement sentencia = conexion.prepareStatement("DELETE FROM sesion_recordada WHERE selector = ?")) {
-            sentencia.setString(1, selector);
-            sentencia.executeUpdate();
-        }
-    }
+    public boolean restablecerContrasena(String token, String nuevaContrasena) throws SQLException {
+        Cliente cliente = buscarPorTokenRecuperacion(token);
 
-    /** Revoca todos los dispositivos recordados de un cliente. */
-    public void borrarSesionesRecordadas(int clienteId) throws SQLException {
+        if (cliente == null) {
+            return false;
+        }
+
+        String sql = """
+            UPDATE cliente
+            SET contrasena = ?,
+                debe_cambiar_contrasena = 0,
+                token_recuperacion = NULL,
+                token_expira = NULL
+            WHERE id = ?
+            """;
+
         try (Connection conexion = ConexionBD.obtenerConexion();
-             PreparedStatement sentencia = conexion.prepareStatement("DELETE FROM sesion_recordada WHERE cliente_id = ?")) {
-            sentencia.setInt(1, clienteId);
-            sentencia.executeUpdate();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, hashear(nuevaContrasena));
+            sentencia.setInt(2, cliente.getId());
+            return sentencia.executeUpdate() == 1;
         }
     }
 

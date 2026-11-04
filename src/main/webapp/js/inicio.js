@@ -40,3 +40,42 @@ const calendarioIngreso = flatpickr("#fechaIngreso", {
         }
     }
 });
+
+window.addEventListener("load", function () {
+
+    const preloader = document.getElementById("preloader");
+
+    if (!preloader) return;
+    const yaMostrado = sessionStorage.getItem("preloaderMostrado");
+
+    if (yaMostrado === "true") {
+        preloader.style.display = "none";
+        return;
+    }
+
+    sessionStorage.setItem("preloaderMostrado", "true");
+
+    setTimeout(function () {
+        preloader.classList.add("oculto");
+    }, 1200);
+});
+
+const btnVolverArriba = document.getElementById("btnVolverArriba");
+if (btnVolverArriba) {
+    window.addEventListener("scroll", function () {
+        if (window.scrollY > 350) {
+            btnVolverArriba.classList.add("visible");
+        } else {
+            btnVolverArriba.classList.remove("visible");
+        }
+
+    });
+
+    btnVolverArriba.addEventListener("click", function () {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
+}
