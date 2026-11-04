@@ -14,6 +14,7 @@ public class LogoutServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        RecordarmeFilter.olvidar(request, response); // cerrar sesión también quita "Recordarme" de este dispositivo
         HttpSession sesion = request.getSession(false);
         if (sesion != null) {
             sesion.invalidate();

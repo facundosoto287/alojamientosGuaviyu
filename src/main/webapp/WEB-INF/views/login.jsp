@@ -86,6 +86,12 @@
                         </button>
                     </div>
 
+                    <label class="recordarme" for="login-recordarme">
+                        <input type="checkbox" id="login-recordarme" name="recordarme" value="on"
+                               ${not empty param.recordarme ? 'checked' : ''}>
+                        <span>Recordarme en este dispositivo</span>
+                    </label>
+
                     <button type="submit" class="btn-primario">Ingresar <span aria-hidden="true">→</span></button>
                 </form>
             </div>

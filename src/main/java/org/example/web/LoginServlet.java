@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * GET  /login  → muestra la página con "Iniciar sesión" y "Registrarse".
  * POST /login  → valida correo y contraseña; si están bien guarda el cliente en la sesión.
+ *                Con la casilla "Recordarme" marcada además deja una cookie de 30 días (ver RecordarmeFilter).
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -90,6 +91,10 @@ public class LoginServlet extends HttpServlet {
         }
 
         abrirSesion(request, cliente);
+        RecordarmeFilter.olvidar(request, response); // si este navegador ya tenía una cookie, se reemplaza
+        if (request.getParameter("recordarme") != null) {
+            RecordarmeFilter.activar(request, response, cliente.getId());
+        }
         response.sendRedirect(request.getContextPath() + destino);
     }
 

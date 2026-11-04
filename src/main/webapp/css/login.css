@@ -130,6 +130,18 @@ label {
 .input-icon input[type="password"],
 .input-icon input[data-pass] { padding-right: 2.8rem; }
 
+.recordarme {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: 1.1rem 0 0;
+    font-weight: 600;
+    color: var(--texto-suave);
+    cursor: pointer;
+}
+.recordarme input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: var(--azul-700); cursor: pointer; }
+.recordarme input:focus-visible { outline: 3px solid var(--naranja); outline-offset: 2px; }
+
 .error-campo { margin: .3rem 0 0; color: var(--rojo); font-size: .85rem; }
 
 .alerta {

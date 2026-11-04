@@ -235,6 +235,92 @@ public class ClienteDAO {
         }
     }
 
+    // ===================== SESIÓN RECORDADA ("Recordarme") =====================
+
+    /*
+     * Tabla (se crea una sola vez a mano):
+     *
+     *   CREATE TABLE sesion_recordada (
+     *       id             INT AUTO_INCREMENT PRIMARY KEY,
+     *       cliente_id     INT NOT NULL,
+     *       selector       CHAR(16) NOT NULL UNIQUE,
+     *       validador_hash CHAR(64) NOT NULL,
+     *       expira         DATETIME NOT NULL,
+     *       CONSTRAINT fk_sesion_recordada_cliente FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE
+     *   );
+     *
+     * El validador nunca se guarda: solo su hash SHA-256. La fecha se calcula con el reloj de la base (NOW()).
+     */
+
+    /** Guarda un token nuevo que vence en {@code dias} días y aprovecha para limpiar los vencidos. */
+    public void guardarSesionRecordada(int clienteId, String selector, String validadorHash, int dias) throws SQLException {
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            try (PreparedStatement limpiar = conexion.prepareStatement("DELETE FROM sesion_recordada WHERE expira < NOW()")) {
+                limpiar.executeUpdate();
+            }
+
+            String sql = "INSERT INTO sesion_recordada (cliente_id, selector, validador_hash, expira) "
+                    + "VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL ? DAY))";
+            try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+                sentencia.setInt(1, clienteId);
+                sentencia.setString(2, selector);
+                sentencia.setString(3, validadorHash);
+                sentencia.setInt(4, dias);
+                sentencia.executeUpdate();
+            }
+        }
+    }
+
+    /**
+     * Devuelve el cliente dueño del token si el selector existe, no venció y el hash del validador coincide.
+     * Si el selector existe pero el validador no coincide, el token se borra (alguien lo adivinó o es una cookie vieja).
+     */
+    public Cliente buscarPorSesionRecordada(String selector, String validadorHash) throws SQLException {
+        String sql = """
+            SELECT c.id, c.nombre, c.documento, c.telefono, c.email, c.procedencia, c.localidad,
+                   c.contrasena, c.debe_cambiar_contrasena, s.validador_hash
+            FROM sesion_recordada s
+            JOIN cliente c ON c.id = s.cliente_id
+            WHERE s.selector = ? AND s.expira > NOW()
+            """;
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setString(1, selector);
+
+            try (ResultSet fila = sentencia.executeQuery()) {
+                if (!fila.next()) {
+                    return null;
+                }
+                byte[] guardado = fila.getString("validador_hash").getBytes(StandardCharsets.UTF_8);
+                if (MessageDigest.isEqual(guardado, validadorHash.getBytes(StandardCharsets.UTF_8))) {
+                    return mapearCliente(fila);
+                }
+            }
+        }
+
+        borrarSesionRecordada(selector);
+        return null;
+    }
+
+    public void borrarSesionRecordada(String selector) throws SQLException {
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement("DELETE FROM sesion_recordada WHERE selector = ?")) {
+            sentencia.setString(1, selector);
+            sentencia.executeUpdate();
+        }
+    }
+
+    /** Revoca todos los dispositivos recordados de un cliente. */
+    public void borrarSesionesRecordadas(int clienteId) throws SQLException {
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement("DELETE FROM sesion_recordada WHERE cliente_id = ?")) {
+            sentencia.setInt(1, clienteId);
+            sentencia.executeUpdate();
+        }
+    }
+
     // ===================== MÉTODOS QUE YA EXISTÍAN =====================
 
     public List<Cliente> listarClientes() throws SQLException {
