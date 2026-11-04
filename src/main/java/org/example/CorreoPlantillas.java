@@ -594,7 +594,7 @@ public class CorreoPlantillas {
 
 
     // Si el admin modifica los datos de la reserva, el cliente recibe un correo
-    public static String reservaModificada(Cliente cliente, ReservaDetalle detalle) {
+    public static String reservaModificada(Cliente cliente, ReservaDetalle detalle, double precioTotal) {
 
         String fechaIngreso = detalle.getFechaIngreso().toLocalDate().format(FORMATO_FECHA);
         String fechaSalida = detalle.getFechaSalida().toLocalDate().format(FORMATO_FECHA);
@@ -718,6 +718,11 @@ public class CorreoPlantillas {
                                 <strong style="color:#30363d;">Huéspedes:</strong>
                                 %d
                             </p>
+                            
+                            <p style="margin:0; font-size:14px; color:#5f6873;">
+                                 <strong style="color:#30363d;">Precio estimado:</strong>
+                                 $ %.0f
+                            </p>
 
                         </div>
 
@@ -757,7 +762,7 @@ public class CorreoPlantillas {
 
             </body>
             </html>
-            """.formatted(cliente.getNombre(), detalle.getAlojamientoNombre(), fechaIngreso, fechaSalida, detalle.getCantidadHuespedes());
+            """.formatted(cliente.getNombre(), detalle.getAlojamientoNombre(), fechaIngreso, fechaSalida, detalle.getCantidadHuespedes(), precioTotal);
     }
 
 

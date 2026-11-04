@@ -100,7 +100,7 @@
             </div>
 
 
-            <!-- POR AHORA EL BOTÓN NO ENVÍA -->
+
             <form id="formSolicitudReserva"
                   action="${ctx}/solicitar-reserva"
                   method="post">

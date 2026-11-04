@@ -17,10 +17,12 @@ import org.example.web.ValidacionCliente;
 import org.example.CorreoServicio;
 import java.time.format.DateTimeFormatter;
 import org.example.CorreoPlantillas;
+import org.example.Alojamiento;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.temporal.ChronoUnit;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -423,7 +425,20 @@ public class AdminReservasServlet extends AdminServlet {
 
                 return;
             }
-            String contenido = CorreoPlantillas.reservaModificada(cliente, detalle);
+
+            Alojamiento alojamiento = alojamientoDAO.buscarPorIdALO(detalle.getAlojamientoId());
+
+            long cantidadNoches = ChronoUnit.DAYS.between(detalle.getFechaIngreso().toLocalDate(), detalle.getFechaSalida().toLocalDate());
+
+            double precioPorNoche = alojamiento.getPrecioParaHuespedes(detalle.getCantidadHuespedes());
+
+            double precioTotal = precioPorNoche * cantidadNoches;
+
+            if (detalle.isMedioDiaExtra()) {
+                precioTotal += precioPorNoche / 2;
+            }
+
+            String contenido = CorreoPlantillas.reservaModificada(cliente, detalle, precioTotal);
 
             CorreoServicio correoServicio = new CorreoServicio();
 

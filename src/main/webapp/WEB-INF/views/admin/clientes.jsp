@@ -68,7 +68,7 @@
             </p>
         </c:when>
         <c:otherwise>
-            <div class="tabla-scroll">
+            <div class="tabla-scroll tabla-clientes">
                 <table class="tabla">
                     <thead>
                     <tr>

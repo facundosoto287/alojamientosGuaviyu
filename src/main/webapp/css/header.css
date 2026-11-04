@@ -805,10 +805,9 @@ body.pagina-con-header-fijo {
 
 
 /* Ocultamos icono y flecha en mobile */
-
-.header-usuario-icono,
-.header-flecha {
-    display: none;
+.header-usuario-boton .header-usuario-icono,
+.header-usuario-boton .header-flecha {
+   display: none;
 }
 
 
@@ -952,5 +951,61 @@ body.pagina-con-header-fijo {
 @media (max-width: 700px) {
     body.pagina-con-header-fijo {
         padding-top: 95px;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .header-user .header-login-link {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        width: 100%;
+
+        gap: 14px;
+
+        padding: 15px 4px;
+
+        background: transparent !important;
+
+        color: white !important;
+
+        border: none;
+        border-radius: 0;
+
+        box-shadow: none;
+
+        font-size: 17px;
+        font-weight: 600;
+
+        text-decoration: none;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .header-user .header-login-link:hover {
+        background: transparent !important;
+        color: #63c7f5 !important;
+    }
+
+    .header-user .header-login-link .header-usuario-icono {
+        display: flex;
+
+        width: 21px;
+        height: 21px;
+
+        background: transparent;
+        border-radius: 0;
+
+        flex-shrink: 0;
+    }
+
+    .header-user .header-login-link .header-usuario-icono svg {
+        width: 21px;
+        height: 21px;
+
+        stroke: #63c7f5;
     }
 }

@@ -2,7 +2,7 @@
     </main>
 </div>
 
-<script src="${ctx}/js/admin.js"></script>
+<script src="${ctx}/js/admin.js?v=4"></script>
 
 <!-- ACCIONES RÁPIDAS FLOTANTES -->
 <div class="acciones-flotantes-admin">

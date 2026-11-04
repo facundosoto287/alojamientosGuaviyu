@@ -307,6 +307,21 @@
                                        </svg>
                                    </c:when>
 
+                                   <c:when test="${servicio.nombre == 'Estufa a leña'}">
+                                       <svg viewBox="0 0 24 24" aria-hidden="true">
+                                           <rect x="6" y="9" width="12" height="10" rx="1"/>
+                                           <path d="M9 9V5h6v4"/>
+                                           <path d="M10 5V2h4v3"/>
+                                           <path d="M9 19l-1 3"/>
+                                           <path d="M15 19l1 3"/>
+                                           <path d="M12 16
+                                                    C10.5 14.8 10 13.8 10.5 12.7
+                                                    C11 11.7 12 11.2 12 10
+                                                    C13.5 11.1 14.2 12.3 14 13.5
+                                                    C13.9 14.7 13.1 15.7 12 16Z"/>
+                                       </svg>
+                                   </c:when>
+
                                    <c:when test="${servicio.nombre == 'Vajilla'}">
                                        <svg viewBox="0 0 24 24" aria-hidden="true">
                                            <circle cx="10" cy="12" r="5"/>
