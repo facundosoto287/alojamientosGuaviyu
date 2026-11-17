@@ -13,6 +13,7 @@ public class Alojamiento {
     private String ubicacion;
     private float distanciaApiscina;
     private boolean permiteMascotas;
+    private boolean permiteColchonExtra;
 
     // Coordenadas para el mapa (null si todavía no se cargaron)
     private Double latitud;
@@ -183,5 +184,13 @@ public class Alojamiento {
             return precioHasta4;
         }
         return precioHasta6;
+    }
+
+    public boolean isPermiteColchonExtra() {
+        return permiteColchonExtra;
+    }
+
+    public void setPermiteColchonExtra(boolean permiteColchonExtra) {
+        this.permiteColchonExtra = permiteColchonExtra;
     }
 }

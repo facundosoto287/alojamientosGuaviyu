@@ -1279,6 +1279,13 @@ html {
     transform: translateY(0);
 }
 
+/*Mensaje debajo del titulo Disponibilidad*/
+.disponibilidad-ayuda {
+    margin: .2rem 0 .8rem;
+    color: #6b7280;
+    font-size: .82rem;
+    line-height: 1.4;
+}
 
 /* En caso de que el usuario tenga reducidas las animaciones */
 @media (prefers-reduced-motion: reduce) {

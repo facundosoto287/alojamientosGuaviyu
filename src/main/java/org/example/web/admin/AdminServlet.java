@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.example.Administrador;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -30,7 +31,13 @@ abstract class AdminServlet extends HttpServlet {
 
         request.setAttribute("base", request.getContextPath() + AdminSesion.BASE);
         request.setAttribute("csrf", AdminSesion.tokenCsrf(request));
-        request.setAttribute("adminNombre", AdminSesion.administrador(request).getNombre());
+        Administrador admin = AdminSesion.administrador(request);
+        if (admin == null) {
+            response.sendRedirect(request.getContextPath() + AdminSesion.BASE + "/login");
+            return;
+        }
+
+        request.setAttribute("adminNombre", admin.getNombre());
         request.setAttribute("seccion", seccion);
         request.setAttribute("tituloPagina", titulo);
 

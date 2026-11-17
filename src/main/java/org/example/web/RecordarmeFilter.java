@@ -31,6 +31,13 @@ public class RecordarmeFilter implements Filter {
 
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        String ruta = request.getRequestURI().substring(request.getContextPath().length());
+
+        if (ruta.startsWith("/gestion-posadasguaviyu")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         /*Si ya hay un cliente en sesiin, no necesitamos hacer nada*/
         if (LoginServlet.clienteLogueado(request) == null) {
             String token = obtenerCookieRecordarme(request);

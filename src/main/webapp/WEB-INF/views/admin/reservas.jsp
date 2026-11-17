@@ -46,7 +46,7 @@
                     <thead>
                     <tr>
                         <th>#</th><th>Alojamiento</th><th>Cliente</th><th>Ingreso</th><th>Salida</th>
-                        <th>Huéspedes</th><th>Estado</th><th>Solicitada</th><th class="acciones-col">Acciones</th>
+                        <th>Huéspedes</th><th>Medio día extra</th><th>Colchón extra</th><th>Estado</th><th>Solicitada</th><th class="acciones-col">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -66,7 +66,8 @@
                             <td><fmt:formatDate value="${r.fechaIngreso}" pattern="dd/MM/yyyy"/></td>
                             <td><fmt:formatDate value="${r.fechaSalida}" pattern="dd/MM/yyyy"/></td>
                             <td>${r.cantidadHuespedes}</td>
-                            <td><span class="estado estado-${r.estado}">${r.estado == 'PENDIENTE' ? 'Pendiente' : (r.estado == 'CONFIRMADA' ? 'Confirmada' : 'Cancelada')}</span></td>
+                            <td>${r.medioDiaExtra ? 'Sí' : 'No'} </td> <td>${r.colchonExtra ? 'Sí' : 'No'}</td>
+                            <td> <span class="estado estado-${r.estado}"> ${r.estado == 'PENDIENTE' ? 'Pendiente' : (r.estado == 'CONFIRMADA' ? 'Confirmada' : 'Cancelada')}</span></td>
                             <td><fmt:formatDate value="${r.fechaSolicitud}" pattern="dd/MM/yyyy"/></td>
                             <td class="acciones">
                                 <c:if test="${r.estado == 'PENDIENTE'}">

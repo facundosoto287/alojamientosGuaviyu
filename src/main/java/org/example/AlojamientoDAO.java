@@ -93,7 +93,7 @@ public class AlojamientoDAO {
         List<Alojamiento> alojamientos = new ArrayList<>();
         String sql = "SELECT id, nombre, descripcion, capacidad, precio, " +
                 "precio_hasta_2, precio_hasta_4, precio_hasta_6, " +
-                "ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas, imagenes " +
+                "ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes " +
                 "FROM alojamiento";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -285,6 +285,7 @@ public class AlojamientoDAO {
                 resultado.getFloat("distanciaApiscina")
         );
         alojamiento.setPermiteMascotas(resultado.getBoolean("permiteMascotas"));
+        alojamiento.setPermiteColchonExtra(resultado.getBoolean("permite_colchon_extra"));
         alojamiento.setImagenes(resultado.getString("imagenes"));
 
         alojamiento.setPrecioHasta2(obtenerDoubleNullable(resultado, "precio_hasta_2"));
@@ -458,7 +459,7 @@ public class AlojamientoDAO {
         List<Alojamiento> alojamientos = new ArrayList<>();
         String sql = "SELECT id, nombre, descripcion, capacidad, precio, " +
                 "precio_hasta_2, precio_hasta_4, precio_hasta_6, " +
-                "ubicacion, distanciaApiscina, permiteMascotas, imagenes " +
+                "ubicacion, distanciaApiscina, permiteMascotas, permite_colchon_extra, imagenes " +
                 "FROM alojamiento WHERE nombre LIKE ? ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -487,11 +488,11 @@ public class AlojamientoDAO {
 
         String sql = """
             
-            SELECT a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.ubicacion, a.distanciaApiscina, a.permiteMascotas, a.imagenes
+            SELECT a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.ubicacion, a.distanciaApiscina, a.permiteMascotas, a.permite_colchon_extra, a.imagenes
             FROM alojamiento a
             JOIN alojamiento_servicio als ON a.id = als.alojamiento_id
             WHERE als.servicio_id IN (%s)
-            GROUP BY a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.ubicacion, a.distanciaApiscina, a.permiteMascotas, a.imagenes
+            GROUP BY a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.ubicacion, a.distanciaApiscina, a.permiteMascotas, a.permite_colchon_extra, a.imagenes
             HAVING COUNT(DISTINCT als.servicio_id) = ?
             """.formatted(placeholders);
 
@@ -528,7 +529,7 @@ public class AlojamientoDAO {
         List<Alojamiento> alojamientos = new ArrayList<>();
 
         String sql = """
-            SELECT id, nombre, descripcion, capacidad, precio, precio_hasta_2, precio_hasta_4, precio_hasta_6, ubicacion, distanciaApiscina, permiteMascotas, imagenes
+            SELECT id, nombre, descripcion, capacidad, precio, precio_hasta_2, precio_hasta_4, precio_hasta_6, ubicacion, distanciaApiscina, permiteMascotas, permite_colchon_extra, imagenes
             FROM alojamiento
             WHERE capacidad >= ?
             AND precio BETWEEN ? AND ?
@@ -577,7 +578,7 @@ public class AlojamientoDAO {
     public Alojamiento buscarPorIdALO(int id) throws SQLException {
         String sql = "SELECT id, nombre, descripcion, capacidad, precio, " +
                 "precio_hasta_2, precio_hasta_4, precio_hasta_6, " +
-                "ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas, imagenes " +
+                "ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes " +
                 "FROM alojamiento WHERE id = ?";
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
