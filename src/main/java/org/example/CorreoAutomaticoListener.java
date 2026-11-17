@@ -37,7 +37,7 @@ public class CorreoAutomaticoListener implements ServletContextListener {
                 3600,
                 TimeUnit.SECONDS);
 
-        System.out.println("Servicio de correos automáticos iniciado.");
+        System.out.println("Servicio de correos automaticos iniciado.");
     }
 
     @Override

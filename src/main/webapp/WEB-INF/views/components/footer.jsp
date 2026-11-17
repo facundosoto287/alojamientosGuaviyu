@@ -112,7 +112,7 @@
             </a>
 
 
-            <a href="#"
+            <a href="https://wa.me/59899933446"
                class="footer-item footer-red"
                target="_blank"
                rel="noopener">

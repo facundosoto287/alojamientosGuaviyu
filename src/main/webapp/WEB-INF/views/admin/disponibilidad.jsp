@@ -504,6 +504,7 @@ body.planilla-abierta {
                                                 data-medio-dia="${r.medioDiaExtra}"
                                                 data-noches="${r.noches}"
                                                 data-huespedes="${r.cantidadHuespedes}"
+                                                data-colchon-extra="${r.colchonExtra}"
                                                 data-precio="${r.cuenta} = ${r.precioTexto}"
                                                 data-procedencia="<c:out value='${r.clienteProcedencia}'/>"
                                                 data-nota="<c:out value='${celda.nota}'/>"
@@ -548,6 +549,7 @@ body.planilla-abierta {
             <dt>Noches</dt><dd id="dr-noches"></dd>
             <dt>Huéspedes</dt><dd id="dr-huespedes"></dd>
             <dt>Teléfono</dt><dd id="dr-telefono"></dd>
+            <dt>Colchón extra</dt><dd id="dr-colchon-extra"></dd>
             <dt>Cédula</dt><dd id="dr-documento"></dd>
             <dt>Procedencia</dt><dd id="dr-procedencia"></dd>
             <dt>Precio</dt><dd id="dr-precio"></dd>
@@ -581,20 +583,48 @@ body.planilla-abierta {
 
             <a id="dr-ver" class="btn btn-secundario" href="#">Ver en Reservas</a>
 
-            <form id="dr-cancelar" action="${base}/reservas" method="post"
-                  data-confirmar="¿Seguro que querés cancelar esta reserva? Las fechas quedan libres.">
+            <button type="button"
+                    id="dr-mostrar-cancelar"
+                    class="btn btn-peligro-borde">
+                Cancelar reserva
+            </button>
+
+            <form id="dr-cancelar"
+                  action="${base}/reservas"
+                  method="post"
+                  hidden>
+
                 <input type="hidden" name="_csrf" value="${csrf}">
                 <input type="hidden" name="accion" value="cancelar">
                 <input type="hidden" name="id" value="">
                 <input type="hidden" name="volver" value="/disponibilidad?mes=${mesValor}">
-                <%-- Solo para reservas confirmadas: la seña ya estaba pagada y siempre queda a favor del cliente por 6 meses --%>
+
                 <fieldset class="opciones sena-cancelar" id="dr-sena" hidden>
-                    <legend>Si se cancela, la seña queda a favor del cliente por 6 meses</legend>
+                    <legend>
+                        La seña queda a favor del cliente por 6 meses
+                    </legend>
                     <input type="hidden" name="guardarSena" value="1">
-                    <label class="importe-sena">Importe de la seña: $
-                        <input type="number" name="importeSena" min="1" step="any" inputmode="decimal" aria-label="Importe de la seña en pesos"></label>
+                    <label class="importe-sena">
+                        Importe de la seña: $
+                        <input type="number"
+                               name="importeSena"
+                               min="1"
+                               step="any"
+                               inputmode="decimal">
+                    </label>
                 </fieldset>
-                <button type="submit" class="btn btn-peligro-borde">Cancelar reserva</button>
+
+                <div class="detalle-cancelacion-acciones">
+                    <button type="button"
+                            class="btn btn-secundario"
+                            id="dr-volver-cancelar">
+                        Volver
+                    </button>
+                    <button type="submit"
+                            class="btn btn-peligro-borde">
+                        Confirmar cancelación
+                    </button>
+                </div>
             </form>
 
             <button type="button" class="btn btn-secundario" data-modal-cerrar>Cerrar</button>
@@ -815,6 +845,22 @@ body.planilla-abierta {
         var base = '${base}';
         var ventana = document.getElementById('m-reserva');
 
+        var botonMostrarCancelar = document.getElementById('dr-mostrar-cancelar');
+
+        var formularioCancelar = document.getElementById('dr-cancelar');
+
+        var botonVolverCancelar = document.getElementById('dr-volver-cancelar');
+
+        botonMostrarCancelar.addEventListener('click', function () {
+            botonMostrarCancelar.hidden = true;
+            formularioCancelar.hidden = false;
+        });
+
+        botonVolverCancelar.addEventListener('click', function () {
+            formularioCancelar.hidden = true;
+            botonMostrarCancelar.hidden = false;
+        });
+
         function poner(id, texto) {
             document.getElementById(id).textContent = texto; // textContent: nunca interpreta HTML
         }
@@ -836,6 +882,7 @@ body.planilla-abierta {
                 poner('dr-noches', d.noches);
                 poner('dr-huespedes', d.huespedes + (d.huespedes === '1' ? ' persona' : ' personas'));
                 poner('dr-telefono', d.telefono || '—');
+                poner('dr-colchon-extra',d.colchonExtra === 'true' ? 'Sí' : 'No');
                 poner('dr-documento', d.documento || '—');
                 poner('dr-procedencia', d.procedencia || '—');
                 var formNota = document.getElementById('dr-nota');
@@ -864,6 +911,8 @@ body.planilla-abierta {
                 importeSena.value = '';
                 importeSena.required = confirmada;
 
+                formularioCancelar.hidden = true;
+                botonMostrarCancelar.hidden = false;
                 reservaActual = d;
                 ventana.showModal();
             });

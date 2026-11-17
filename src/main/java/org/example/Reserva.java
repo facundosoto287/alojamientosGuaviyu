@@ -19,6 +19,7 @@ public class Reserva {
     private boolean medioDiaExtra;
     private boolean correoRecordatorioEnviado;
     private boolean correoResenaEnviado;
+    private boolean colchonExtra;
 
     public Reserva(int id, Date fechaIngreso, Date fechaSalida, int cantidadHuespedes,
                    EstadoReserva estado, Date fechaSolicitud, int alojamientoId) {
@@ -149,6 +150,10 @@ public class Reserva {
     public boolean isCorreoResenaEnviado() {return correoResenaEnviado;}
 
     public void setCorreoResenaEnviado(boolean correoResenaEnviado) {this.correoResenaEnviado = correoResenaEnviado;}
+
+    public boolean isColchonExtra() {return colchonExtra;}
+
+    public void setColchonExtra(boolean colchonExtra) {this.colchonExtra = colchonExtra;}
 
 }
 
