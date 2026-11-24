@@ -8,7 +8,16 @@ public class Cliente {
     private String telefono;
     private String email;
     private String procedencia;
+
+    // Ciudad o pueblo donde vive el cliente (la procedencia es el departamento, provincia o país)
+    private String localidad;
+
+    // Guarda el HASH BCrypt de la contraseña (ej: "$2a$12$..."), nunca la contraseña en texto.
+    // Al guardar el cliente en la sesión web se pone en null para no tenerlo en memoria sin necesidad.
     private String contrasena;
+
+    // true si el cliente todavía usa la contraseña por defecto y debe cambiarla antes de seguir navegando
+    private boolean debeCambiarContrasena;
 
     public Cliente(int id, String nombre, String documento, String telefono, String email, String procedencia, String contrasena) {
         this.id = id;
@@ -68,12 +77,36 @@ public class Cliente {
         this.procedencia = procedencia;
     }
 
+    public String getLocalidad() {
+        return localidad;
+    }
+
+    public void setLocalidad(String localidad) {
+        this.localidad = localidad;
+    }
+
     public String getContrasena() {
         return contrasena;
     }
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+
+    public boolean isDebeCambiarContrasena() {
+        return debeCambiarContrasena;
+    }
+
+    public void setDebeCambiarContrasena(boolean debeCambiarContrasena) {
+        this.debeCambiarContrasena = debeCambiarContrasena;
+    }
+
+    /** Primer nombre, para el saludo del encabezado ("Hola, Brandon"). */
+    public String getPrimerNombre() {
+        if (nombre == null || nombre.isBlank()) {
+            return "";
+        }
+        return nombre.trim().split("\\s+")[0];
     }
 
     @Override

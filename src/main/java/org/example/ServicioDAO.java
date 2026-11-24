@@ -13,11 +13,12 @@ public class ServicioDAO {
     public boolean agregarServicio(Servicio servicio) throws SQLException {
         String sql = "INSERT INTO servicio (nombre) VALUES (?)";
 
-        Connection conexion = ConexionBD.obtenerConexion();
-        PreparedStatement sentencia = conexion.prepareStatement(sql);
-        sentencia.setString(1, servicio.getNombre());
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, servicio.getNombre());
 
-        return sentencia.executeUpdate() == 1;
+            return sentencia.executeUpdate() == 1;
+        }
     }
 
     public List<Servicio> listarServicios() throws SQLException {
@@ -50,24 +51,73 @@ public class ServicioDAO {
 
         return new Servicio(id, nombre);
     }
+    /** Cantidad de alojamientos que tienen asociado este servicio. */
+    public int contarAlojamientos(int idServicio) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM alojamiento_servicio WHERE servicio_id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setInt(1, idServicio);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                return filas.next() ? filas.getInt(1) : 0;
+            }
+        }
+    }
+
+    /** true si ya hay un servicio con ese nombre (sin importar mayúsculas), ignorando el id indicado. */
+    public boolean existeNombre(String nombre, int excluirId) throws SQLException {
+        String sql = "SELECT 1 FROM servicio WHERE LOWER(nombre) = LOWER(?) AND id <> ? LIMIT 1";
+
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, nombre);
+            sentencia.setInt(2, excluirId);
+
+            try (ResultSet filas = sentencia.executeQuery()) {
+                return filas.next();
+            }
+        }
+    }
+
+    /**
+     * Elimina el servicio junto con sus asociaciones a alojamientos, todo en una sola transacción
+     * (antes fallaba por la clave foránea si el servicio estaba asociado).
+     */
     public boolean eliminarServicio(int id) throws SQLException {
-        String sql = "DELETE FROM servicio WHERE id = ?";
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            conexion.setAutoCommit(false);
+            try {
+                try (PreparedStatement asociaciones = conexion.prepareStatement(
+                        "DELETE FROM alojamiento_servicio WHERE servicio_id = ?")) {
+                    asociaciones.setInt(1, id);
+                    asociaciones.executeUpdate();
+                }
 
-        Connection conexion = ConexionBD.obtenerConexion();
-        PreparedStatement sentencia = conexion.prepareStatement(sql);
-        sentencia.setInt(1, id);
+                boolean eliminado;
+                try (PreparedStatement sentencia = conexion.prepareStatement("DELETE FROM servicio WHERE id = ?")) {
+                    sentencia.setInt(1, id);
+                    eliminado = sentencia.executeUpdate() == 1;
+                }
 
-        return sentencia.executeUpdate() == 1;
+                conexion.commit();
+                return eliminado;
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
+            }
+        }
     }
     public boolean editarServicio(int id, String nuevoNombre) throws SQLException {
         String sql = "UPDATE servicio SET nombre = ? WHERE id = ?";
 
-        Connection conexion = ConexionBD.obtenerConexion();
-        PreparedStatement sentencia = conexion.prepareStatement(sql);
-        sentencia.setString(1, nuevoNombre);
-        sentencia.setInt(2, id);
+        try (Connection conexion = ConexionBD.obtenerConexion();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, nuevoNombre);
+            sentencia.setInt(2, id);
 
-        return sentencia.executeUpdate() == 1;
+            return sentencia.executeUpdate() == 1;
+        }
     }
 
     public Servicio buscarPorId(int id) throws SQLException {

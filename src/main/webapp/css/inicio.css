@@ -1,0 +1,1225 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Poppins, "Segoe UI", sans-serif;
+}
+
+.banner {
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 50px 40px 20px;
+
+    /* Capa azul encima de la foto: cuanto más bajo el último número, más clarita se ve la imagen */
+    background-image: linear-gradient(rgba(0, 35, 80, 0.28), rgba(0, 35, 80, 0.28)), url("../img/banner-guaviyu1.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.site-header:not(.header-scroll) .brand-texto,
+.site-header:not(.header-scroll) .main-nav a,
+.site-header:not(.header-scroll) .header-user,
+.site-header:not(.header-scroll) .header-login-link,
+.site-header:not(.header-scroll) .header-usuario-boton {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+}
+
+.site-header:not(.header-scroll) .header-usuario-icono svg,
+.site-header:not(.header-scroll) .main-nav svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+/* Sombras un poco más fuertes para que el texto se lea bien sobre la foto más clara */
+.banner h1 {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45), 0 4px 18px rgba(0, 0, 0, 0.55);
+}
+
+.banner p {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+}
+
+/* Detalles informativos del banner */
+.banner-detalles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    margin-top: 35px;
+}
+
+/* Cada detalle del banner */
+.banner-detalle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    text-align: left;
+    white-space: nowrap;
+
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+}
+
+/* Íconos de los detalles */
+.banner-detalle svg {
+    width: 42px;
+    height: 42px;
+    padding: 8px;
+
+    border: 2px solid;
+    border-radius: 50%;
+
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.detalle-azul {
+    color: #73acf8;
+}
+
+.detalle-azul svg {
+    stroke: #73acf8;
+    border-color: #73acf8;
+}
+
+.detalle-verde {
+    color: #58ef85;
+}
+
+.detalle-verde svg {
+    stroke: #58ef85;
+    border-color: #58ef85;
+}
+
+.detalle-naranja {
+    color: #fff998;
+}
+
+.detalle-naranja svg {
+    stroke: #fff998;
+    border-color: #fff998;
+}
+
+.banner-content {   /* Contenido interno del banner */
+    max-width: 1100px;
+    color: white;
+}
+
+.banner h1 {    /* Título principal del banner */
+    margin: 0 0 15px;
+
+    font-family: "Cormorant Garamond", Georgia, serif;   /* letra delicada, con serifa */
+    font-size: 58px;
+    font-weight: 500;
+    font-style: italic;
+
+    line-height: 1.15;
+    letter-spacing: 0.5px;
+}
+
+.banner p {     /* Texto secundario del banner */
+    margin: 0;
+    font-size: 20px;
+}
+
+
+/* Contenedor del campo con icono */
+.input-con-icono {
+    position: relative;
+    width: 100%;
+}
+
+/* Icono azul de la izquierda */
+.input-con-icono svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: #0d6efd;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Inputs dentro del contenedor con icono */
+.input-con-icono input,
+.input-con-icono select {
+    width: 100%;
+    height: 44px;
+
+    padding: 0 36px 0 42px;
+
+    border: 1px solid #d9e1ea;
+    border-radius: 10px;
+
+    background-color: #f9fbfd;
+    color: #27415c;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+
+    outline: none;
+}
+
+.input-con-icono select {
+    cursor: pointer;
+}
+
+/* Los inputs de fecha dejan espacio para el calendario de la derecha */
+.input-con-icono input[type="date"] {
+    padding-right: 38px;
+    cursor: pointer;
+}
+
+/* Cuando se selecciona el input */
+.input-con-icono input:focus,
+.input-con-icono select:focus {
+    border-color: #0d6efd;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.10);
+}
+
+/* Calendario del navegador */
+.input-con-icono input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+    width: 18px;
+    height: 18px;
+}
+
+
+/*cards del alojamiento*/
+.alojamientos-inicio {
+    font-family: "Poppins", sans-serif;
+    background-color: #eef6ff;
+    padding: 50px 20px;
+}
+
+.alojamientos-contenido {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.alojamientos-titulo {  /* Separación inferior del título de la sección */
+    margin-bottom: 32px;
+}
+
+.titulo-etiqueta {
+    display: inline-block;
+
+    margin-bottom: 8px;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #0d6efd;
+
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.alojamientos-titulo h2 {   /* Título "Conocé nuestros alojamientos" */
+    margin: 0 0 8px;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+
+    color: #0b3d91;
+}
+
+.alojamientos-titulo p {    /* Texto debajo del título de alojamientos */
+    margin: 0;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+
+    color: #667788;
+}
+
+.alojamientos-grid {    /* Grilla donde se muestran las cards de alojamientos */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.alojamiento-card {     /* Contenedor visual de cada alojamiento */
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.alojamiento-card-imagen img {      /* Imagen de cada alojamiento */
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    display: block;
+}
+
+.alojamiento-card-contenido {   /* Contenido interno de la card */
+    padding: 20px;
+}
+
+.alojamiento-card h3 {      /* Nombre del alojamiento */
+    margin: 0 0 14px;
+    font-size: 23px;
+    color: #123b73;
+}
+
+.alojamiento-card .descripcion {    /* Descripción del alojamiento */
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0 0 15px;
+    font-size: 14px;
+    color: #667788;
+}
+
+.alojamiento-card-datos {       /* Datos generales como capacidad */
+    margin: 12px 0;
+    font-size: 14px;
+    color: #4b6075;
+}
+
+.alojamiento-card-datos strong {        /* Datos destacados dentro de la card */
+    color: #27384a;
+}
+
+.boton-detalle {        /* Botón para acceder al detalle del alojamiento */
+    font-family: "Poppins", sans-serif;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 14px;
+
+    text-decoration: none;
+    background-color: #0d6efd;
+    color: white;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.boton-detalle:hover {      /* Cambio de color al pasar el mouse por Ver detalle */
+    font-family: "Poppins", sans-serif;
+    background-color: #0758b8;
+}
+
+.servicios-card {       /* Contenedor de servicios asociados */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin: 15px 0;
+}
+
+.servicio-item {        /* Texto de cada servicio */
+    font-family: "Nunito Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #4b6075;
+}
+
+.servicio-item svg {    /* Tamaño de los logos */
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #0d6efd;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+
+.card-footer {      /* Fila inferior con precio y botón de detalle */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-top: 16px;
+    padding-top: 14px;
+
+    border-top: 1px solid #edf0f3;
+}
+
+.precio-card {      /* Contenedor del precio */
+    font-family: "Nunito Sans", sans-serif;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.precio-card strong {       /* Precio del alojamiento */
+    font-size: 23px;
+    color: #123b73;
+
+    white-space: nowrap;
+}
+
+.precio-card span {     /* Texto "por noche" */
+    font-size: 13px;
+    color: #788796;
+}
+
+/*boton de busqueda alojamientos*/
+.buscador-inicio {
+    width: calc(100vw - 68px);
+    max-width: 1250px;
+
+    margin: -105px 50% 45px;
+    transform: translateX(-50%);
+
+    padding: 24px;
+
+    background-color: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+
+    position: relative;
+    z-index: 2;
+}
+
+/* Cada campo del buscador */
+.campo-buscador {
+    flex: 1 1 125px;
+    min-width: 115px;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.campo-buscador label {     /* Tono azulado titulos */
+    font-family: "Nunito Sans", sans-serif;
+    display: block;
+    margin-bottom: 6px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #0b4da2;
+}
+
+.boton-buscar {     /* Cambio de color al pasar el mouse por Buscar */
+    font-family: "Poppins", sans-serif;
+    height: 44px;
+    padding: 0 24px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #0d6efd;
+    color: white;
+
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    flex-shrink: 0;
+}
+
+.boton-limpiar {    /* Botón para eliminar los filtros aplicados */
+    font-family: "Poppins", sans-serif;
+    height: 44px;
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #0d6efd;
+    border-radius: 8px;
+
+    background-color: white;
+    color: #0d6efd;
+
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    flex-shrink: 0;
+}
+
+.boton-buscar,
+.boton-limpiar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.boton-buscar svg,
+.boton-limpiar svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.boton-buscar svg {
+    stroke: white;
+}
+
+.boton-limpiar svg {
+    stroke: #0d6efd;
+}
+
+.boton-limpiar:hover {  /* Cambio visual al pasar el mouse por Limpiar filtros */
+    background-color: #f0f6ff;
+}
+
+.boton-buscar:hover {   /* Cambio de color al pasar el mouse por Buscar */
+    background-color: #0b5ed7;
+}
+
+.campo-buscador:has(#mascotas) {
+    flex: 1.15 1 160px;
+    min-width: 155px;
+}
+
+.campo-mascotas .input-con-icono svg {
+    fill: #0d6efd;
+    stroke: none;
+}
+
+/*ANIMACIONES AL HACER SCROLL*/
+
+.animar-scroll {
+    opacity: 0;
+    transform: translateY(25px);
+
+    transition:
+            opacity 0.6s ease,
+            transform 0.6s ease;
+}
+
+.animar-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.alojamientos-card:nth-child(1) {
+    transition-delay: 0.05s;
+}
+
+.alojamientos-card:nth-child(2) {
+    transition-delay: 0.10s;
+}
+
+.alojamientos-card:nth-child(3) {
+    transition-delay: 0.15s;
+}
+
+.alojamientos-card:nth-child(4) {
+    transition-delay: 0.20s;
+}
+
+.alojamientos-card:nth-child(5) {
+    transition-delay: 0.25s;
+}
+
+.alojamientos-card:nth-child(6) {
+    transition-delay: 0.30s;
+}
+
+.buscador-animado {
+    width: 100%;
+}
+
+
+/*PREGUNTAS FRECUENTES*/
+
+.faq-seccion {
+    margin-top: 70px;
+    padding-top: 10px;
+    padding-bottom: 70px;
+}
+
+
+.faq-encabezado {
+    margin-bottom: 28px;
+}
+
+
+.faq-encabezado h2 {
+    margin: 6px 0 8px;
+
+    color: #0b3d91;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 32px;
+}
+
+
+.faq-encabezado p {
+    margin: 0;
+
+    color: #667b91;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 15px;
+}
+
+
+.faq-lista {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+.faq-item {
+    overflow: hidden;
+
+    background-color: white;
+
+    border: 1px solid #dce6f0;
+    border-radius: 12px;
+
+    box-shadow: 0 4px 14px rgba(11, 61, 145, 0.05);
+}
+
+
+.faq-item summary {
+    position: relative;
+
+    padding: 17px 50px 17px 20px;
+
+    color: #123b73;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    list-style: none;
+}
+
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+
+/* Símbolo + */
+.faq-item summary::after {
+    content: "+";
+
+    position: absolute;
+
+    right: 20px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #0d6efd;
+
+    font-size: 23px;
+    font-weight: 500;
+}
+
+
+.faq-item[open] summary::after {
+    content: "−";
+}
+
+
+.faq-item p {
+    margin: 0;
+
+    padding: 0 20px 18px;
+
+    color: #62758a;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+.faq-item[open] {
+    border-color: #c8dcf7;
+    background-color: #fbfdff;
+}
+
+
+.faq-item summary:hover {
+    background-color: #f6f9fd;
+}
+
+
+/*MEJORAS CARDS ALOJAMIENTOS*/
+
+
+/* Hover suave de toda la card */
+
+.alojamiento-card {
+    transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+}
+
+.alojamiento-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+            0 14px 35px rgba(11, 61, 145, 0.13);
+
+    border-color: #d5e5f7;
+}
+
+
+/* No hacemos zoom en la imagen */
+
+.alojamiento-card-imagen {
+    position: relative;
+    overflow: hidden;
+}
+
+
+/*BADGES*/
+
+.card-badges {
+    position: absolute;
+
+    top: 12px;
+    left: 12px;
+    right: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    pointer-events: none;
+}
+
+
+.card-badge {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 10px;
+
+    border-radius: 20px;
+
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+
+/* Capacidad */
+
+.badge-capacidad {
+    background: rgba(13, 110, 253, .95);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, .35);
+    box-shadow: 0 4px 14px rgba(13, 110, 253, .25);
+}
+
+.badge-capacidad svg {
+    width: 16px;
+    height: 16px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* Mascotas permitidas */
+
+.badge-mascotas.permite {
+    background: rgba(230, 248, 239, .95);
+    color: #16794b;
+}
+
+
+/* Mascotas no permitidas */
+
+.badge-mascotas.no-permite {
+    background: rgba(255, 245, 245, .95);
+    color: #b84141;
+}
+
+
+/*DISTANCIA A LA PISCINA*/
+
+.servicio-distancia {
+    width: fit-content;
+
+    padding: 6px 10px;
+
+    background: #edf6ff;
+
+    border: 1px solid #d7eaff;
+    border-radius: 20px;
+
+    color: #0b5eb7;
+
+    font-weight: 700;
+}
+
+.servicio-distancia svg {
+    stroke: #0d6efd;
+}
+
+
+/*BOTON VER DETALLE*/
+.boton-detalle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 15px;
+
+    background: #0d6efd;
+    color: white;
+
+    border: 1px solid #0d6efd;
+    border-radius: 9px;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    box-shadow: 0 5px 14px rgba(13, 110, 253, .18);
+
+    transition:
+            background-color .2s ease,
+            box-shadow .2s ease,
+            transform .2s ease;
+}
+
+
+.boton-detalle svg {
+    width: 17px;
+    height: 17px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    transition: transform .2s ease;
+}
+
+
+.boton-detalle:hover {
+    background: #0b5ed7;
+
+    box-shadow: 0 7px 18px rgba(13, 110, 253, .25);
+
+    transform: translateY(-1px);
+}
+
+
+/* La flecha se desplaza suavemente */
+.boton-detalle:hover svg {
+    transform: translateX(3px);
+}
+
+.badge-mascotas svg {
+    width: 16px;
+    height: 16px;
+
+    fill: currentColor;
+    stroke: none;
+
+    flex-shrink: 0;
+}
+
+
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+            opacity 1.2s ease,
+            visibility 1.2s ease;
+}
+
+.preloader-contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.preloader-logo-wrap {
+    position: relative;
+
+    width: 150px;
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preloader-logo-wrap img {
+    width: 105px !important;
+    height: 105px !important;
+    max-width: 105px !important;
+
+    object-fit: contain;
+
+    position: relative;
+    z-index: 2;
+}
+
+.preloader-circulo {
+    position: absolute;
+    inset: 0;
+
+    border: 2px solid rgba(11, 61, 145, .18);
+    border-top-color: #0b3d91;
+    border-right-color: #0b3d91;
+
+    border-radius: 50%;
+
+    animation: preloader-girar 1.3s linear infinite;
+}
+
+.preloader-texto {
+    color: #0b3d91;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    letter-spacing: 5px;
+    text-align: center;
+}
+
+.preloader.oculto {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@keyframes preloader-girar {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.btn-volver-arriba {
+    position: fixed;
+    left: 8px;
+    bottom: 24px;
+
+    width: 46px;
+    height: 46px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #0b3d91;
+    color: #fff;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+
+    transition:
+            opacity .25s ease,
+            transform .25s ease,
+            visibility .25s ease,
+            background .2s ease;
+
+    z-index: 999;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+}
+
+.btn-volver-arriba.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.btn-volver-arriba:hover {
+    background: #1157d6;
+}
+
+
+/*DISEÑO RESPONSIVE*/
+@media (max-width: 600px) {
+
+    .faq-seccion {
+        margin-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    .faq-encabezado h2 {
+        font-size: 26px;
+    }
+
+    .faq-item summary {
+        padding: 15px 44px 15px 15px;
+        font-size: 13px;
+    }
+
+    .faq-item p {
+        padding: 0 15px 15px;
+        font-size: 13px;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .animar-scroll {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+@media (max-width: 900px) { /* Ajustes para tablets y pantallas medianas */
+    .buscador-inicio {
+        width: calc(100% - 32px);
+
+        margin-left: 50%;
+        margin-right: 0;
+
+        flex-wrap: wrap;
+    }
+
+    .campo-buscador {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 200px;
+    }
+
+    .campo-buscador:has(#mascotas) {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 200px;
+    }
+
+    .boton-buscar,
+    .boton-limpiar {
+        flex: 1 1 calc(50% - 8px);
+    }
+}
+
+@media (max-width: 900px) {
+    .alojamientos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+
+    /* ALOJAMIENTOS */
+    .alojamientos-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* BANNER */
+    .banner {
+        min-height: 500px;
+
+        padding: 130px 18px 120px;
+
+        background-position: center;
+    }
+
+    .banner-content {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .banner h1 {
+        font-size: 34px;
+        line-height: 1.1;
+
+        margin-bottom: 12px;
+    }
+
+    .banner p {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
+
+    /* DETALLES DEL BANNER */
+    .banner-detalles {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        width: 100%;
+
+        margin: 28px auto 0;
+
+        gap: 14px;
+    }
+
+    .banner-detalle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+
+        gap: 10px;
+
+        font-size: 13px;
+
+        white-space: normal;
+        text-align: center;
+    }
+
+    .banner-detalle svg {
+        width: 38px;
+        height: 38px;
+
+        flex-shrink: 0;
+    }
+
+
+    /* BUSCADOR */
+    .buscador-inicio {
+        width: calc(100% - 32px);
+
+        margin: -85px 50% 30px;
+        transform: translateX(-50%);
+
+        padding: 20px;
+
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 14px;
+    }
+
+    .campo-buscador {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .campo-buscador:has(#mascotas) {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .boton-buscar,
+    .boton-limpiar {
+        width: 100%;
+        flex: none;
+    }
+
+    .boton-limpiar {
+        margin-top: 10px;
+    }
+}
+
+.alojamiento-card-imagen img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    display: block;
+}
+
+@media (max-width: 600px) {
+    .btn-volver-arriba {
+        right: 16px;
+        bottom: 16px;
+
+        width: 40px;
+        height: 40px;
+
+        font-size: 19px;
+    }
+}

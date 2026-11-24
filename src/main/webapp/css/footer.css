@@ -1,0 +1,342 @@
+.site-footer {
+    margin-top: 60px;
+    background-color: #07477f;
+    color: white;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+
+/* Contenido principal del footer */
+.footer-contenido {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 25px 35px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 55px;
+}
+
+
+/* Logo y nombre */
+.footer-logo-bloque {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.footer-logo {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.footer-nombre {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.footer-nombre span {
+    font-size: 13px;
+}
+
+.footer-nombre strong {
+    margin-top: 3px;
+    font-family: "Poppins", sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* Texto de descripción */
+.footer-marca p {
+    max-width: 340px;
+    margin: 0;
+    color: #e1edf7;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Títulos de cada columna */
+.footer-columna h4 {
+    margin: 0 0 16px;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+}
+
+/* Links de navegación */
+.footer-columna > a:not(.footer-item) {
+    display: block;
+    margin-bottom: 9px;
+    color: #e1edf7;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.footer-columna > a:not(.footer-item):hover {
+    color: white;
+}
+
+/* Elementos con ícono */
+.footer-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 12px;
+    color: #e1edf7;
+    font-size: 14px;
+}
+
+
+/* Íconos */
+.footer-item svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+
+/* Redes sociales */
+.footer-red {
+    text-decoration: none;
+}
+
+
+.footer-red:hover {
+    color: white;
+}
+
+
+/* Parte inferior */
+.footer-inferior {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    text-align: center;
+}
+
+.footer-inferior p {
+    margin: 0;
+
+    color: #d2e3f1;
+
+    font-size: 12px;
+}
+
+.footer-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 12px;
+
+    color: #e1edf7;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.footer-item svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.footer-red {
+    text-decoration: none;
+}
+
+.footer-red svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.footer-red:hover {
+    color: white;
+}
+
+.icono-red-social {
+    width: 20px;
+    height: 20px;
+    fill: currentColor !important;
+    stroke: none !important;
+}
+
+.footer-contacto a:hover {
+    text-decoration: underline;
+}
+
+.footer-item,
+.footer-contacto {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 12px;
+
+    color: #e1edf7;
+    font-size: 14px;
+}
+
+.footer-item,
+.footer-contacto a,
+.footer-red {
+    font-size: 14px;
+    font-weight: 400;
+    color: #e1edf7;
+    text-decoration: none;
+}
+
+.footer-item svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    flex-shrink: 0;
+}
+
+.footer-redes a,
+.footer-contacto a {
+    font-size: 14px;
+    font-weight: 400;
+    color: white;
+    text-decoration: none;
+}
+
+/* Evita que el contenido del footer genere ancho extra */
+.site-footer {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.footer-contenido {
+    width: 100%;
+    max-width: 1200px;
+    min-width: 0;
+}
+
+.footer-marca,
+.footer-columna {
+    min-width: 0;
+}
+
+/* Permite cortar textos largos como el correo */
+.footer-item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.footer-desarrollo {
+    text-align: center;
+}
+
+.footer-desarrollo p {
+    margin: 0;
+}
+
+.footer-autores {
+    margin-top: 4px !important;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/*RESPONSIVE*/
+
+@media (max-width: 900px) {
+    .footer-contenido {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 35px;
+    }
+}
+
+
+@media (max-width: 600px) {
+    .footer-contenido {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .footer-contenido {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        grid-template-columns: minmax(0, 1fr);
+
+        gap: 30px;
+
+        padding: 40px 20px 35px;
+    }
+
+    .footer-columna,
+    .footer-marca {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .footer-item {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .footer-item span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .site-footer {
+        width: 100vw;
+        max-width: none;
+
+        margin-left: 0;
+        margin-right: 0;
+
+        overflow: hidden;
+    }
+
+    .footer-contenido {
+        width: 100%;
+        max-width: 100%;
+
+        grid-template-columns: minmax(0, 1fr);
+
+        padding: 40px 20px 35px;
+    }
+
+    .footer-inferior {
+        width: 100%;
+        max-width: 100%;
+    }
+}

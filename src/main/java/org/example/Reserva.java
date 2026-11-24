@@ -11,6 +11,15 @@ public class Reserva {
     private EstadoReserva estado;
     private Date fechaSolicitud;
     private int alojamientoId;
+    private String nombreAlojamiento;
+    private String ubicacionAlojamiento;
+    private double precioPorNoche;
+    private int cantidadNoches;
+    private double precioTotal;
+    private boolean medioDiaExtra;
+    private boolean correoRecordatorioEnviado;
+    private boolean correoResenaEnviado;
+    private boolean colchonExtra;
 
     public Reserva(int id, Date fechaIngreso, Date fechaSalida, int cantidadHuespedes,
                    EstadoReserva estado, Date fechaSolicitud, int alojamientoId) {
@@ -85,4 +94,66 @@ public class Reserva {
                 ", huespedes=" + cantidadHuespedes + ", estado=" + estado +
                 ", solicitado=" + fechaSolicitud + ", alojamientoId=" + alojamientoId + "}";
     }
+
+    public String getNombreAlojamiento() {
+        return nombreAlojamiento;
+    }
+
+    public void setNombreAlojamiento(String nombreAlojamiento) {
+        this.nombreAlojamiento = nombreAlojamiento;
+    }
+
+    public String getUbicacionAlojamiento() {
+        return ubicacionAlojamiento;
+    }
+
+    public void setUbicacionAlojamiento(String ubicacionAlojamiento) {
+        this.ubicacionAlojamiento = ubicacionAlojamiento;
+    }
+
+    public double getPrecioPorNoche() {
+        return precioPorNoche;
+    }
+
+    public void setPrecioPorNoche(double precioPorNoche) {
+        this.precioPorNoche = precioPorNoche;
+    }
+
+    public int getCantidadNoches() {
+        return cantidadNoches;
+    }
+
+    public void setCantidadNoches(int cantidadNoches) {
+        this.cantidadNoches = cantidadNoches;
+    }
+
+    public double getPrecioTotal() {
+        return precioTotal;
+    }
+
+    public void setPrecioTotal(double precioTotal) {
+        this.precioTotal = precioTotal;
+    }
+
+    public boolean isMedioDiaExtra() {
+        return medioDiaExtra;
+    }
+
+    public void setMedioDiaExtra(boolean medioDiaExtra) {
+        this.medioDiaExtra = medioDiaExtra;
+    }
+
+    public boolean isCorreoRecordatorioEnviado() {return correoRecordatorioEnviado;}
+
+    public void setCorreoRecordatorioEnviado(boolean correoRecordatorioEnviado) {this.correoRecordatorioEnviado = correoRecordatorioEnviado;}
+
+    public boolean isCorreoResenaEnviado() {return correoResenaEnviado;}
+
+    public void setCorreoResenaEnviado(boolean correoResenaEnviado) {this.correoResenaEnviado = correoResenaEnviado;}
+
+    public boolean isColchonExtra() {return colchonExtra;}
+
+    public void setColchonExtra(boolean colchonExtra) {this.colchonExtra = colchonExtra;}
+
 }
+

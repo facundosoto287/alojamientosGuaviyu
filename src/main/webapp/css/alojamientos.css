@@ -1,0 +1,69 @@
+/* Estilos del listado de alojamientos (/alojamientos). El encabezado se estiliza en header.css. */
+
+/* ============================================================
+   Alojamientos Guaviyú - estilos generales
+   ============================================================ */
+
+:root {
+    --azul-900: #0b2a66;   /* títulos */
+    --azul-700: #0b47b8;   /* botones */
+    --azul-600: #1157d6;   /* hover */
+    --azul-100: #e8f0fd;   /* fondos suaves */
+    --naranja: #f5a524;
+    --texto: #1d2a3f;
+    --texto-suave: #5b6880;
+    --linea: #dde3ee;
+    --rojo: #c62d2d;
+    --rojo-fondo: #fdecec;
+    --papel: #ffffff;
+    --pagina: #f4f7fb;
+    --radio: 14px;
+    --sombra: 0 18px 50px rgba(11, 42, 102, .18);
+    --fuente-titulos: "Poppins", "Segoe UI", system-ui, sans-serif;
+    --fuente-texto: "Nunito Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--pagina);
+    color: var(--texto);
+    font: 16px/1.5 var(--fuente-texto);
+}
+
+h1, h2, h3 { font-family: var(--fuente-titulos); color: var(--azul-900); line-height: 1.15; }
+
+a { color: var(--azul-700); }
+
+
+.contenido { max-width: 1200px; margin: 0 auto; padding: 2.2rem 1.25rem 3rem; }
+.intro { margin-bottom: 1.5rem; }
+.intro h1 { margin: 0 0 .35rem; font-size: clamp(1.8rem, 4vw, 2.5rem); }
+.intro p { margin: 0; color: var(--texto-suave); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.2rem; }
+
+.card {
+    background: var(--papel);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    padding: 1.3rem;
+    box-shadow: 0 6px 18px rgba(11, 42, 102, .06);
+}
+.card h2 { margin: 0 0 .55rem; font-size: 1.25rem; }
+.description { min-height: 3rem; color: var(--texto-suave); }
+.facts { display: grid; gap: .45rem; margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--linea); }
+.fact { display: flex; justify-content: space-between; gap: 1rem; }
+.fact strong { text-align: right; }
+
+.empty {
+    background: var(--papel);
+    border: 1px dashed #aab6c9;
+    border-radius: var(--radio);
+    padding: 1.4rem;
+    color: var(--texto-suave);
+}
+
+.site-footer { text-align: center; padding: 1.2rem; color: var(--texto-suave); }
+

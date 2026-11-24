@@ -1,0 +1,325 @@
+/* Disponibilidad · vista Todas las casas (planilla de ocupación). Se carga solo desde disponibilidad.jsp */
+
+/* ===================== PLANILLA DE OCUPACIÓN ===================== */
+/* Todas las casas (columnas) y los días del mes (filas), como la planilla de Excel */
+
+.solo-lector {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.planilla-acciones { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+/* Año y pestañas de meses (como las hojas del Excel) */
+.planilla-barra { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.2rem; margin-bottom: .8rem; }
+.planilla-anio { display: flex; align-items: center; gap: .4rem; }
+.planilla-anio strong { font: 800 1.15rem var(--fuente-titulos); color: var(--azul-900); }
+.planilla-anio a {
+    width: 34px; height: 34px; display: grid; place-items: center;
+    border-radius: 8px; background: #fff; border: 1px solid var(--linea);
+    font-size: 1.3rem; font-weight: 800; text-decoration: none;
+}
+.meses { display: flex; flex-wrap: wrap; gap: .3rem; }
+.meses a {
+    padding: .45rem .8rem; border-radius: 8px; background: #fff; border: 1px solid var(--linea);
+    color: var(--azul-900); font: 700 .85rem var(--fuente-texto); text-decoration: none;
+    text-transform: uppercase; letter-spacing: .03em;
+}
+.meses a:hover { background: var(--azul-50); }
+.meses a.activo { background: var(--azul-700); border-color: var(--azul-700); color: #fff; }
+.planilla-mes { font-size: 1.3rem; margin: .2rem 0 .8rem; text-transform: capitalize; }
+
+/* Resumen de hoy */
+.resumen-hoy { display: flex; flex-wrap: wrap; gap: .8rem; margin-bottom: 1rem; }
+.resumen-hoy div {
+    display: flex; align-items: center; gap: .6rem; padding: .7rem 1rem;
+    background: #fff; border: 1px solid var(--linea); border-radius: 12px; font-size: 1rem;
+}
+.resumen-hoy strong { font: 800 1.6rem var(--fuente-titulos); }
+.resumen-hoy .libres strong { color: var(--verde); }
+.resumen-hoy .ocupadas strong { color: var(--azul-700); }
+.resumen-hoy .pendientes strong { color: var(--amarillo); }
+
+/* Leyenda */
+.leyenda-planilla { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; margin-bottom: .8rem; font-size: .95rem; }
+.leyenda-planilla span { display: inline-flex; align-items: center; gap: .45rem; }
+.planilla-muestra { width: 28px; height: 20px; border-radius: 5px; display: inline-grid; place-items: center; font-size: .75rem; font-style: normal; }
+.planilla-muestra.libre { background: #fff; border: 1px solid var(--linea); }
+.planilla-muestra.confirmada { background: var(--azul-700); color: #fff; }
+.planilla-muestra.pendiente { background: repeating-linear-gradient(45deg, #fff3d6, #fff3d6 4px, #ffe4a3 4px, #ffe4a3 8px); border: 2px dashed #c98a00; }
+.planilla-muestra.feriado { background: #ffcc99; }
+
+/* La grilla */
+.planilla-caja { overflow: auto; max-height: none ; border: 1px solid var(--linea); border-radius: 14px; background: #fff; }
+.planilla { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1400px; table-layout: fixed; }
+.planilla th, .planilla td { border-right: 1px solid #e3e8f0; border-bottom: 1px solid #e3e8f0; padding: 0; vertical-align: top; }
+
+/* Encabezado fijo con el nombre de cada casa */
+.planilla thead th {
+    position: sticky; top: 0; z-index: 3; padding: .7rem .3rem;
+    font: 800 .72rem var(--fuente-titulos); color: var(--azul-950);
+    text-align: center; text-transform: uppercase; border-bottom: 2px solid #b9c4d6;
+}
+/* Columna de días fija a la izquierda */
+.planilla .dia {
+    position: sticky; left: 0; z-index: 2; width: 74px; padding: .45rem .5rem;
+    background: #fff; font: 800 1rem var(--fuente-titulos); color: var(--azul-900);
+    white-space: nowrap; text-align: left;
+}
+.planilla .dia small { display: block; font: 700 .7rem var(--fuente-texto); color: var(--texto-suave); white-space: normal; line-height: 1.1; }
+.planilla thead .dia { z-index: 4; }
+.planilla tr.finde .dia { background: #f3f6fb; }
+.planilla tr.feriado .dia, .planilla tr.feriado td.libre { background: #ffcc99 !important; }
+.planilla tr.feriado .dia small { color: #8a4b00; }
+.planilla tr.hoy .dia { background: var(--azul-700); color: #fff; }
+.planilla tr.hoy .dia small { color: #dbe6ff; }
+.planilla tr.hoy td { border-bottom: 2px solid var(--azul-700); }
+
+/* Lugar libre: botón que ocupa toda la celda */
+.planilla td.libre { height: 46px; }
+.celda-libre {
+    width: 100%; height: 100%; min-height: 46px; padding: 4px;
+    border: 0; background: transparent; cursor: pointer;
+}
+.celda-libre span {
+    display: grid; place-items: center; height: 100%; border-radius: 8px;
+    color: var(--azul-700); font: 700 .8rem var(--fuente-texto); opacity: 0;
+}
+.celda-libre:hover span, .celda-libre:focus-visible span {
+    opacity: 1; border: 2px dashed var(--azul-600); background: rgba(255, 255, 255, .85);
+}
+.celda-libre:focus-visible { outline: 3px solid var(--naranja); outline-offset: -3px; }
+
+/* Bloque de reserva: ocupa todas las noches (nombres propios para no chocar con .bloque y .estado del panel) */
+.planilla td.reserva { position: relative; height: 46px; }
+.reserva-bloque {
+    position: absolute; top: 4px; left: 4px;
+    width: calc(100% - 8px); height: calc(100% - 8px);      /* ocupa todas las noches de la reserva */
+    display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch;
+    border: 0; border-radius: 9px; padding: .45rem .55rem;
+    text-align: left; font: 400 .85rem/1.25 var(--fuente-texto); overflow: hidden; cursor: pointer;
+}
+.reserva-bloque:focus-visible { outline: 3px solid var(--naranja); outline-offset: 1px; }
+.reserva-bloque strong {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    padding-right: 1rem; font: 700 .88rem var(--fuente-texto);
+}
+.reserva-bloque .info { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .76rem; }
+.reserva-bloque .bloque-estado { position: absolute; top: .3rem; right: .4rem; font-weight: 800; font-size: .85rem; }
+.reserva-bloque.confirmada { background: var(--azul-700); color: #fff; box-shadow: 0 3px 8px rgba(11, 71, 184, .25); }
+.reserva-bloque.confirmada:hover { background: var(--azul-600); }
+.reserva-bloque.pendiente {
+    background: repeating-linear-gradient(45deg, #fff3d6, #fff3d6 6px, #ffe9b8 6px, #ffe9b8 12px);
+    border: 2px dashed #c98a00; color: #6b4400;
+}
+
+/* Ventana de detalle */
+.etiqueta-estado { display: inline-block; padding: .2rem .75rem; border-radius: 99px; font-weight: 800; font-size: .85rem; }
+.etiqueta-estado.confirmada { background: var(--azul-100); color: var(--azul-700); }
+.etiqueta-estado.pendiente { background: var(--amarillo-fondo); color: var(--amarillo); }
+.detalle-datos { display: grid; grid-template-columns: 1fr 1.4fr; gap: .5rem .8rem; margin: 1rem 0 1.2rem; }
+.detalle-datos dt { color: var(--texto-suave); }
+.detalle-datos dd { margin: 0; font-weight: 700; }
+.detalle-botones { display: grid; gap: .55rem; }
+.detalle-botones form { margin: 0; }
+.detalle-botones form .btn { width: 100%; }
+.aviso-superpuesta { margin: .8rem 0 0; padding: .6rem .8rem; border-radius: 10px; background: var(--amarillo-fondo); color: var(--amarillo); font-weight: 600; }
+
+
+/* ================= VISTA AMPLIADA ================= */
+
+.planilla-ampliada {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    width: 100vw;
+    height: 100vh;
+
+    padding: 12px 18px;
+
+    background: #f4f7fb;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
+/* Contenedor del calendario */
+.planilla-ampliada .planilla-caja {
+    flex: 1 1 auto;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    max-height: none;
+
+    overflow-y: auto;
+    overflow-x: hidden !important;
+
+    border-radius: 14px;
+}
+.planilla tr.hoy { scroll-margin-top: 80px; }
+
+/* Tabla completa dentro de la pantalla */
+.planilla-ampliada .planilla {
+    width: 100% !important;
+
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    table-layout: fixed !important;
+}
+
+
+/* Primera columna: día */
+.planilla-ampliada .planilla .dia {
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+
+    padding-left: 7px;
+    padding-right: 4px;
+}
+
+
+/* Todas las columnas de alojamientos se reparten el espacio */
+.planilla-ampliada .planilla th:not(.dia),
+.planilla-ampliada .planilla td:not(.dia) {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
+
+/* Nombre de los alojamientos */
+.planilla-ampliada .planilla thead th:not(.dia) {
+    padding: .55rem .15rem;
+
+    font-size: .62rem;
+    line-height: 1.1;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+
+/* Nombre/link de la casa */
+.planilla-ampliada .planilla thead th a {
+    display: block;
+
+    width: 100%;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+
+/* Reserva más compacta */
+.planilla-ampliada .reserva-bloque {
+    padding: .3rem .3rem;
+
+    font-size: .68rem;
+}
+
+
+/* Nombre del cliente */
+.planilla-ampliada .reserva-bloque strong {
+    padding-right: .7rem;
+
+    font-size: .7rem;
+
+    white-space: normal;
+}
+
+
+/* Datos de la reserva */
+.planilla-ampliada .reserva-bloque .info {
+    font-size: .6rem;
+}
+
+
+/* Casilleros */
+.planilla-ampliada .planilla td.libre,
+.planilla-ampliada .planilla td.reserva {
+    min-width: 0 !important;
+}
+
+
+/* Evita scroll de la página */
+body.planilla-abierta {
+    overflow: hidden;
+}
+
+.planilla-ampliada .planilla th,
+.planilla-ampliada .planilla td {
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
+.planilla-ampliada .planilla thead th {
+    font-size: .6rem !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+}
+
+.planilla-ampliada .planilla .dia {
+    width: 55px !important;
+}
+
+/* Disponibilidad · Todas las casas: el nombre de cada casa lleva a su calendario */
+.planilla thead th a { color: inherit; text-decoration: none; }
+.planilla thead th a:hover, .planilla thead th a:focus-visible { text-decoration: underline; }
+
+@media (max-width: 768px) {
+
+    .planilla-ampliada {
+        padding: 8px;
+    }
+
+    .planilla-ampliada .planilla-caja {
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .planilla-ampliada .planilla {
+        width: max-content !important;
+        min-width: 1000px !important;
+        max-width: none !important;
+
+        table-layout: fixed !important;
+    }
+
+    .planilla-ampliada .planilla .dia {
+        width: 55px !important;
+        min-width: 55px !important;
+        max-width: 55px !important;
+    }
+
+    .planilla-ampliada .planilla th:not(.dia),
+    .planilla-ampliada .planilla td:not(.dia) {
+        width: 115px !important;
+        min-width: 115px !important;
+        max-width: 115px !important;
+    }
+
+    .planilla-ampliada .planilla thead th:not(.dia) {
+        font-size: .62rem !important;
+        line-height: 1.15;
+        padding: 7px 3px !important;
+    }
+
+    .planilla-ampliada .reserva-bloque {
+        font-size: .68rem;
+    }
+}
