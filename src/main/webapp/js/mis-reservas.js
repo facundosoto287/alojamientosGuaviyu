@@ -29,6 +29,12 @@ const detalleEstado = document.getElementById("detalleEstado");
 const filtroVacio = document.getElementById("filtroVacio");
 const filtroVacioTitulo = document.getElementById("filtroVacioTitulo");
 
+const detalleColchonExtra = document.getElementById("detalleColchonExtra");
+
+const detalleFilaColchonExtra = document.getElementById("detalleFilaColchonExtra");
+
+const detallePrecioColchonExtra = document.getElementById("detallePrecioColchonExtra");
+
 
 /*FORMATEAR PRECIO*/
 function formatearPrecio(valor) {
@@ -143,6 +149,8 @@ filas.forEach(fila => {
 
         const medioDiaExtra = fila.dataset.medioDia === "true";
 
+        const colchonExtra = fila.dataset.colchonExtra === "true";
+
 
         /*DATOS*/
         detalleNombre.textContent = nombre;
@@ -165,6 +173,12 @@ filas.forEach(fila => {
         } else {
             detalleHorarioSalida.textContent = "10:00 hs";
             detalleMedioDia.textContent = "No";
+        }
+
+        if (colchonExtra) {
+            detalleColchonExtra.textContent = "Sí";
+        } else {
+            detalleColchonExtra.textContent = "No";
         }
 
 
@@ -190,6 +204,23 @@ filas.forEach(fila => {
             detalleFilaMedioDia.hidden = true;
 
             detallePrecioMedioDia.textContent = "";
+        }
+
+        /*PRECIO COLCHON EXTRA*/
+        if (colchonExtra) {
+
+            const precioColchonExtra = noches * 200;
+
+            detalleFilaColchonExtra.hidden = false;
+
+            detallePrecioColchonExtra.textContent =
+                "$ " + formatearPrecio(precioColchonExtra);
+
+        } else {
+
+            detalleFilaColchonExtra.hidden = true;
+
+            detallePrecioColchonExtra.textContent = "";
         }
 
         detalleTotal.textContent = "$ " + formatearPrecio(total);

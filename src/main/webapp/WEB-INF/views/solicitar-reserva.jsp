@@ -351,6 +351,32 @@
 
                     </div>
 
+                    <!--COLCHON EXTRA-->
+
+                    <c:if test="${alojamiento.permiteColchonExtra}">
+                        <div class="medio-dia-opcion">
+
+                            <label class="medio-dia-check">
+
+                                <input type="checkbox"
+                                       id="colchonExtra"
+                                       name="colchonExtra"
+                                       value="true">
+
+                                <span>
+                                    ¿Deseás agregar un colchón extra?
+                                </span>
+
+                            </label>
+
+                            <p class="medio-dia-ayuda">
+                                Podés agregar un colchón extra durante toda la estadía.
+                                Tiene un costo adicional de $200 por noche.
+                            </p>
+
+                        </div>
+                    </c:if>
+
 
                 </div>
 
@@ -649,6 +675,22 @@
 
                 </div>
 
+                <c:if test="${alojamiento.permiteColchonExtra}">
+                    <div class="resumen-precio"
+                         id="filaColchonExtra"
+                         hidden>
+
+                        <span>
+                            Colchón extra
+                        </span>
+
+                        <strong id="precioColchonExtra">
+                            $ 0
+                        </strong>
+
+                    </div>
+                </c:if>
+
 
                 <div class="resumen-total">
 
@@ -717,18 +759,19 @@
 <script>
 
     const medioDia = document.getElementById("medioDia");
+    const colchonExtra = document.getElementById("colchonExtra");
 
     const filaMedioDia = document.getElementById("filaMedioDia");
-
     const precioMedioDia = document.getElementById("precioMedioDia");
+
+    const filaColchonExtra = document.getElementById("filaColchonExtra");
+    const precioColchonExtra = document.getElementById("precioColchonExtra");
 
     const precioTotalFinal = document.getElementById("precioTotalFinal");
 
-
     const precioPorNoche = Number("${precioPorNoche}");
-
     const precioBase = Number("${precioTotal}");
-
+    const cantidadNoches = Number("${cantidadNoches}");
 
     function formatearPrecio(valor) {
 
@@ -741,33 +784,61 @@
         );
     }
 
+    function actualizarPrecio() {
 
-    medioDia.addEventListener("change",function () {
+        let total = precioBase;
 
-            if (medioDia.checked) {
+        if (medioDia && medioDia.checked) {
 
-                const adicional = precioPorNoche / 2;
+            const adicionalMedioDia = precioPorNoche / 2;
 
-                const total = precioBase + adicional;
+            total += adicionalMedioDia;
 
+            filaMedioDia.hidden = false;
 
-                filaMedioDia.hidden = false;
+            precioMedioDia.textContent =
+                formatearPrecio(adicionalMedioDia);
 
+        } else {
 
-                precioMedioDia.textContent = formatearPrecio(adicional);
-
-
-                precioTotalFinal.textContent = formatearPrecio(total);
-
-            } else {
-
-                filaMedioDia.hidden = true;
-
-
-                precioTotalFinal.textContent = formatearPrecio(precioBase);
-            }
+            filaMedioDia.hidden = true;
         }
+
+        if (colchonExtra && colchonExtra.checked) {
+
+            const adicionalColchon = cantidadNoches * 200;
+
+            total += adicionalColchon;
+
+            filaColchonExtra.style.display = "";
+
+            precioColchonExtra.textContent =
+                formatearPrecio(adicionalColchon);
+
+        } else if (filaColchonExtra) {
+
+            precioColchonExtra.textContent =
+                formatearPrecio(0);
+
+            filaColchonExtra.style.display = "none";
+        }
+
+        precioTotalFinal.textContent =
+            formatearPrecio(total);
+    }
+
+    medioDia.addEventListener(
+        "change",
+        actualizarPrecio
     );
+
+    if (colchonExtra) {
+
+        colchonExtra.addEventListener(
+            "change",
+            actualizarPrecio
+        );
+    }
 
 </script>
 <script>

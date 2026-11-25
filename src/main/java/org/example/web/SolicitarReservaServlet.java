@@ -221,6 +221,8 @@ public class SolicitarReservaServlet extends HttpServlet {
 
         boolean medioDiaExtra = request.getParameter("medioDiaExtra") != null;
 
+        boolean colchonExtra = request.getParameter("colchonExtra") != null;
+
 
         try {
 
@@ -258,6 +260,10 @@ public class SolicitarReservaServlet extends HttpServlet {
                 return;
             }
 
+            if (colchonExtra && !alojamiento.isPermiteColchonExtra()) {
+                response.sendRedirect(request.getContextPath() + "/alojamiento-detalle?id=" + alojamientoId);
+                return;
+            }
 
             if (cantidadHuespedes > alojamiento.getCapacidad()) {
 
@@ -322,6 +328,7 @@ public class SolicitarReservaServlet extends HttpServlet {
 
 
             reserva.setMedioDiaExtra(medioDiaExtra);
+            reserva.setColchonExtra(colchonExtra);
 
 
             int idReserva = reservaDao.crearSolicitudReserva(reserva, cliente.getId());
@@ -356,6 +363,9 @@ public class SolicitarReservaServlet extends HttpServlet {
             if (medioDiaExtra) {
                 precioTotal += precioPorNoche / 2;
             }
+            if (colchonExtra) {
+                precioTotal += cantidadNoches * 200;
+            }
 
 
             /*ARMAR WHATSAPP*/
@@ -384,7 +394,7 @@ public class SolicitarReservaServlet extends HttpServlet {
 
 
             mensaje.append("Medio día adicional: ").append(medioDiaExtra ? "Sí" : "No").append("\n\n");
-
+            mensaje.append("Colchón extra: ").append(colchonExtra ? "Sí" : "No").append("\n\n");
 
             /*Edades */
 
@@ -428,15 +438,9 @@ public class SolicitarReservaServlet extends HttpServlet {
 
 
             /*REDIRECT A WHATSAPP*/
-
-
             /*
-             * CAMBIAR POR EL NÚMERO
-             * REAL DE LA ADMINISTRACIÓN.
-             *
              * Uruguay:
-             * 598 + número sin 0 inicial.
-             *
+             * 598 + número sin 0 inicial
              * Ejemplo:
              * 099 123 456
              * sería:
@@ -444,7 +448,7 @@ public class SolicitarReservaServlet extends HttpServlet {
              */
 
             String telefonoAdministrador =
-                    "59892201428";
+                    "59899933446";
 
 
             String mensajeCodificado =

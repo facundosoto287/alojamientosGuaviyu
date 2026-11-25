@@ -288,7 +288,9 @@
 
                                 data-total="${reserva.precioTotal}"
 
-                                data-medio-dia="${reserva.medioDiaExtra}">
+                                data-medio-dia="${reserva.medioDiaExtra}"
+
+                                data-colchon-extra="${reserva.colchonExtra}">
 
 
 
@@ -682,6 +684,15 @@
 
                     </div>
 
+                    <div>
+                        <span>
+                            Colchón extra
+                        </span>
+
+                        <strong id="detalleColchonExtra">
+                        </strong>
+                    </div>
+
 
                 </div>
 
@@ -738,6 +749,21 @@
                         </span>
 
                         <strong id="detallePrecioMedioDia">
+                        </strong>
+
+                    </div>
+
+                    <!--COLCHON EXTRA-->
+
+                    <div class="fila-precio"
+                         id="detalleFilaColchonExtra"
+                         hidden>
+
+                        <span>
+                            Colchón extra
+                        </span>
+
+                        <strong id="detallePrecioColchonExtra">
                         </strong>
 
                     </div>

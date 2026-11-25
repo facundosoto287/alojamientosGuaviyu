@@ -35,7 +35,11 @@ public class ReservaPlanilla extends ReservaDetalle {
      * noches × precio del alojamiento, más media noche si pidió medio día extra.
      */
     public double getPrecioTotal() {
-        return getNoches() * precioNoche + (isMedioDiaExtra() ? precioNoche / 2 : 0);
+        double total = getNoches() * precioNoche + (isMedioDiaExtra() ? precioNoche / 2 : 0);
+        if (isColchonExtra()) {
+            total += getNoches() * 200;
+        }
+        return total;
     }
 
     /** Precio total para mostrar: "$ 17.500". */
@@ -53,7 +57,15 @@ public class ReservaPlanilla extends ReservaDetalle {
      * Si pidió medio día extra se agrega "+ ½".
      */
     public String getCuenta() {
-        return getNoches() + " × " + getPrecioNocheTexto() + (isMedioDiaExtra() ? " + ½" : "");
+
+        String cuenta = getNoches()  + " × " + getPrecioNocheTexto();
+        if (isMedioDiaExtra()) {
+            cuenta += " + ½";
+        }
+        if (isColchonExtra()) {
+            cuenta += " + colchón";
+        }
+        return cuenta;
     }
 
     /** Texto "3 noches" / "1 noche". */

@@ -690,6 +690,9 @@
             <div class="disponibilidad" id="bloqueDisponibilidad">
 
                 <h3>Disponibilidad</h3>
+                <p class="disponibilidad-ayuda">
+                    Seleccioná en el calendario las fechas en las que querés alojarte.
+                </p>
 
 
                 <!-- Calendario -->

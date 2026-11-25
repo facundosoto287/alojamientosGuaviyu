@@ -33,4 +33,5 @@ public class ReservaDetalle {
     public java.sql.Date getFechaSolicitud() { return reserva.getFechaSolicitud(); }
     public int getAlojamientoId() { return reserva.getAlojamientoId(); }
     public boolean isMedioDiaExtra() { return reserva.isMedioDiaExtra(); }
+    public boolean isColchonExtra() { return reserva.isColchonExtra() ;}
 }

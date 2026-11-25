@@ -441,7 +441,7 @@ public class ReservaDao {
     public List<ReservaDetalle> listarDetalle(EstadoReserva estado, Integer alojamientoId, Integer clienteId, String textoCliente) {
         StringBuilder sql = new StringBuilder("""
                 SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado, r.fechaSolicitud,
-                       r.alojamiento_id, r.medioDiaExtra,
+                       r.alojamiento_id, r.medioDiaExtra, r.colchon_extra,
                        a.nombre AS alojamiento, c.id AS cliente_id, c.nombre AS cliente, c.documento
                 FROM reserva r
                 LEFT JOIN alojamiento a ON a.id = r.alojamiento_id
@@ -485,6 +485,7 @@ public class ReservaDao {
                     boolean sinCliente = fila.wasNull();
                     Reserva reserva = mapearReserva(fila);
                     reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
+                    reserva.setColchonExtra(fila.getBoolean("colchon_extra"));
                     lista.add(new ReservaDetalle(
                             reserva,
                             fila.getString("alojamiento"),
@@ -815,9 +816,10 @@ public class ReservaDao {
                 estado,
                 fechaSolicitud,
                 alojamiento_id,
-                medioDiaExtra
+                medioDiaExtra,
+                colchon_extra
             )
-            VALUES (?, ?, ?, 'PENDIENTE', ?, ?, ?)
+            VALUES (?, ?, ?, 'PENDIENTE', ?, ?, ?, ?)
             """;
 
 
@@ -908,6 +910,11 @@ public class ReservaDao {
                     insertar.setBoolean(
                             6,
                             reserva.isMedioDiaExtra()
+                    );
+
+                    insertar.setBoolean(
+                            7,
+                            reserva.isColchonExtra()
                     );
 
 
@@ -1011,6 +1018,7 @@ public class ReservaDao {
             r.fechaSolicitud,
             r.alojamiento_id,
             r.medioDiaExtra,
+            r.colchon_extra,
 
             a.nombre AS nombreAlojamiento,
             a.ubicacion AS ubicacionAlojamiento,
@@ -1024,6 +1032,12 @@ public class ReservaDao {
                 CASE
                     WHEN r.medioDiaExtra = 1
                     THEN a.precio / 2
+                    ELSE 0
+                END
+                +
+                CASE
+                    WHEN r.colchon_extra = 1
+                    THEN DATEDIFF(r.fechaSalida, r.fechaIngreso) * 200
                     ELSE 0
                 END
             ) AS precioTotal
@@ -1065,6 +1079,10 @@ public class ReservaDao {
 
                     reserva.setMedioDiaExtra(
                             resultado.getBoolean("medioDiaExtra")
+                    );
+
+                    reserva.setColchonExtra(
+                            resultado.getBoolean("colchon_extra")
                     );
 
 
@@ -1112,7 +1130,7 @@ public class ReservaDao {
 
         String sql = """
                 SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado,
-                       r.fechaSolicitud, r.alojamiento_id, r.medioDiaExtra,
+                       r.fechaSolicitud, r.alojamiento_id, r.medioDiaExtra, r.colchon_extra,
                        a.nombre AS alojamiento,
                        a.precio AS precioNoche,
                        c.id AS cliente_id, c.nombre AS cliente, c.documento, c.telefono, c.procedencia
@@ -1143,6 +1161,7 @@ public class ReservaDao {
 
                     Reserva reserva = mapearReserva(fila);
                     reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
+                    reserva.setColchonExtra(fila.getBoolean("colchon_extra"));
 
                     lista.add(new ReservaPlanilla(
                             reserva,
@@ -1312,6 +1331,7 @@ public class ReservaDao {
                r.fechaSolicitud,
                r.alojamiento_id,
                r.medioDiaExtra,
+               r.colchon_extra,
                a.nombre AS alojamiento,
                c.id AS cliente_id,
                c.nombre AS cliente,
@@ -1341,6 +1361,7 @@ public class ReservaDao {
                     Reserva reserva = mapearReserva(fila);
 
                     reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
+                    reserva.setColchonExtra(fila.getBoolean("colchon_extra"));
 
                     return new ReservaDetalle(reserva, fila.getString("alojamiento"), sinCliente ? null : idCliente, fila.getString("cliente"), fila.getString("documento"));
                 }
