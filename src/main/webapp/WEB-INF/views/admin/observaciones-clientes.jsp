@@ -124,28 +124,28 @@
                             <div>
                                 <span>Documento</span>
                                 <strong>
-                                    <c:out value="${clienteSeleccionado.documento}"/>
+                                    <c:out value="${empty clienteSeleccionado.documento ? '—' : clienteSeleccionado.documento}"/>
                                 </strong>
                             </div>
 
                             <div>
                                 <span>Teléfono</span>
                                 <strong>
-                                    <c:out value="${clienteSeleccionado.telefono}"/>
+                                    <c:out value="${empty clienteSeleccionado.telefono ? '—' : clienteSeleccionado.telefono}"/>
                                 </strong>
                             </div>
 
                             <div>
                                 <span>Correo</span>
                                 <strong>
-                                    <c:out value="${clienteSeleccionado.email}"/>
+                                    <c:out value="${empty clienteSeleccionado.email ? '—' : clienteSeleccionado.email}"/>
                                 </strong>
                             </div>
 
                             <div>
                                 <span>Procedencia</span>
                                 <strong>
-                                    <c:out value="${clienteSeleccionado.procedencia}"/>
+                                    <c:out value="${empty clienteSeleccionado.procedencia ? '—' : clienteSeleccionado.procedencia}"/>
                                 </strong>
                             </div>
 

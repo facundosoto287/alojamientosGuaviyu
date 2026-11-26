@@ -9,7 +9,7 @@
 <div class="pagina-titulo">
     <div>
         <h1>Clientes</h1>
-        <p class="muted">Registrá clientes, consultá su historial de reservas y mantené el listado al día.</p>
+        <p class="muted">Registrá y editá clientes, consultá su historial de reservas y mantené el listado al día.</p>
     </div>
     <button type="button" class="btn btn-primario" data-modal-abrir="m-registrar">+ Registrar cliente</button>
 </div>
@@ -21,7 +21,7 @@
             <h2>Historial de <c:out value="${clienteHistorial.nombre}"/></h2>
             <a href="${base}/clientes" class="enlace">Cerrar historial</a>
         </div>
-        <p class="muted">Documento <c:out value="${clienteHistorial.documento}"/> · <c:out value="${clienteHistorial.email}"/></p>
+        <p class="muted">Documento <c:out value="${empty clienteHistorial.documento ? '—' : clienteHistorial.documento}"/> · <c:out value="${empty clienteHistorial.email ? 'sin correo' : clienteHistorial.email}"/></p>
 
         <c:choose>
             <c:when test="${empty historial}"><p class="vacio">Este cliente todavía no tiene reservas.</p></c:when>
@@ -84,13 +84,21 @@
                                 <c:out value="${cl.nombre}"/>
                                 <c:if test="${cl.debeCambiarContrasena}"><div class="celda-sub">Aún no cambió la contraseña inicial</div></c:if>
                             </td>
-                            <td><c:out value="${cl.documento}"/></td>
+                            <td><c:out value="${empty cl.documento ? '—' : cl.documento}"/></td>
                             <td><c:out value="${empty cl.telefono ? '—' : cl.telefono}"/></td>
-                            <td><c:out value="${cl.email}"/></td>
+                            <td><c:out value="${empty cl.email ? '—' : cl.email}"/></td>
                             <td><c:out value="${empty cl.procedencia ? '—' : cl.procedencia}"/></td>
                             <td><c:out value="${empty cl.localidad ? '—' : cl.localidad}"/></td>
                             <td class="acciones">
                                 <a href="${base}/clientes?historial=${cl.id}" class="btn btn-editar">Historial</a>
+                                <button type="button" class="btn btn-editar" data-modal-abrir="m-editar"
+                                        data-f-id="${cl.id}"
+                                        data-f-nombre="<c:out value='${cl.nombre}'/>"
+                                        data-f-documento="<c:out value='${cl.documento}'/>"
+                                        data-f-telefono="<c:out value='${cl.telefono}'/>"
+                                        data-f-email="<c:out value='${cl.email}'/>"
+                                        data-f-procedencia="<c:out value='${cl.procedencia}'/>"
+                                        data-f-localidad="<c:out value='${cl.localidad}'/>">Editar</button>
                                 <form action="${base}/clientes" method="post"
                                       data-confirmar="¿Eliminar al cliente &quot;<c:out value='${cl.nombre}'/>&quot;? Solo se puede si no tiene reservas.">
                                     <input type="hidden" name="_csrf" value="${csrf}">
@@ -112,21 +120,22 @@
 <dialog id="m-registrar" class="modal">
     <form action="${base}/clientes" method="post" class="modal-form">
         <h2>Registrar cliente</h2>
-        <p class="muted">La cuenta se crea con la contraseña por defecto del sistema. El cliente tendrá que cambiarla la primera vez que ingrese.</p>
+        <p class="muted">Solo el nombre es obligatorio; los demás datos se pueden completar después. La cuenta se crea con la contraseña
+            por defecto, que el cliente cambia la primera vez que ingresa. Para ingresar necesita tener correo.</p>
         <input type="hidden" name="_csrf" value="${csrf}">
         <input type="hidden" name="accion" value="registrar">
         <div class="campos">
             <label class="campo ancho">Nombre completo
                 <input type="text" name="nombre" maxlength="100" required></label>
             <label class="campo">Documento (cédula)
-                <input type="text" name="documento" maxlength="20" placeholder="1.234.567-2" required></label>
+                <input type="text" name="documento" maxlength="20" placeholder="1.234.567-2"></label>
             <label class="campo">Teléfono (celular)
                 <input type="tel" name="telefono" maxlength="30" placeholder="099 123 456"></label>
             <label class="campo ancho">Correo electrónico
-                <input type="email" name="email" maxlength="100" required></label>
+                <input type="email" name="email" maxlength="100"></label>
             <label class="campo ancho">Procedencia
                 <small>Departamento, provincia o país donde vive.</small>
-                <select name="procedencia" required>
+                <select name="procedencia">
                     <option value="">Elegí una opción…</option>
                     <c:forEach var="p" items="${procedencias}">
                         <option value="${fn:escapeXml(p)}"><c:out value="${p}"/></option>
@@ -134,7 +143,7 @@
                 </select></label>
             <label class="campo ancho">Localidad
                 <small>Ciudad o pueblo donde vive (por ejemplo: Paysandú, Salto o Guichón).</small>
-                <input type="text" name="localidad" list="lista-localidades" maxlength="100" placeholder="Ciudad o pueblo" required></label>
+                <input type="text" name="localidad" list="lista-localidades" maxlength="100" placeholder="Ciudad o pueblo"></label>
             <datalist id="lista-localidades">
                 <c:forEach var="sugerida" items="${localidades}"><option value="${fn:escapeXml(sugerida)}"></option></c:forEach>
             </datalist>
@@ -142,6 +151,43 @@
         <div class="modal-pie">
             <button type="button" class="btn btn-secundario" data-modal-cerrar>Cancelar</button>
             <button type="submit" class="btn btn-primario">Registrar</button>
+        </div>
+    </form>
+</dialog>
+
+<%-- ============ Editar ============ --%>
+<dialog id="m-editar" class="modal">
+    <form action="${base}/clientes" method="post" class="modal-form">
+        <h2>Editar cliente</h2>
+        <p class="muted">Solo el nombre es obligatorio. La contraseña del cliente no cambia. El correo es el que usa para
+            iniciar sesión: si se lo quitás, no puede ingresar.</p>
+        <input type="hidden" name="_csrf" value="${csrf}">
+        <input type="hidden" name="accion" value="editar">
+        <input type="hidden" name="id">
+        <div class="campos">
+            <label class="campo ancho">Nombre completo
+                <input type="text" name="nombre" maxlength="100" required></label>
+            <label class="campo">Documento (cédula)
+                <input type="text" name="documento" maxlength="20"></label>
+            <label class="campo">Teléfono (celular)
+                <input type="tel" name="telefono" maxlength="30" placeholder="099 123 456"></label>
+            <label class="campo ancho">Correo electrónico
+                <input type="email" name="email" maxlength="100"></label>
+            <label class="campo ancho">Procedencia
+                <small>Departamento, provincia o país donde vive.</small>
+                <select name="procedencia">
+                    <option value="">Elegí una opción…</option>
+                    <c:forEach var="p" items="${procedencias}">
+                        <option value="${fn:escapeXml(p)}"><c:out value="${p}"/></option>
+                    </c:forEach>
+                </select></label>
+            <label class="campo ancho">Localidad
+                <small>Ciudad o pueblo donde vive.</small>
+                <input type="text" name="localidad" list="lista-localidades" maxlength="100"></label>
+        </div>
+        <div class="modal-pie">
+            <button type="button" class="btn btn-secundario" data-modal-cerrar>Cancelar</button>
+            <button type="submit" class="btn btn-primario">Guardar cambios</button>
         </div>
     </form>
 </dialog>

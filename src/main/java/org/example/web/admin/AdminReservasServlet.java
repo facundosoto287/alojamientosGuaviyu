@@ -159,7 +159,9 @@ public class AdminReservasServlet extends AdminServlet {
                 return; // el aviso con el error ya quedó guardado
             }
             clienteId = nuevoId;
-            avisoCliente = " Cliente registrado con la contraseña por defecto (deberá cambiarla en su primer ingreso).";
+            avisoCliente = texto(request, "nuevoEmail").isEmpty()
+                    ? " Cliente registrado sin correo (todavía no puede ingresar a la web)."
+                    : " Cliente registrado con la contraseña por defecto (deberá cambiarla en su primer ingreso).";
         }
 
         try {
@@ -181,7 +183,8 @@ public class AdminReservasServlet extends AdminServlet {
 
     /**
      * Registra el cliente nuevo que se cargó en el formulario de "Nueva reserva",
-     * con las mismas validaciones que la sección Clientes. Devuelve su id, o null si hubo un error.
+     * con las mismas validaciones que la sección Clientes (solo el nombre es obligatorio).
+     * Devuelve su id, o null si hubo un error.
      */
     private Integer registrarClienteNuevo(HttpServletRequest request) {
         Map<String, String> valores = new LinkedHashMap<>();
@@ -192,7 +195,7 @@ public class AdminReservasServlet extends AdminServlet {
         valores.put("procedencia", texto(request, "nuevoProcedencia"));
         valores.put("localidad", texto(request, "nuevoLocalidad"));
 
-        Map<String, String> errores = ValidacionCliente.validarDatos(valores, clienteDAO);
+        Map<String, String> errores = ValidacionCliente.validarDatosAdmin(valores, clienteDAO);
         if (!errores.isEmpty()) {
             avisoError(request, "Cliente nuevo: " + String.join(" ", errores.values()));
             return null;
