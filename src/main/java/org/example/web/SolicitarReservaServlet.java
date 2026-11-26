@@ -412,16 +412,16 @@ public class SolicitarReservaServlet extends HttpServlet {
             mensaje.append("\nCliente: ").append(cliente.getNombre());
 
 
-            mensaje.append("\nCédula: ").append(cliente.getDocumento());
+            mensaje.append("\nCédula: ").append(java.util.Objects.toString(cliente.getDocumento(), "—"));
 
 
-            mensaje.append("\nTeléfono: ").append(cliente.getTelefono());
+            mensaje.append("\nTeléfono: ").append(java.util.Objects.toString(cliente.getTelefono(), "—"));
 
 
-            mensaje.append("\nCorreo: ").append(cliente.getEmail());
+            mensaje.append("\nCorreo: ").append(java.util.Objects.toString(cliente.getEmail(), "—"));
 
 
-            mensaje.append("\nProcedencia: ").append(cliente.getProcedencia());
+            mensaje.append("\nProcedencia: ").append(java.util.Objects.toString(cliente.getProcedencia(), "—"));
 
 
             /*Observaciones*/

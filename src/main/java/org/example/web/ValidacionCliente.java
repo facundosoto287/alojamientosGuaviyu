@@ -1,9 +1,11 @@
 package org.example.web;
 
+import org.example.Cliente;
 import org.example.ClienteDAO;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /** Validación de los datos personales de un cliente, compartida por el registro público y el panel de administrador. */
 public final class ValidacionCliente {
@@ -62,5 +64,38 @@ public final class ValidacionCliente {
         }
 
         return errores;
+    }
+
+    /**
+     * Validación del panel de administrador: solo el nombre es obligatorio. Los demás datos se pueden dejar
+     * vacíos, pero los que se cargan tienen que ser válidos. El registro público usa validarDatos.
+     */
+    public static Map<String, String> validarDatosAdmin(Map<String, String> v, ClienteDAO clienteDAO) {
+        Map<String, String> errores = validarDatos(v, clienteDAO);
+        errores.keySet().removeIf(campo -> !campo.equals("nombre") && v.getOrDefault(campo, "").isBlank());
+        return errores;
+    }
+
+    /**
+     * Validación al editar un cliente desde el panel: como validarDatosAdmin, y además solo se revisan
+     * los datos que se modificaron. Así un dato antiguo mal cargado no impide corregir otro.
+     */
+    public static Map<String, String> validarCambios(Map<String, String> v, Cliente actual, ClienteDAO clienteDAO) {
+        Map<String, String> errores = validarDatosAdmin(v, clienteDAO);
+
+        quitarSiNoCambio(errores, v, "documento", actual.getDocumento());
+        quitarSiNoCambio(errores, v, "telefono", actual.getTelefono());
+        quitarSiNoCambio(errores, v, "email", actual.getEmail());
+        quitarSiNoCambio(errores, v, "procedencia", actual.getProcedencia());
+        quitarSiNoCambio(errores, v, "localidad", actual.getLocalidad());
+
+        return errores;
+    }
+
+    private static void quitarSiNoCambio(Map<String, String> errores, Map<String, String> v, String campo,
+                                         String guardado) {
+        if (v.getOrDefault(campo, "").equals(Objects.toString(guardado, "").trim())) {
+            errores.remove(campo);
+        }
     }
 }
