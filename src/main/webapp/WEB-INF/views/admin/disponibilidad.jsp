@@ -722,7 +722,7 @@ body.planilla-abierta {
                 <select name="clienteId" required>
                     <option value="">Elegí un cliente…</option>
                     <c:forEach var="cli" items="${clientes}">
-                        <option value="${cli.id}"><c:out value="${cli.nombre}"/> — <c:out value="${cli.documento}"/></option>
+                        <option value="${cli.id}"><c:out value="${cli.nombre}"/><c:if test="${not empty cli.documento}"> — <c:out value="${cli.documento}"/></c:if></option>
                     </c:forEach>
                 </select>
             </label>
@@ -771,7 +771,7 @@ body.planilla-abierta {
                     <option value="nuevo">+ Agregar cliente nuevo…</option>
                     <c:forEach var="cli" items="${clientes}">
                         <c:set var="senaCli" value="${senasPorCliente[cli.id]}"/>
-                        <option value="${cli.id}" data-sena-id="${senaCli.id}" data-sena="${senaCli.resumen}"><c:out value="${cli.nombre}"/> — <c:out value="${cli.documento}"/></option>
+                        <option value="${cli.id}" data-sena-id="${senaCli.id}" data-sena="${senaCli.resumen}"><c:out value="${cli.nombre}"/><c:if test="${not empty cli.documento}"> — <c:out value="${cli.documento}"/></c:if></option>
                     </c:forEach>
                 </select>
                 <button type="button" class="btn btn-editar boton-cliente-nuevo" data-elegir-cliente-nuevo>+ Agregar cliente nuevo</button>
@@ -788,14 +788,14 @@ body.planilla-abierta {
                     <label class="campo ancho">Nombre completo
                         <input type="text" name="nuevoNombre" maxlength="100" data-requerido></label>
                     <label class="campo">Documento (cédula)
-                        <input type="text" name="nuevoDocumento" maxlength="20" placeholder="1.234.567-2" data-requerido></label>
+                        <input type="text" name="nuevoDocumento" maxlength="20" placeholder="1.234.567-2"></label>
                     <label class="campo">Teléfono (celular)
                         <input type="tel" name="nuevoTelefono" maxlength="30" placeholder="099 123 456"></label>
                     <label class="campo">Correo electrónico
-                        <input type="email" name="nuevoEmail" maxlength="100" data-requerido></label>
+                        <input type="email" name="nuevoEmail" maxlength="100"></label>
                     <label class="campo">Procedencia
                         <small>Departamento, provincia o país</small>
-                        <select name="nuevoProcedencia" data-requerido>
+                        <select name="nuevoProcedencia">
                             <option value="">Elegí una opción…</option>
                             <c:forEach var="p" items="${procedencias}">
                                 <option value="<c:out value='${p}'/>"><c:out value="${p}"/></option>
@@ -803,12 +803,12 @@ body.planilla-abierta {
                         </select></label>
                     <label class="campo">Localidad
                         <small>Ciudad o pueblo donde vive</small>
-                        <input type="text" name="nuevoLocalidad" list="lista-localidades" maxlength="100" placeholder="Ciudad o pueblo" data-requerido></label>
+                        <input type="text" name="nuevoLocalidad" list="lista-localidades" maxlength="100" placeholder="Ciudad o pueblo"></label>
                     <datalist id="lista-localidades">
                         <c:forEach var="sugerida" items="${localidades}"><option value="<c:out value='${sugerida}'/>"></option></c:forEach>
                     </datalist>
                 </div>
-                <small>Se registra junto con la reserva, con la contraseña por defecto (la cambia en su primer ingreso).</small>
+                <small>Solo el nombre es obligatorio. Se registra junto con la reserva, con la contraseña por defecto (la cambia en su primer ingreso).</small>
             </fieldset>
             <label class="campo ancho">Alojamiento
                 <select name="alojamientoId" required>

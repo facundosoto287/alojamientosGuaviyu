@@ -1254,19 +1254,25 @@ body.admin-ingreso { display: grid; place-items: center; min-height: 100vh; padd
 
 .tabla-clientes th,
 .tabla-clientes td {
-    padding-left: .6rem;
-    padding-right: .6rem;
+    padding-left: .4rem;
+    padding-right: .4rem;
 }
 
+/* Tres botones por fila: Historial, Editar y Eliminar */
 .tabla-clientes .acciones-col,
 .tabla-clientes td.acciones {
-    min-width: 185px;
-    width: 185px;
+    min-width: 200px;
+    width: 200px;
+}
+
+.tabla-clientes td.acciones > * {
+    margin-left: .2rem;
 }
 
 .tabla-clientes td.acciones .btn {
-    padding-left: .65rem;
-    padding-right: .65rem;
+    padding-left: .45rem;
+    padding-right: .45rem;
+    font-size: .8rem;
 }
 
 /* RESPONSIVE */

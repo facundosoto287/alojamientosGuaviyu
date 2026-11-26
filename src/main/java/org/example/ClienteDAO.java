@@ -25,6 +25,9 @@ public class ClienteDAO {
     /** Costo de BCrypt: 12 tarda ~0,2 s por intento, suficiente para frenar ataques de fuerza bruta. */
     private static final int COSTO_BCRYPT = 12;
 
+    /** Código de error de MySQL cuando se intenta guardar NULL en una columna que no lo admite. */
+    private static final int COLUMNA_NO_ADMITE_VACIO = 1048;
+
     /** Contraseña inicial de los clientes que registra el administrador; deben cambiarla en su primer ingreso. */
     public static final String CONTRASENA_POR_DEFECTO = "alojamientosguaviyu";
 
@@ -99,8 +102,10 @@ public class ClienteDAO {
     }
 
     /**
-     * Registro hecho por el administrador: la cuenta queda con la contraseña por defecto
-     * y marcada para que el cliente la cambie en su primer ingreso.
+     * Registro hecho por el administrador: solo el nombre es obligatorio, porque no siempre tiene los demás datos.
+     * Los que se cargan se validan igual que en el registro público; los que faltan quedan vacíos (NULL).
+     * La cuenta queda con la contraseña por defecto y marcada para que el cliente la cambie en su primer ingreso.
+     * Sin correo, el cliente no puede iniciar sesión en la web hasta que se le agregue uno.
      */
     public Cliente registrarClienteDesdeAdmin(String nombre, String documento, String telefono, String email,
                                               String procedencia, String localidad) {
@@ -108,30 +113,38 @@ public class ClienteDAO {
     }
 
     private Cliente registrar(String nombre, String documento, String telefono, String email, String procedencia,
-                              String localidad, String contrasena, boolean debeCambiarContrasena) {
+                              String localidad, String contrasena, boolean desdeAdmin) {
 
-        if (esVacio(nombre) || esVacio(documento) || esVacio(email) || contrasena == null || contrasena.isEmpty()) {
+        if (esVacio(nombre) || contrasena == null || contrasena.isEmpty()) {
+            throw new IllegalArgumentException("Faltan datos obligatorios.");
+        }
+        // Quien se registra por su cuenta tiene que dar todos sus datos
+        if (!desdeAdmin && (esVacio(documento) || esVacio(email))) {
             throw new IllegalArgumentException("Faltan datos obligatorios.");
         }
 
         nombre = nombre.trim();
-        documento = documento.trim();
-        email = normalizarEmail(email);
+        // Un dato vacío se guarda como NULL: así varios clientes sin documento o sin correo no chocan entre sí
+        documento = esVacio(documento) ? null : documento.trim();
+        email = esVacio(email) ? null : normalizarEmail(email);
         telefono = esVacio(telefono) ? null : telefono.trim();
         procedencia = esVacio(procedencia) ? null : procedencia.trim();
+        localidad = normalizarLocalidad(localidad);
 
-        // La procedencia (departamento, provincia o país) y la localidad (ciudad o pueblo) son obligatorias
-        if (procedencia == null) {
+        // La procedencia (departamento, provincia o país) y la localidad (ciudad o pueblo)
+        // son obligatorias en el registro público
+        if (!desdeAdmin && procedencia == null) {
             throw new IllegalArgumentException("Indicá la procedencia (departamento, provincia o país donde vivís).");
         }
-        localidad = normalizarLocalidad(localidad);
-        String errorLocalidad = errorDeLocalidad(localidad);
-        if (errorLocalidad != null) {
-            throw new IllegalArgumentException(errorLocalidad);
+        if (!desdeAdmin || localidad != null) {
+            String errorLocalidad = errorDeLocalidad(localidad);
+            if (errorLocalidad != null) {
+                throw new IllegalArgumentException(errorLocalidad);
+            }
         }
 
         // Validar cédula y celular antes de tocar la base de datos
-        if (!cedulaValida(documento)) {
+        if (documento != null && !cedulaValida(documento)) {
             throw new IllegalArgumentException("La cédula ingresada no es válida.");
         }
         if (telefono != null && !celularValido(telefono)) {
@@ -139,7 +152,7 @@ public class ClienteDAO {
         }
 
         // Guardar solo los números, así "1.234.567-2" y "12345672" cuentan como la misma cédula
-        documento = soloNumeros(documento);
+        documento = documento == null ? null : soloNumeros(documento);
         telefono = telefono == null ? null : soloNumeros(telefono);
 
         String sqlVerificar = "SELECT email FROM cliente WHERE email = ? OR documento = ?";
@@ -152,7 +165,7 @@ public class ClienteDAO {
 
             try (ResultSet resultado = verificar.executeQuery()) {
                 if (resultado.next()) {
-                    throw new IllegalArgumentException(email.equalsIgnoreCase(resultado.getString("email"))
+                    throw new IllegalArgumentException(email != null && email.equalsIgnoreCase(resultado.getString("email"))
                             ? "Ya existe una cuenta con ese correo electrónico."
                             : "Ya existe una cuenta con ese documento.");
                 }
@@ -175,7 +188,7 @@ public class ClienteDAO {
             sentencia.setString(5, procedencia);
             sentencia.setString(6, localidad);
             sentencia.setString(7, hash);
-            sentencia.setBoolean(8, debeCambiarContrasena);
+            sentencia.setBoolean(8, desdeAdmin);
 
             sentencia.executeUpdate();
 
@@ -188,10 +201,14 @@ public class ClienteDAO {
 
             Cliente nuevo = new Cliente(id, nombre, documento, telefono, email, procedencia, hash);
             nuevo.setLocalidad(localidad);
-            nuevo.setDebeCambiarContrasena(debeCambiarContrasena);
+            nuevo.setDebeCambiarContrasena(desdeAdmin);
             return nuevo;
 
         } catch (SQLIntegrityConstraintViolationException e) {
+            if (e.getErrorCode() == COLUMNA_NO_ADMITE_VACIO) {
+                // La base todavía no permite dejar vacíos el documento o el correo (ver tools/migraciones)
+                throw new RuntimeException(e);
+            }
             // Dos registros simultáneos con el mismo email/documento (lo frena el UNIQUE de la tabla)
             throw new IllegalArgumentException("Ya existe una cuenta con ese correo o documento.");
         } catch (SQLException e) {
@@ -469,6 +486,77 @@ public class ClienteDAO {
             sentencia.setString(4, normalizarLocalidad(localidad));
             sentencia.setInt(5, id);
             return sentencia.executeUpdate() == 1;
+        }
+    }
+
+    /**
+     * Edición de un cliente desde el panel de administrador. Los datos ya vienen validados
+     * (ver ValidacionCliente.validarCambios). Todo menos el nombre se puede dejar vacío. La contraseña no se toca.
+     * Si cambia o se quita el correo se anula el enlace de "Olvidé mi contraseña" que estuviera pendiente,
+     * porque se había enviado a la dirección anterior.
+     * Lanza IllegalArgumentException con un mensaje para mostrar si el correo o el documento son de otro cliente.
+     */
+    public void actualizarDesdeAdmin(Cliente actual, String nombre, String documento, String telefono, String email,
+                                     String procedencia, String localidad) throws SQLException {
+
+        // El documento y el teléfono se guardan solo con números, igual que en el registro
+        if (esVacio(documento)) {
+            documento = null;
+        } else if (!documento.equals(actual.getDocumento())) {
+            documento = soloNumeros(documento);
+        }
+        if (esVacio(telefono)) {
+            telefono = null;
+        } else if (!telefono.equals(actual.getTelefono())) {
+            telefono = soloNumeros(telefono);
+        }
+        email = esVacio(email) ? null : normalizarEmail(email);
+        procedencia = esVacio(procedencia) ? null : procedencia.trim();
+        localidad = normalizarLocalidad(localidad);
+
+        boolean cambiaCorreo = email == null ? actual.getEmail() != null : !email.equalsIgnoreCase(actual.getEmail());
+
+        String sqlRepetido = "SELECT email FROM cliente WHERE (email = ? OR documento = ?) AND id <> ?";
+        String sqlActualizar = "UPDATE cliente SET nombre = ?, documento = ?, telefono = ?, email = ?, procedencia = ?, "
+                + "localidad = ?" + (cambiaCorreo ? ", token_recuperacion = NULL, token_expira = NULL" : "")
+                + " WHERE id = ?";
+
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+
+            try (PreparedStatement verificar = conexion.prepareStatement(sqlRepetido)) {
+                verificar.setString(1, email);
+                verificar.setString(2, documento);
+                verificar.setInt(3, actual.getId());
+
+                try (ResultSet repetido = verificar.executeQuery()) {
+                    if (repetido.next()) {
+                        throw new IllegalArgumentException(email != null && email.equalsIgnoreCase(repetido.getString("email"))
+                                ? "Ya existe otro cliente con ese correo electrónico."
+                                : "Ya existe otro cliente con ese documento.");
+                    }
+                }
+            }
+
+            try (PreparedStatement sentencia = conexion.prepareStatement(sqlActualizar)) {
+                sentencia.setString(1, nombre.trim());
+                sentencia.setString(2, documento);
+                sentencia.setString(3, telefono);
+                sentencia.setString(4, email);
+                sentencia.setString(5, procedencia);
+                sentencia.setString(6, localidad);
+                sentencia.setInt(7, actual.getId());
+
+                if (sentencia.executeUpdate() != 1) {
+                    throw new IllegalArgumentException("El cliente ya no existe.");
+                }
+            }
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            if (e.getErrorCode() == COLUMNA_NO_ADMITE_VACIO) {
+                throw e; // falta la migración de la base (ver tools/migraciones)
+            }
+            // Alguien guardó el mismo correo o documento en el mismo momento (lo frena la base)
+            throw new IllegalArgumentException("Ya existe otro cliente con ese correo o documento.");
         }
     }
 
