@@ -700,6 +700,10 @@
 
 
 
+                    <!--DESGLOSE: se oculta si la administracion acordo el precio-->
+
+                    <div id="detalleDesglose">
+
                     <!--PRECIO POR NOCHE-->
 
                     <div class="fila-precio">
@@ -758,20 +762,6 @@
                         </strong>
 
                     </div>
-
-
-                    <!--PRECIO ACORDADO CON LA ADMINISTRACION-->
-
-                    <div class="fila-precio"
-                         id="detalleFilaAjuste"
-                         hidden>
-
-                        <span id="detalleEtiquetaAjuste">
-                            Descuento
-                        </span>
-
-                        <strong id="detallePrecioAjuste">
-                        </strong>
 
                     </div>
 

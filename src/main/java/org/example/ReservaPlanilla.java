@@ -55,13 +55,12 @@ public class ReservaPlanilla extends ReservaDetalle {
         return cuenta;
     }
 
-    /** Precio con su explicación, para la ventana de detalle de la planilla. */
+    /**
+     * Precio para la ventana de detalle de la planilla: la cuenta con su total,
+     * o solo el importe acordado si el administrador fijó uno.
+     */
     public String getPrecioDetalle() {
-        if (getPrecioAcordado() == null) {
-            return getCuenta() + " = " + getPrecioTexto();
-        }
-        return getCuenta() + " · calculado: "
-                + PlanillaDia.precioTexto(java.math.BigDecimal.valueOf(getPrecioCalculado()));
+        return getPrecioAcordado() != null ? getCuenta() : getCuenta() + " = " + getPrecioTexto();
     }
 
     /** Texto "3 noches" / "1 noche". */
