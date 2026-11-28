@@ -36,7 +36,6 @@
                         <div class="facts">
                             <div class="fact"><span>Capacidad</span><strong><c:out value="${alojamiento.capacidad}"/> personas</strong></div>
                             <div class="fact"><span>Precio</span><strong><c:out value="${alojamiento.precio}"/></strong></div>
-                            <div class="fact"><span>Ubicación</span><strong><c:out value="${alojamiento.ubicacion}"/></strong></div>
                             <div class="fact"><span>Distancia a piscina</span><strong><c:out value="${alojamiento.distanciaApiscina}"/> m</strong></div>
                         </div>
                     </article>

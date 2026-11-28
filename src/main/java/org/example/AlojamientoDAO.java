@@ -18,6 +18,8 @@ public class AlojamientoDAO {
     /** Agrega el alojamiento y devuelve el id que le asignó la base, o -1 si falló. */
     public int agregarAlojamientoConId(Alojamiento alojamiento) {
 
+        // La columna "ubicacion" ya no se usa (se guardan las coordenadas), pero sigue existiendo
+        // en la base compartida con las otras ramas: se completa vacía.
         String sql = """
         INSERT INTO alojamiento (
             nombre,
@@ -33,7 +35,7 @@ public class AlojamientoDAO {
             longitud,
             permiteMascotas
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+        VALUES (?, ?, ?, ?, ?, ?, ?, '', ?, ?, ?, ?)""";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -47,12 +49,11 @@ public class AlojamientoDAO {
             setDoubleNullable(sentencia, 6, alojamiento.getPrecioHasta4());
             setDoubleNullable(sentencia, 7, alojamiento.getPrecioHasta6());
 
-            sentencia.setString(8, alojamiento.getUbicacion());
-            sentencia.setFloat(9, alojamiento.getDistanciaApiscina());
+            sentencia.setFloat(8, alojamiento.getDistanciaApiscina());
 
-            guardarCoordenadas(sentencia, 10, alojamiento);
+            guardarCoordenadas(sentencia, 9, alojamiento);
 
-            sentencia.setBoolean(12, alojamiento.getPermiteMascotas());
+            sentencia.setBoolean(11, alojamiento.getPermiteMascotas());
 
             if (sentencia.executeUpdate() == 0) {
                 return -1;
@@ -93,7 +94,7 @@ public class AlojamientoDAO {
         List<Alojamiento> alojamientos = new ArrayList<>();
         String sql = "SELECT id, nombre, descripcion, capacidad, precio, " +
                 "precio_hasta_2, precio_hasta_4, precio_hasta_6, " +
-                "ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes " +
+                "distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes " +
                 "FROM alojamiento";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -101,9 +102,7 @@ public class AlojamientoDAO {
              ResultSet resultado = sentencia.executeQuery()) {
 
             while (resultado.next()) {
-                Alojamiento alojamiento = mapearAlojamiento(resultado);
-                leerCoordenadas(resultado, alojamiento);
-                alojamientos.add(alojamiento);
+                alojamientos.add(mapearAlojamiento(resultado));
             }
 
         } catch (SQLException e) {
@@ -124,7 +123,6 @@ public class AlojamientoDAO {
             precio_hasta_2 = ?,
             precio_hasta_4 = ?,
             precio_hasta_6 = ?,
-            ubicacion = ?,
             distanciaApiscina = ?,
             latitud = ?,
             longitud = ?,
@@ -143,13 +141,12 @@ public class AlojamientoDAO {
             setDoubleNullable(sentencia, 6, alojamiento.getPrecioHasta4());
             setDoubleNullable(sentencia, 7, alojamiento.getPrecioHasta6());
 
-            sentencia.setString(8, alojamiento.getUbicacion());
-            sentencia.setFloat(9, alojamiento.getDistanciaApiscina());
+            sentencia.setFloat(8, alojamiento.getDistanciaApiscina());
 
-            guardarCoordenadas(sentencia, 10, alojamiento);
+            guardarCoordenadas(sentencia, 9, alojamiento);
 
-            sentencia.setBoolean(12, alojamiento.getPermiteMascotas());
-            sentencia.setInt(13, alojamiento.getId());
+            sentencia.setBoolean(11, alojamiento.getPermiteMascotas());
+            sentencia.setInt(12, alojamiento.getId());
 
             return sentencia.executeUpdate() > 0;
 
@@ -213,8 +210,8 @@ public class AlojamientoDAO {
 
     // ---- Coordenadas para el mapa ----
 
-    // Pide la ubicación en el mapa. Se pega tal cual la copia Google Maps: "-31.83812, -57.89034".
-    // Si se deja vacío, el alojamiento se guarda sin ubicación y no aparece en el mapa.
+    // Pide las coordenadas del mapa. Se pega tal cual la copia Google Maps: "-31.83812, -57.89034".
+    // Si se deja vacío, el alojamiento se guarda sin coordenadas y no aparece en el mapa.
     private void pedirCoordenadas(Scanner sc, Alojamiento alojamiento) {
         while (true) {
             System.out.println("Ingrese las coordenadas del mapa (ej: -31.83812, -57.89034), o Enter para dejarlas vacías:");
@@ -233,8 +230,7 @@ public class AlojamientoDAO {
                     double latitud = Double.parseDouble(partes[0].trim());
                     double longitud = Double.parseDouble(partes[1].trim());
 
-                    // Uruguay está entre las latitudes -35 y -30 y las longitudes -59 y -53
-                    if (latitud >= -35 && latitud <= -30 && longitud >= -59 && longitud <= -53) {
+                    if (Alojamiento.coordenadasEnUruguay(latitud, longitud)) {
                         alojamiento.setLatitud(latitud);
                         alojamiento.setLongitud(longitud);
                         return;
@@ -281,9 +277,9 @@ public class AlojamientoDAO {
                 resultado.getString("descripcion"),
                 resultado.getInt("capacidad"),
                 resultado.getDouble("precio"),
-                resultado.getString("ubicacion"),
                 resultado.getFloat("distanciaApiscina")
         );
+        leerCoordenadas(resultado, alojamiento);
         alojamiento.setPermiteMascotas(resultado.getBoolean("permiteMascotas"));
         alojamiento.setPermiteColchonExtra(resultado.getBoolean("permite_colchon_extra"));
         alojamiento.setImagenes(resultado.getString("imagenes"));
@@ -316,14 +312,11 @@ public class AlojamientoDAO {
         double precio = sc.nextDouble();
         sc.nextLine();
 
-        System.out.println("Ingrese la ubicación:");
-        String ubicacion = sc.nextLine();
-
         System.out.println("Ingrese la distancia a la piscina (metros):");
         float distanciaApiscina = sc.nextFloat();
         sc.nextLine();
 
-        Alojamiento alojamiento = new Alojamiento(0, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        Alojamiento alojamiento = new Alojamiento(0, nombre, descripcion, capacidad, precio, distanciaApiscina);
         pedirCoordenadas(sc, alojamiento);
         return alojamiento;
     }
@@ -347,14 +340,11 @@ public class AlojamientoDAO {
         double precio = sc.nextDouble();
         sc.nextLine();
 
-        System.out.println("Ingrese la nueva ubicación:");
-        String ubicacion = sc.nextLine();
-
         System.out.println("Ingrese la nueva distancia a la piscina:");
         float distanciaApiscina = sc.nextFloat();
         sc.nextLine();
 
-        Alojamiento alojamiento = new Alojamiento(id, nombre, descripcion, capacidad, precio, ubicacion, distanciaApiscina);
+        Alojamiento alojamiento = new Alojamiento(id, nombre, descripcion, capacidad, precio, distanciaApiscina);
         pedirCoordenadas(sc, alojamiento);
         return alojamiento;
     }
@@ -459,7 +449,7 @@ public class AlojamientoDAO {
         List<Alojamiento> alojamientos = new ArrayList<>();
         String sql = "SELECT id, nombre, descripcion, capacidad, precio, " +
                 "precio_hasta_2, precio_hasta_4, precio_hasta_6, " +
-                "ubicacion, distanciaApiscina, permiteMascotas, permite_colchon_extra, imagenes " +
+                "distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes " +
                 "FROM alojamiento WHERE nombre LIKE ? ORDER BY nombre";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -488,11 +478,11 @@ public class AlojamientoDAO {
 
         String sql = """
             
-            SELECT a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.ubicacion, a.distanciaApiscina, a.permiteMascotas, a.permite_colchon_extra, a.imagenes
+            SELECT a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.distanciaApiscina, a.latitud, a.longitud, a.permiteMascotas, a.permite_colchon_extra, a.imagenes
             FROM alojamiento a
             JOIN alojamiento_servicio als ON a.id = als.alojamiento_id
             WHERE als.servicio_id IN (%s)
-            GROUP BY a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.ubicacion, a.distanciaApiscina, a.permiteMascotas, a.permite_colchon_extra, a.imagenes
+            GROUP BY a.id, a.nombre, a.descripcion, a.capacidad, a.precio, a.precio_hasta_2, a.precio_hasta_4, a.precio_hasta_6, a.distanciaApiscina, a.latitud, a.longitud, a.permiteMascotas, a.permite_colchon_extra, a.imagenes
             HAVING COUNT(DISTINCT als.servicio_id) = ?
             """.formatted(placeholders);
 
@@ -529,7 +519,7 @@ public class AlojamientoDAO {
         List<Alojamiento> alojamientos = new ArrayList<>();
 
         String sql = """
-            SELECT id, nombre, descripcion, capacidad, precio, precio_hasta_2, precio_hasta_4, precio_hasta_6, ubicacion, distanciaApiscina, permiteMascotas, permite_colchon_extra, imagenes
+            SELECT id, nombre, descripcion, capacidad, precio, precio_hasta_2, precio_hasta_4, precio_hasta_6, distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes
             FROM alojamiento
             WHERE capacidad >= ?
             AND precio BETWEEN ? AND ?
@@ -578,7 +568,7 @@ public class AlojamientoDAO {
     public Alojamiento buscarPorIdALO(int id) throws SQLException {
         String sql = "SELECT id, nombre, descripcion, capacidad, precio, " +
                 "precio_hasta_2, precio_hasta_4, precio_hasta_6, " +
-                "ubicacion, distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes " +
+                "distanciaApiscina, latitud, longitud, permiteMascotas, permite_colchon_extra, imagenes " +
                 "FROM alojamiento WHERE id = ?";
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -587,9 +577,7 @@ public class AlojamientoDAO {
                 if (!resultado.next()) {
                     return null;
                 }
-                Alojamiento alojamiento = mapearAlojamiento(resultado);
-                leerCoordenadas(resultado, alojamiento); // para el mapa de la página de detalle
-                return alojamiento;
+                return mapearAlojamiento(resultado);
             }
         }
     }

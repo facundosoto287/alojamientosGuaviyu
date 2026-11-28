@@ -415,7 +415,7 @@ public class Main {
                         + " | Descripción: " + a.getDescripcion()
                         + " | Capacidad: " + a.getCapacidad()
                         + " | Precio: " + a.getPrecio()
-                        + " | Ubicación: " + a.getUbicacion()
+                        + " | Coordenadas: " + a.getCoordenadasTexto()
                         + " | Dist. piscina: " + a.getDistanciaApiscina() + "m");
             }
         }
@@ -467,7 +467,7 @@ public class Main {
                 System.out.println(a.getId() + " - " + a.getNombre()
                         + " | Capacidad: " + a.getCapacidad()
                         + " | Precio: " + a.getPrecio()
-                        + " | Ubicación: " + a.getUbicacion());
+                        + " | Coordenadas: " + a.getCoordenadasTexto());
             }
         }
     }
@@ -680,7 +680,7 @@ public class Main {
                     System.out.println(a.getId() + " - " + a.getNombre()
                             + " | Capacidad: " + a.getCapacidad()
                             + " | Precio: " + a.getPrecio()
-                            + " | Ubicación: " + a.getUbicacion());
+                            + " | Coordenadas: " + a.getCoordenadasTexto());
                 }
             }
 
@@ -1208,16 +1208,15 @@ public class Main {
     static void verUbicacionAlojamientos() {
         List<Alojamiento> alojamientos = alojamientoDAO.listarAlojamientos();
         if (alojamientos.isEmpty()) {
-            System.out.println("No hay alojamientos con ubicación registrada.");
+            System.out.println("No hay alojamientos registrados.");
             return;
         }
 
         System.out.println("\n=== UBICACIÓN DE LOS ALOJAMIENTOS ===");
         for (Alojamiento a : alojamientos) {
-            System.out.printf("%d. %s | Ubicación: %s | Distancia a piscina: %.1f m%n",
-                    a.getId(), a.getNombre(), a.getUbicacion(), a.getDistanciaApiscina());
+            System.out.printf("%d. %s | Coordenadas: %s | Distancia a piscina: %.1f m%n",
+                    a.getId(), a.getNombre(), a.getCoordenadasTexto(), a.getDistanciaApiscina());
         }
-        System.out.println("\nNota: el proyecto guarda texto de ubicación y distancia, no coordenadas para dibujar un mapa.");
     }
 
     static void verInformacionAlojamiento() {
@@ -1246,7 +1245,7 @@ public class Main {
             System.out.println("Descripción: " + a.getDescripcion());
             System.out.println("Capacidad: " + a.getCapacidad() + " personas");
             System.out.printf("Precio: %.2f%n", a.getPrecio());
-            System.out.println("Ubicación: " + a.getUbicacion());
+            System.out.println("Coordenadas: " + a.getCoordenadasTexto());
             System.out.printf("Distancia a piscina: %.1f m%n", a.getDistanciaApiscina());
 
             List<Servicio> servicios = alojamientoDAO.verServiciosDeUnAlojamiento(id);

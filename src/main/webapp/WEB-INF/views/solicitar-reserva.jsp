@@ -538,10 +538,6 @@
                         <c:out value="${alojamiento.nombre}"/>
                     </strong>
 
-                    <span>
-                        <c:out value="${alojamiento.ubicacion}"/>
-                    </span>
-
                 </div>
 
             </div>

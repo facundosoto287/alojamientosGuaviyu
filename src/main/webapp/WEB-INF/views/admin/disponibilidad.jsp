@@ -505,14 +505,15 @@ body.planilla-abierta {
                                                 data-noches="${r.noches}"
                                                 data-huespedes="${r.cantidadHuespedes}"
                                                 data-colchon-extra="${r.colchonExtra}"
-                                                data-precio="${r.cuenta} = ${r.precioTexto}"
+                                                data-precio="${r.precioDetalle}"
+                                                data-precio-acordado="${r.precioAcordado}"
                                                 data-procedencia="<c:out value='${r.clienteProcedencia}'/>"
                                                 data-nota="<c:out value='${celda.nota}'/>"
                                                 data-superpuesta="${celda.superpuesta}">
                                             <span class="bloque-estado" aria-hidden="true">${r.confirmada ? '✓' : '⏳'}${celda.superpuesta ? ' ⚠' : ''}</span>
                                             <strong><c:out value="${r.nombreMostrar}"/></strong>
                                             <span class="info">Tel. <c:out value="${empty r.clienteTelefono ? '—' : r.clienteTelefono}"/></span>
-                                            <span class="info precio" title="${r.nochesTexto} × precio por noche">${r.cuenta}</span>
+                                            <span class="info precio" title="${r.precioDetalle}">${r.cuenta}</span>
                                             <span class="info">${r.cantidadHuespedes} ${r.cantidadHuespedes == 1 ? 'persona' : 'personas'}</span>
                                             <c:if test="${not empty celda.nota}">
                                                 <span class="info obs">📝 <c:out value="${celda.nota}"/></span>
@@ -746,6 +747,10 @@ body.planilla-abierta {
                     <option value="1">Sí (el día de salida queda ocupado)</option>
                 </select>
             </label>
+            <label class="campo ancho">Precio total acordado ($)
+                <input type="number" name="precioAcordado" min="0" step="0.01" inputmode="decimal" placeholder="Precio calculado">
+                <small>Es el total de la estadía. Dejalo vacío para usar el precio calculado. Si cambiás las fechas, revisalo.</small>
+            </label>
         </div>
 
         <div class="modal-pie">
@@ -932,6 +937,7 @@ body.planilla-abierta {
             f.fechaSalida.value = d.salidaIso;
             f.huespedes.value = d.huespedes;
             f.medioDiaExtra.value = d.medioDia === 'true' ? '1' : '0';
+            f.precioAcordado.value = d.precioAcordado || '';
             editar.showModal();
             f.clienteId.focus();
         });

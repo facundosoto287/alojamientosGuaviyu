@@ -531,15 +531,6 @@ body {
     font-size: 1.3rem;
 }
 
-.detalle-ubicacion {
-    margin: .3rem 0 1rem;
-
-    color: var(--texto-suave);
-
-    font-size: .9rem;
-}
-
-
 /* Datos detalle */
 .detalle-grid {
     display: grid;
@@ -607,6 +598,11 @@ body {
     margin-bottom: .55rem;
 
     font-size: .88rem;
+}
+
+/* Las filas que no corresponden a la reserva quedan ocultas (el display: flex anulaba "hidden") */
+.fila-precio[hidden] {
+    display: none;
 }
 
 .fila-precio.total {
@@ -907,7 +903,6 @@ body {
 
 .detalle-reserva span,
 .detalle-reserva p,
-.detalle-reserva .detalle-ubicacion,
 .detalle-reserva .detalle-grid span {
     color: rgba(255, 255, 255, 0.85);
 }

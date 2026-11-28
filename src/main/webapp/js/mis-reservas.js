@@ -5,7 +5,6 @@ const detalleVacio = document.getElementById("detalleVacio");
 const detalleContenido = document.getElementById("detalleContenido");
 
 const detalleNombre = document.getElementById("detalleNombre");
-const detalleUbicacion = document.getElementById("detalleUbicacion");
 
 const detalleIngreso = document.getElementById("detalleIngreso");
 const detalleSalida = document.getElementById("detalleSalida");
@@ -34,6 +33,8 @@ const detalleColchonExtra = document.getElementById("detalleColchonExtra");
 const detalleFilaColchonExtra = document.getElementById("detalleFilaColchonExtra");
 
 const detallePrecioColchonExtra = document.getElementById("detallePrecioColchonExtra");
+
+const detalleDesglose = document.getElementById("detalleDesglose");
 
 
 /*FORMATEAR PRECIO*/
@@ -131,8 +132,6 @@ filas.forEach(fila => {
 
         const nombre = fila.dataset.nombre;
 
-        const ubicacion = fila.dataset.ubicacion;
-
         const ingreso = fila.dataset.ingreso;
 
         const salida = fila.dataset.salida;
@@ -154,8 +153,6 @@ filas.forEach(fila => {
 
         /*DATOS*/
         detalleNombre.textContent = nombre;
-
-        detalleUbicacion.textContent = ubicacion;
 
         detalleIngreso.textContent = formatearFecha(ingreso);
         detalleSalida.textContent = formatearFecha(salida);
@@ -222,6 +219,10 @@ filas.forEach(fila => {
 
             detallePrecioColchonExtra.textContent = "";
         }
+
+        /*PRECIO ACORDADO: solo se muestra el total, sin la cuenta con los precios anteriores*/
+        detalleDesglose.hidden = fila.dataset.precioAcordado === "true";
+
 
         detalleTotal.textContent = "$ " + formatearPrecio(total);
 

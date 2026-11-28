@@ -164,34 +164,6 @@ body {
 }
 
 
-/* Ubicación */
-.detalle-ubicacion {
-    display: flex;
-    align-items: center;
-
-    gap: 7px;
-
-    margin-bottom: 22px;
-
-    color: #60758d;
-
-    font-family: "Nunito Sans", sans-serif;
-    font-size: 15px;
-}
-
-
-.detalle-ubicacion svg {
-    width: 19px;
-    height: 19px;
-
-    fill: none;
-    stroke: #0d6efd;
-    stroke-width: 2;
-
-    flex-shrink: 0;
-}
-
-
 /* Descripción */
 .detalle-descripcion {
     max-width: 750px;

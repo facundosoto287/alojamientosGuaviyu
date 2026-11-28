@@ -12,10 +12,11 @@ public class Reserva {
     private Date fechaSolicitud;
     private int alojamientoId;
     private String nombreAlojamiento;
-    private String ubicacionAlojamiento;
     private double precioPorNoche;
     private int cantidadNoches;
     private double precioTotal;
+    // Precio total que fijó el administrador (null = se usa el calculado)
+    private java.math.BigDecimal precioAcordado;
     private boolean medioDiaExtra;
     private boolean correoRecordatorioEnviado;
     private boolean correoResenaEnviado;
@@ -103,12 +104,12 @@ public class Reserva {
         this.nombreAlojamiento = nombreAlojamiento;
     }
 
-    public String getUbicacionAlojamiento() {
-        return ubicacionAlojamiento;
+    public java.math.BigDecimal getPrecioAcordado() {
+        return precioAcordado;
     }
 
-    public void setUbicacionAlojamiento(String ubicacionAlojamiento) {
-        this.ubicacionAlojamiento = ubicacionAlojamiento;
+    public void setPrecioAcordado(java.math.BigDecimal precioAcordado) {
+        this.precioAcordado = precioAcordado;
     }
 
     public double getPrecioPorNoche() {

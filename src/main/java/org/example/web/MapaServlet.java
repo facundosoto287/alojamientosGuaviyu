@@ -76,7 +76,6 @@ public class MapaServlet extends HttpServlet {
                     .append("\"descripcion\":").append(texto(a.getDescripcion())).append(",")
                     .append("\"capacidad\":").append(a.getCapacidad()).append(",")
                     .append("\"precio\":").append(a.getPrecio()).append(",")
-                    .append("\"ubicacion\":").append(texto(a.getUbicacion())).append(",")
                     // Reseñas: promedio con un decimal (0 si no tiene) y cantidad
                     .append("\"promedio\":").append(String.format(Locale.ROOT, "%.1f",
                             promedios.containsKey(a.getId()) ? promedios.get(a.getId())[0] : 0)).append(",")

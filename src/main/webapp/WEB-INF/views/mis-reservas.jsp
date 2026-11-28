@@ -272,8 +272,6 @@
 
                                 data-nombre="${reserva.nombreAlojamiento}"
 
-                                data-ubicacion="${reserva.ubicacionAlojamiento}"
-
                                 data-ingreso="${reserva.fechaIngreso}"
 
                                 data-salida="${reserva.fechaSalida}"
@@ -287,6 +285,8 @@
                                 data-precio="${reserva.precioPorNoche}"
 
                                 data-total="${reserva.precioTotal}"
+
+                                data-precio-acordado="${not empty reserva.precioAcordado}"
 
                                 data-medio-dia="${reserva.medioDiaExtra}"
 
@@ -320,11 +320,6 @@
                                     <strong>
                                         <c:out value="${reserva.nombreAlojamiento}"/>
                                     </strong>
-
-
-                                    <span>
-                                        <c:out value="${reserva.ubicacionAlojamiento}"/>
-                                    </span>
 
                                 </div>
 
@@ -587,10 +582,6 @@
                 </h3>
 
 
-                <p id="detalleUbicacion"
-                   class="detalle-ubicacion">
-                </p>
-
 
 
                 <!--DATOS DE LA RESERVA-->
@@ -709,6 +700,10 @@
 
 
 
+                    <!--DESGLOSE: se oculta si la administracion acordo el precio-->
+
+                    <div id="detalleDesglose">
+
                     <!--PRECIO POR NOCHE-->
 
                     <div class="fila-precio">
@@ -765,6 +760,8 @@
 
                         <strong id="detallePrecioColchonExtra">
                         </strong>
+
+                    </div>
 
                     </div>
 

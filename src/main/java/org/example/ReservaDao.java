@@ -329,15 +329,17 @@ public class ReservaDao {
     }
 
     /**
-     * Edita una reserva PENDIENTE o CONFIRMADA desde el panel: cliente, alojamiento, fechas, huéspedes
-     * y medio día extra. El estado no cambia (para eso están confirmar y cancelar).
+     * Edita una reserva PENDIENTE o CONFIRMADA desde el panel: cliente, alojamiento, fechas, huéspedes,
+     * medio día extra y precio acordado (null = usar el precio calculado).
+     * El estado no cambia (para eso están confirmar y cancelar).
      * Todo ocurre en una transacción, con las mismas validaciones que crearReservaAdmin:
      * capacidad del alojamiento, que el cliente exista y que las fechas no se superpongan
      * con otra reserva (sin contar la misma reserva que se está editando).
      * Lanza IllegalArgumentException con un mensaje para mostrar si los datos no son válidos.
      */
     public void editarReservaAdmin(int idReserva, int idCliente, int alojamientoId, Date ingreso, Date salida,
-                                   int huespedes, boolean medioDiaExtra) throws SQLException {
+                                   int huespedes, boolean medioDiaExtra,
+                                   java.math.BigDecimal precioAcordado) throws SQLException {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             conexion.setAutoCommit(false);
             try {
@@ -401,14 +403,16 @@ public class ReservaDao {
 
                 try (PreparedStatement actualizar = conexion.prepareStatement("""
                         UPDATE reserva
-                        SET fechaIngreso = ?, fechaSalida = ?, cantidadHuespedes = ?, alojamiento_id = ?, medioDiaExtra = ?
+                        SET fechaIngreso = ?, fechaSalida = ?, cantidadHuespedes = ?, alojamiento_id = ?, medioDiaExtra = ?,
+                            precio_acordado = ?
                         WHERE id = ?""")) {
                     actualizar.setDate(1, ingreso);
                     actualizar.setDate(2, salida);
                     actualizar.setInt(3, huespedes);
                     actualizar.setInt(4, alojamientoId);
                     actualizar.setBoolean(5, medioDiaExtra);
-                    actualizar.setInt(6, idReserva);
+                    actualizar.setBigDecimal(6, precioAcordado);
+                    actualizar.setInt(7, idReserva);
                     actualizar.executeUpdate();
                 }
 
@@ -441,8 +445,9 @@ public class ReservaDao {
     public List<ReservaDetalle> listarDetalle(EstadoReserva estado, Integer alojamientoId, Integer clienteId, String textoCliente) {
         StringBuilder sql = new StringBuilder("""
                 SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado, r.fechaSolicitud,
-                       r.alojamiento_id, r.medioDiaExtra, r.colchon_extra,
-                       a.nombre AS alojamiento, c.id AS cliente_id, c.nombre AS cliente, c.documento
+                       r.alojamiento_id, r.medioDiaExtra, r.colchon_extra, r.precio_acordado,
+                       a.nombre AS alojamiento, a.precio AS precioNoche,
+                       c.id AS cliente_id, c.nombre AS cliente, c.documento
                 FROM reserva r
                 LEFT JOIN alojamiento a ON a.id = r.alojamiento_id
                 LEFT JOIN cliente_reserva cr ON cr.idReserva = r.id
@@ -486,6 +491,7 @@ public class ReservaDao {
                     Reserva reserva = mapearReserva(fila);
                     reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
                     reserva.setColchonExtra(fila.getBoolean("colchon_extra"));
+                    leerPrecio(fila, reserva);
                     lista.add(new ReservaDetalle(
                             reserva,
                             fila.getString("alojamiento"),
@@ -561,6 +567,12 @@ public class ReservaDao {
         }
 
         return reservas;
+    }
+
+    /** Datos del precio: el del alojamiento por noche y el acordado por el administrador (si hay). */
+    private void leerPrecio(ResultSet fila, Reserva reserva) throws SQLException {
+        reserva.setPrecioPorNoche(fila.getDouble("precioNoche"));
+        reserva.setPrecioAcordado(fila.getBigDecimal("precio_acordado"));
     }
 
     private Reserva mapearReserva(ResultSet resultado) throws SQLException {
@@ -1019,14 +1031,15 @@ public class ReservaDao {
             r.alojamiento_id,
             r.medioDiaExtra,
             r.colchon_extra,
+            r.precio_acordado,
 
             a.nombre AS nombreAlojamiento,
-            a.ubicacion AS ubicacionAlojamiento,
             a.precio AS precioPorNoche,
 
             DATEDIFF(r.fechaSalida, r.fechaIngreso) AS cantidadNoches,
 
-            (
+            COALESCE(
+                r.precio_acordado,
                 DATEDIFF(r.fechaSalida, r.fechaIngreso) * a.precio
                 +
                 CASE
@@ -1091,11 +1104,6 @@ public class ReservaDao {
                     );
 
 
-                    reserva.setUbicacionAlojamiento(
-                            resultado.getString("ubicacionAlojamiento")
-                    );
-
-
                     reserva.setPrecioPorNoche(
                             resultado.getDouble("precioPorNoche")
                     );
@@ -1107,6 +1115,7 @@ public class ReservaDao {
 
 
                     reserva.setPrecioTotal(resultado.getDouble("precioTotal"));
+                    reserva.setPrecioAcordado(resultado.getBigDecimal("precio_acordado"));
                     reservas.add(reserva);
                 }
             }
@@ -1130,7 +1139,7 @@ public class ReservaDao {
 
         String sql = """
                 SELECT r.id, r.fechaIngreso, r.fechaSalida, r.cantidadHuespedes, r.estado,
-                       r.fechaSolicitud, r.alojamiento_id, r.medioDiaExtra, r.colchon_extra,
+                       r.fechaSolicitud, r.alojamiento_id, r.medioDiaExtra, r.colchon_extra, r.precio_acordado,
                        a.nombre AS alojamiento,
                        a.precio AS precioNoche,
                        c.id AS cliente_id, c.nombre AS cliente, c.documento, c.telefono, c.procedencia
@@ -1162,6 +1171,7 @@ public class ReservaDao {
                     Reserva reserva = mapearReserva(fila);
                     reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
                     reserva.setColchonExtra(fila.getBoolean("colchon_extra"));
+                    reserva.setPrecioAcordado(fila.getBigDecimal("precio_acordado"));
 
                     lista.add(new ReservaPlanilla(
                             reserva,
@@ -1332,7 +1342,9 @@ public class ReservaDao {
                r.alojamiento_id,
                r.medioDiaExtra,
                r.colchon_extra,
+               r.precio_acordado,
                a.nombre AS alojamiento,
+               a.precio AS precioNoche,
                c.id AS cliente_id,
                c.nombre AS cliente,
                c.documento
@@ -1362,6 +1374,7 @@ public class ReservaDao {
 
                     reserva.setMedioDiaExtra(fila.getBoolean("medioDiaExtra"));
                     reserva.setColchonExtra(fila.getBoolean("colchon_extra"));
+                    leerPrecio(fila, reserva);
 
                     return new ReservaDetalle(reserva, fila.getString("alojamiento"), sinCliente ? null : idCliente, fila.getString("cliente"), fila.getString("documento"));
                 }

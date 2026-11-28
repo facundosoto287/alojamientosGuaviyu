@@ -2,7 +2,6 @@ package org.example;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Una reserva tal como se muestra en la Planilla de ocupación del panel:
@@ -24,27 +23,11 @@ public class ReservaPlanilla extends ReservaDetalle {
         this.clienteTelefono = clienteTelefono;
         this.clienteProcedencia = clienteProcedencia;
         this.precioNoche = precioNoche;
+        reserva.setPrecioPorNoche(precioNoche); // lo usa el cálculo del precio (ReservaDetalle)
     }
 
     public String getClienteProcedencia() {
         return clienteProcedencia;
-    }
-
-    /**
-     * Precio total de la estadía, con la misma cuenta que "Mis reservas" del cliente:
-     * noches × precio del alojamiento, más media noche si pidió medio día extra.
-     */
-    public double getPrecioTotal() {
-        double total = getNoches() * precioNoche + (isMedioDiaExtra() ? precioNoche / 2 : 0);
-        if (isColchonExtra()) {
-            total += getNoches() * 200;
-        }
-        return total;
-    }
-
-    /** Precio total para mostrar: "$ 17.500". */
-    public String getPrecioTexto() {
-        return PlanillaDia.precioTexto(java.math.BigDecimal.valueOf(getPrecioTotal()));
     }
 
     /** Precio por noche para mostrar: "$ 2.500". */
@@ -55,8 +38,12 @@ public class ReservaPlanilla extends ReservaDetalle {
     /**
      * Noches por precio, como en la planilla de Excel: "8 × $ 2.500".
      * Si pidió medio día extra se agrega "+ ½".
+     * Si el administrador fijó el precio, se muestra ese importe: "$ 15.000 (acordado)".
      */
     public String getCuenta() {
+        if (getPrecioAcordado() != null) {
+            return getPrecioTexto() + " (acordado)";
+        }
 
         String cuenta = getNoches()  + " × " + getPrecioNocheTexto();
         if (isMedioDiaExtra()) {
@@ -66,6 +53,14 @@ public class ReservaPlanilla extends ReservaDetalle {
             cuenta += " + colchón";
         }
         return cuenta;
+    }
+
+    /**
+     * Precio para la ventana de detalle de la planilla: la cuenta con su total,
+     * o solo el importe acordado si el administrador fijó uno.
+     */
+    public String getPrecioDetalle() {
+        return getPrecioAcordado() != null ? getCuenta() : getCuenta() + " = " + getPrecioTexto();
     }
 
     /** Texto "3 noches" / "1 noche". */
@@ -127,10 +122,6 @@ public class ReservaPlanilla extends ReservaDetalle {
     /** ¿Esta reserva ocupa ese día? */
     public boolean ocupa(LocalDate dia) {
         return !dia.isBefore(getIngreso()) && dia.isBefore(getFinOcupacion());
-    }
-
-    public long getNoches() {
-        return ChronoUnit.DAYS.between(getIngreso(), getSalida());
     }
 
     public boolean isConfirmada() {

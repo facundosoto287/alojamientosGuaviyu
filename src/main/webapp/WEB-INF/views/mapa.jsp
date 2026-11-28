@@ -174,9 +174,6 @@
         }
         cartel.appendChild(resenas);
 
-        if (a.ubicacion) {
-            agregarTexto(cartel, "p", "cartel__sub", "📍 " + a.ubicacion);
-        }
         if (a.descripcion) {
             agregarTexto(cartel, "p", "cartel__desc", a.descripcion);
         }

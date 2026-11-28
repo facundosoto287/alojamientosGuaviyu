@@ -10,7 +10,6 @@ public class Alojamiento {
     private String descripcion;
     private int capacidad;
     private double precio;
-    private String ubicacion;
     private float distanciaApiscina;
     private boolean permiteMascotas;
     private boolean permiteColchonExtra;
@@ -25,13 +24,12 @@ public class Alojamiento {
     // Fotos en Cloudinary: identificadores (public_id) separados por "|". La primera es la portada.
     private String imagenes;
 
-    public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, String ubicacion, float distanciaApiscina) {
+    public Alojamiento(int id, String nombre, String descripcion, int capacidad, double precio, float distanciaApiscina) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.capacidad = capacidad;
         this.precio = precio;
-        this.ubicacion = ubicacion;
         this.distanciaApiscina = distanciaApiscina;
     }
 
@@ -73,14 +71,6 @@ public class Alojamiento {
 
     public void setPrecio(double precio) {
         this.precio = precio;
-    }
-
-    public String getUbicacion() {
-        return ubicacion;
-    }
-
-    public void setUbicacion(String ubicacion) {
-        this.ubicacion = ubicacion;
     }
 
     public float getDistanciaApiscina() {
@@ -161,16 +151,26 @@ public class Alojamiento {
         return lista == null || lista.isEmpty() ? null : String.join("|", lista);
     }
 
-    // true si el alojamiento tiene ubicación cargada para mostrarse en el mapa
+    // true si el alojamiento tiene coordenadas cargadas para mostrarse en el mapa
     public boolean tieneCoordenadas() {
         return latitud != null && longitud != null;
+    }
+
+    /** Uruguay está entre las latitudes -35 y -30 y las longitudes -59 y -53. */
+    public static boolean coordenadasEnUruguay(double latitud, double longitud) {
+        return latitud >= -35 && latitud <= -30 && longitud >= -59 && longitud <= -53;
+    }
+
+    /** "-31.83812, -57.89034", o "sin cargar" si todavía no tiene coordenadas. */
+    public String getCoordenadasTexto() {
+        return tieneCoordenadas() ? latitud + ", " + longitud : "sin cargar";
     }
 
     @Override
     public String toString() {
         return "Alojamiento{id=" + id + ", nombre='" + nombre + "', descripcion='" + descripcion +
-                "', capacidad=" + capacidad + ", precio=" + precio + ", ubicacion='" + ubicacion +
-                "', distanciaApiscina=" + distanciaApiscina + "}";
+                "', capacidad=" + capacidad + ", precio=" + precio + ", latitud=" + latitud +
+                ", longitud=" + longitud + ", distanciaApiscina=" + distanciaApiscina + "}";
     }
 
     public double getPrecioParaHuespedes(int huespedes) {

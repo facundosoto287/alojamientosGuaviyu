@@ -221,6 +221,9 @@ public class AdminReservasServlet extends AdminServlet {
         Date ingreso = fecha(texto(request, "fechaIngreso"));
         Date salida = fecha(texto(request, "fechaSalida"));
         boolean medioDiaExtra = "1".equals(texto(request, "medioDiaExtra"));
+        // Precio total fijado a mano (por ejemplo, a un cliente de años). Vacío = precio calculado
+        String precioTexto = texto(request, "precioAcordado");
+        BigDecimal precioAcordado = precioTexto.isEmpty() ? null : importe(precioTexto);
 
         String error = null;
         if (id == null) {
@@ -235,6 +238,9 @@ public class AdminReservasServlet extends AdminServlet {
             error = "La fecha de salida debe ser posterior a la de ingreso.";
         } else if (huespedes == null || huespedes < 1) {
             error = "La cantidad de huéspedes debe ser mayor que cero.";
+        } else if (!precioTexto.isEmpty() && (precioAcordado == null || precioAcordado.signum() < 0
+                || precioAcordado.compareTo(new BigDecimal("10000000")) >= 0)) {
+            error = "Ingresá un precio válido (solo números, por ejemplo 15000). La reserva no se modificó.";
         }
 
         if (error != null) {
@@ -243,7 +249,8 @@ public class AdminReservasServlet extends AdminServlet {
         }
 
         try {
-            reservaDao.editarReservaAdmin(id, clienteId, alojamientoId, ingreso, salida, huespedes, medioDiaExtra);
+            reservaDao.editarReservaAdmin(id, clienteId, alojamientoId, ingreso, salida, huespedes, medioDiaExtra,
+                    precioAcordado);
 
             enviarCorreoReservaModificada(id);
 
@@ -439,6 +446,11 @@ public class AdminReservasServlet extends AdminServlet {
 
             if (detalle.isMedioDiaExtra()) {
                 precioTotal += precioPorNoche / 2;
+            }
+
+            // Si el administrador fijó el precio, ese es el que se le informa al cliente
+            if (detalle.getPrecioAcordado() != null) {
+                precioTotal = detalle.getPrecioAcordado().doubleValue();
             }
 
             String contenido = CorreoPlantillas.reservaModificada(cliente, detalle, precioTotal);
