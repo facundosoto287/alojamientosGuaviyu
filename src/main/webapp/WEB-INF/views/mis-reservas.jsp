@@ -272,8 +272,6 @@
 
                                 data-nombre="${reserva.nombreAlojamiento}"
 
-                                data-ubicacion="${reserva.ubicacionAlojamiento}"
-
                                 data-ingreso="${reserva.fechaIngreso}"
 
                                 data-salida="${reserva.fechaSalida}"
@@ -320,11 +318,6 @@
                                     <strong>
                                         <c:out value="${reserva.nombreAlojamiento}"/>
                                     </strong>
-
-
-                                    <span>
-                                        <c:out value="${reserva.ubicacionAlojamiento}"/>
-                                    </span>
 
                                 </div>
 
@@ -586,10 +579,6 @@
                 <h3 id="detalleNombre">
                 </h3>
 
-
-                <p id="detalleUbicacion"
-                   class="detalle-ubicacion">
-                </p>
 
 
 

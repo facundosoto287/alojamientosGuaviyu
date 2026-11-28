@@ -89,7 +89,10 @@ public class AdminAlojamientosServlet extends AdminServlet {
 
         String nombre = texto(request, "nombre");
         String descripcion = texto(request, "descripcion");
-        String ubicacion = texto(request, "ubicacion");
+        String latitudTexto = texto(request, "latitud");
+        String longitudTexto = texto(request, "longitud");
+        Double latitud = latitudTexto.isEmpty() ? null : decimal(latitudTexto);
+        Double longitud = longitudTexto.isEmpty() ? null : decimal(longitudTexto);
         Integer capacidad = entero(request, "capacidad");
         Double precio = decimal(texto(request, "precio"));
         Double precioHasta2 = texto(request, "precioHasta2").isEmpty() ? null : decimal(texto(request, "precioHasta2"));
@@ -108,8 +111,11 @@ public class AdminAlojamientosServlet extends AdminServlet {
             error = "La capacidad debe ser un número entre 1 y 100.";
         } else if (precio == null || precio < 0 || precio > 10_000_000) {
             error = "El precio debe ser un número válido, mayor o igual a cero.";
-        } else if (ubicacion.isEmpty() || ubicacion.length() > 150) {
-            error = "La ubicación es obligatoria (hasta 150 caracteres).";
+        } else if (latitudTexto.isEmpty() != longitudTexto.isEmpty()) {
+            error = "Completá la latitud y la longitud, o dejá las dos vacías.";
+        } else if (!latitudTexto.isEmpty() && (latitud == null || longitud == null
+                || !Alojamiento.coordenadasEnUruguay(latitud, longitud))) {
+            error = "Las coordenadas no son válidas: la latitud va de -35 a -30 y la longitud de -59 a -53.";
         } else if (distancia == null || distancia < 0 || distancia > 100_000) {
             error = "La distancia a la piscina debe ser un número válido, mayor o igual a cero.";
         }
@@ -119,8 +125,10 @@ public class AdminAlojamientosServlet extends AdminServlet {
             return;
         }
 
-        Alojamiento alojamiento = new Alojamiento(editando ? id : 0, nombre, descripcion, capacidad, precio, ubicacion, distancia.floatValue());
+        Alojamiento alojamiento = new Alojamiento(editando ? id : 0, nombre, descripcion, capacidad, precio, distancia.floatValue());
         alojamiento.setPermiteMascotas(permiteMascotas);
+        alojamiento.setLatitud(latitud);
+        alojamiento.setLongitud(longitud);
 
         if (nombre.equalsIgnoreCase("Pampita")) {
             alojamiento.setPrecioHasta2(precioHasta2);

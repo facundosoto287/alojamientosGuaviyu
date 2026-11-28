@@ -12,7 +12,6 @@ public class Reserva {
     private Date fechaSolicitud;
     private int alojamientoId;
     private String nombreAlojamiento;
-    private String ubicacionAlojamiento;
     private double precioPorNoche;
     private int cantidadNoches;
     private double precioTotal;
@@ -101,14 +100,6 @@ public class Reserva {
 
     public void setNombreAlojamiento(String nombreAlojamiento) {
         this.nombreAlojamiento = nombreAlojamiento;
-    }
-
-    public String getUbicacionAlojamiento() {
-        return ubicacionAlojamiento;
-    }
-
-    public void setUbicacionAlojamiento(String ubicacionAlojamiento) {
-        this.ubicacionAlojamiento = ubicacionAlojamiento;
     }
 
     public double getPrecioPorNoche() {

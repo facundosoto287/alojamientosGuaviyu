@@ -1021,7 +1021,6 @@ public class ReservaDao {
             r.colchon_extra,
 
             a.nombre AS nombreAlojamiento,
-            a.ubicacion AS ubicacionAlojamiento,
             a.precio AS precioPorNoche,
 
             DATEDIFF(r.fechaSalida, r.fechaIngreso) AS cantidadNoches,
@@ -1088,11 +1087,6 @@ public class ReservaDao {
 
                     reserva.setNombreAlojamiento(
                             resultado.getString("nombreAlojamiento")
-                    );
-
-
-                    reserva.setUbicacionAlojamiento(
-                            resultado.getString("ubicacionAlojamiento")
                     );
 
 

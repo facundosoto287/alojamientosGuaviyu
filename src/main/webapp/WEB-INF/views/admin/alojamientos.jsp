@@ -36,7 +36,7 @@
                     <thead>
                     <tr>
                         <th>ID</th><th>Alojamiento</th><th>Capacidad</th><th>Precio</th>
-                        <th>Ubicación</th><th>Piscina</th><th class="acciones-col">Acciones</th>
+                        <th>Latitud</th><th>Longitud</th><th>Piscina</th><th class="acciones-col">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -49,7 +49,8 @@
                             </td>
                             <td>${a.capacidad} pers.</td>
                             <td>$ <fmt:formatNumber value="${a.precio}" pattern="#,##0.##"/></td>
-                            <td><c:out value="${a.ubicacion}"/></td>
+                            <td>${empty a.latitud ? '—' : a.latitud}</td>
+                            <td>${empty a.longitud ? '—' : a.longitud}</td>
                             <td>${a.distanciaApiscina} m</td>
                             <td class="acciones">
                                 <button type="button" class="btn btn-secundario" data-modal-abrir="m-fotos-${a.id}">Fotos (${fn:length(a.listaImagenes)})</button>
@@ -62,7 +63,8 @@
                                         data-f-preciohasta2="${a.precioHasta2}"
                                         data-f-preciohasta4="${a.precioHasta4}"
                                         data-f-preciohasta6="${a.precioHasta6}"
-                                        data-f-ubicacion="<c:out value='${a.ubicacion}'/>"
+                                        data-f-latitud="${a.latitud}"
+                                        data-f-longitud="${a.longitud}"
                                         data-f-distanciaApiscina="${a.distanciaApiscina}"
                                         data-f-permiteMascotas="${a.permiteMascotas}">Editar</button>
                                 <form action="${base}/alojamientos" method="post"
@@ -98,8 +100,13 @@
             <label class="campo">Precio por noche ($)
                 <input type="number" name="precio" min="0" step="0.01" required></label>
 
-            <label class="campo">Ubicación
-                <input type="text" name="ubicacion" maxlength="150" required></label>
+            <label class="campo">Latitud
+                <input type="number" name="latitud" min="-35" max="-30" step="any" placeholder="-31.83812"></label>
+            <label class="campo">Longitud
+                <input type="number" name="longitud" min="-59" max="-53" step="any" placeholder="-57.89034"></label>
+            <div class="campo ancho">
+                <small>Para que se vea en el mapa. En Google Maps, clic derecho sobre el lugar: el primer número es la latitud y el segundo la longitud.</small>
+            </div>
             <label class="campo">Distancia a la piscina (m)
                 <input type="number" name="distanciaApiscina" min="0" step="any" value="0"></label>
             <label class="campo">
@@ -166,8 +173,13 @@
                 </div>
             </div>
 
-            <label class="campo">Ubicación
-                <input type="text" name="ubicacion" maxlength="150" required></label>
+            <label class="campo">Latitud
+                <input type="number" name="latitud" min="-35" max="-30" step="any" placeholder="-31.83812"></label>
+            <label class="campo">Longitud
+                <input type="number" name="longitud" min="-59" max="-53" step="any" placeholder="-57.89034"></label>
+            <div class="campo ancho">
+                <small>Para que se vea en el mapa. En Google Maps, clic derecho sobre el lugar: el primer número es la latitud y el segundo la longitud.</small>
+            </div>
             <label class="campo">Distancia a la piscina (m)
                 <input type="number" name="distanciaApiscina" min="0" step="any"></label>
             <label class="campo">

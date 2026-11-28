@@ -5,7 +5,6 @@ const detalleVacio = document.getElementById("detalleVacio");
 const detalleContenido = document.getElementById("detalleContenido");
 
 const detalleNombre = document.getElementById("detalleNombre");
-const detalleUbicacion = document.getElementById("detalleUbicacion");
 
 const detalleIngreso = document.getElementById("detalleIngreso");
 const detalleSalida = document.getElementById("detalleSalida");
@@ -131,8 +130,6 @@ filas.forEach(fila => {
 
         const nombre = fila.dataset.nombre;
 
-        const ubicacion = fila.dataset.ubicacion;
-
         const ingreso = fila.dataset.ingreso;
 
         const salida = fila.dataset.salida;
@@ -154,8 +151,6 @@ filas.forEach(fila => {
 
         /*DATOS*/
         detalleNombre.textContent = nombre;
-
-        detalleUbicacion.textContent = ubicacion;
 
         detalleIngreso.textContent = formatearFecha(ingreso);
         detalleSalida.textContent = formatearFecha(salida);
