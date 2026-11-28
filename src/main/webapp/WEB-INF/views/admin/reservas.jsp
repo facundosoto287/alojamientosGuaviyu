@@ -46,7 +46,7 @@
                     <thead>
                     <tr>
                         <th>#</th><th>Alojamiento</th><th>Cliente</th><th>Ingreso</th><th>Salida</th>
-                        <th>Huéspedes</th><th>Medio día extra</th><th>Colchón extra</th><th>Estado</th><th>Solicitada</th><th class="acciones-col">Acciones</th>
+                        <th>Huéspedes</th><th>Medio día extra</th><th>Colchón extra</th><th>Precio</th><th>Estado</th><th>Solicitada</th><th class="acciones-col">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -67,6 +67,10 @@
                             <td><fmt:formatDate value="${r.fechaSalida}" pattern="dd/MM/yyyy"/></td>
                             <td>${r.cantidadHuespedes}</td>
                             <td>${r.medioDiaExtra ? 'Sí' : 'No'} </td> <td>${r.colchonExtra ? 'Sí' : 'No'}</td>
+                            <td>
+                                ${r.precioTexto}
+                                <c:if test="${not empty r.precioAcordado}"><div class="celda-sub">Acordado</div></c:if>
+                            </td>
                             <td> <span class="estado estado-${r.estado}"> ${r.estado == 'PENDIENTE' ? 'Pendiente' : (r.estado == 'CONFIRMADA' ? 'Confirmada' : 'Cancelada')}</span></td>
                             <td><fmt:formatDate value="${r.fechaSolicitud}" pattern="dd/MM/yyyy"/></td>
                             <td class="acciones">
@@ -91,7 +95,8 @@
                                             data-f-fechaingreso="${r.fechaIngreso}"
                                             data-f-fechasalida="${r.fechaSalida}"
                                             data-f-huespedes="${r.cantidadHuespedes}"
-                                            data-f-mediodiaextra="${r.medioDiaExtra ? 1 : 0}">Editar</button>
+                                            data-f-mediodiaextra="${r.medioDiaExtra ? 1 : 0}"
+                                            data-f-precioacordado="${r.precioAcordado}">Editar</button>
                                 </c:if>
                                 <c:if test="${r.estado == 'CONFIRMADA'}">
                                     <button type="button" class="btn btn-eliminar" data-modal-abrir="m-cancelar"
@@ -244,6 +249,10 @@
                     <option value="0">No</option>
                     <option value="1">Sí (el día de salida queda ocupado)</option>
                 </select>
+            </label>
+            <label class="campo ancho">Precio total acordado ($)
+                <input type="number" name="precioAcordado" min="0" step="0.01" inputmode="decimal" placeholder="Precio calculado">
+                <small>Es el total de la estadía. Dejalo vacío para usar el precio calculado. Si cambiás las fechas, revisalo.</small>
             </label>
         </div>
 

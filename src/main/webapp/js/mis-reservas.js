@@ -34,6 +34,10 @@ const detalleFilaColchonExtra = document.getElementById("detalleFilaColchonExtra
 
 const detallePrecioColchonExtra = document.getElementById("detallePrecioColchonExtra");
 
+const detalleFilaAjuste = document.getElementById("detalleFilaAjuste");
+const detalleEtiquetaAjuste = document.getElementById("detalleEtiquetaAjuste");
+const detallePrecioAjuste = document.getElementById("detallePrecioAjuste");
+
 
 /*FORMATEAR PRECIO*/
 function formatearPrecio(valor) {
@@ -216,6 +220,29 @@ filas.forEach(fila => {
             detalleFilaColchonExtra.hidden = true;
 
             detallePrecioColchonExtra.textContent = "";
+        }
+
+        /*PRECIO ACORDADO: la diferencia con la cuenta normal se muestra como descuento o ajuste*/
+        const calculado = subtotalNoches
+            + (medioDiaExtra ? precio / 2 : 0)
+            + (colchonExtra ? noches * 200 : 0);
+
+        const ajuste = total - calculado;
+
+        if (fila.dataset.precioAcordado === "true" && ajuste !== 0) {
+
+            detalleFilaAjuste.hidden = false;
+
+            detalleEtiquetaAjuste.textContent = ajuste < 0 ? "Descuento" : "Ajuste de precio";
+
+            detallePrecioAjuste.textContent =
+                (ajuste < 0 ? "- $ " : "+ $ ") + formatearPrecio(Math.abs(ajuste));
+
+        } else {
+
+            detalleFilaAjuste.hidden = true;
+
+            detallePrecioAjuste.textContent = "";
         }
 
         detalleTotal.textContent = "$ " + formatearPrecio(total);

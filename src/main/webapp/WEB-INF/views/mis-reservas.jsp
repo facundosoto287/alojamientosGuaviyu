@@ -286,6 +286,8 @@
 
                                 data-total="${reserva.precioTotal}"
 
+                                data-precio-acordado="${not empty reserva.precioAcordado}"
+
                                 data-medio-dia="${reserva.medioDiaExtra}"
 
                                 data-colchon-extra="${reserva.colchonExtra}">
@@ -753,6 +755,22 @@
                         </span>
 
                         <strong id="detallePrecioColchonExtra">
+                        </strong>
+
+                    </div>
+
+
+                    <!--PRECIO ACORDADO CON LA ADMINISTRACION-->
+
+                    <div class="fila-precio"
+                         id="detalleFilaAjuste"
+                         hidden>
+
+                        <span id="detalleEtiquetaAjuste">
+                            Descuento
+                        </span>
+
+                        <strong id="detallePrecioAjuste">
                         </strong>
 
                     </div>

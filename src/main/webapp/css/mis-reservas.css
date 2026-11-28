@@ -600,6 +600,11 @@ body {
     font-size: .88rem;
 }
 
+/* Las filas que no corresponden a la reserva quedan ocultas (el display: flex anulaba "hidden") */
+.fila-precio[hidden] {
+    display: none;
+}
+
 .fila-precio.total {
     margin-top: .8rem;
 

@@ -34,4 +34,37 @@ public class ReservaDetalle {
     public int getAlojamientoId() { return reserva.getAlojamientoId(); }
     public boolean isMedioDiaExtra() { return reserva.isMedioDiaExtra(); }
     public boolean isColchonExtra() { return reserva.isColchonExtra() ;}
+
+    public long getNoches() {
+        return java.time.temporal.ChronoUnit.DAYS.between(
+                getFechaIngreso().toLocalDate(), getFechaSalida().toLocalDate());
+    }
+
+    // ---- Precio ----
+
+    /** Precio total que fijó el administrador, o null si la reserva usa el precio calculado. */
+    public java.math.BigDecimal getPrecioAcordado() { return reserva.getPrecioAcordado(); }
+
+    /**
+     * Precio calculado de la estadía, con la misma cuenta que "Mis reservas" del cliente:
+     * noches × precio del alojamiento, más media noche si pidió medio día extra y $ 200 por noche de colchón.
+     */
+    public double getPrecioCalculado() {
+        double porNoche = reserva.getPrecioPorNoche();
+        double total = getNoches() * porNoche + (isMedioDiaExtra() ? porNoche / 2 : 0);
+        if (isColchonExtra()) {
+            total += getNoches() * 200;
+        }
+        return total;
+    }
+
+    /** Lo que se cobra por la reserva: el precio acordado si hay uno; si no, el calculado. */
+    public double getPrecioTotal() {
+        return getPrecioAcordado() != null ? getPrecioAcordado().doubleValue() : getPrecioCalculado();
+    }
+
+    /** Precio total para mostrar: "$ 17.500". */
+    public String getPrecioTexto() {
+        return PlanillaDia.precioTexto(java.math.BigDecimal.valueOf(getPrecioTotal()));
+    }
 }
